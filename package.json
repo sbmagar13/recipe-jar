@@ -18,5 +18,8 @@
     "tsx": "^4.23.0",
     "typescript": "~6.0.2",
     "vite": "^8.1.1"
+  },
+  "dependencies": {
+    "dexie": "^4.4.4"
   }
 }

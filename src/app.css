@@ -326,3 +326,221 @@ footer {
     }
   }
 }
+
+/* Nav */
+.top {
+  justify-content: space-between;
+}
+
+.navlink {
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+  cursor: pointer;
+}
+
+.navlink:hover,
+.navlink.active {
+  background: var(--basil);
+  border-color: var(--basil);
+  color: #fff;
+}
+
+.linklike {
+  background: none;
+  border: none;
+  color: var(--basil-deep);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+}
+
+/* Card actions */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.save {
+  background: var(--basil);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save:hover {
+  background: var(--basil-deep);
+}
+
+.saved-badge {
+  color: var(--basil-deep);
+  font-weight: 700;
+}
+
+.remove {
+  background: none;
+  border: none;
+  color: var(--tomato);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* Jar view */
+.jar-title {
+  font-family: Georgia, serif;
+  color: var(--basil-deep);
+  font-size: 1.8rem;
+  margin: 8px 0 16px;
+}
+
+.jar-search {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: var(--sheet);
+  margin-bottom: 16px;
+}
+
+.jar-search:focus-visible {
+  outline: 3px solid var(--basil);
+  border-color: var(--basil);
+}
+
+.jar-empty {
+  color: var(--muted);
+  max-width: 48ch;
+}
+
+.jar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.jar-list > li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.jar-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: none;
+  border: none;
+  padding: 10px 4px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.jar-item:hover strong {
+  color: var(--basil-deep);
+}
+
+.jar-item img,
+.thumb-fallback {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  background: var(--paper);
+}
+
+.jar-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.jar-item-text small {
+  color: var(--muted);
+}
+
+.jar-delete {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 10px;
+}
+
+.jar-delete:hover {
+  color: var(--tomato);
+}
+
+.jar-footer {
+  margin-top: 16px;
+}
+
+/* Manual entry */
+.manual-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.manual-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--basil-deep);
+}
+
+.manual-form small {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.manual-form input,
+.manual-form textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--sheet);
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.manual-form input:focus-visible,
+.manual-form textarea:focus-visible {
+  outline: 3px solid var(--basil);
+  border-color: var(--basil);
+}
+
+.manual-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.manual .sub {
+  text-align: left;
+  margin: 0 0 20px;
+}
