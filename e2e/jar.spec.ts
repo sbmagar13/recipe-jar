@@ -55,7 +55,7 @@ test('save a fetched recipe to the jar and it persists across reload', async ({ 
 test('add a manual recipe and it appears in the jar', async ({ page }) => {
   const errors = collectPageErrors(page)
 
-  await page.getByRole('button', { name: /type in one of your own/ }).click()
+  await page.getByRole('button', { name: /type in one of your own/i }).click()
   await page.getByLabel('Recipe name').fill('Mums dal')
   await page.getByLabel('Servings').fill('4')
   await page.getByLabel(/Ingredients/).fill('2 cups red lentils\n1 tsp turmeric')

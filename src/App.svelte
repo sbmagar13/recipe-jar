@@ -2,16 +2,19 @@
   import type { Recipe } from './lib/types'
   import { parseRecipeFromHtml } from './lib/parse'
   import { saveRecipe, removeRecipe, findBySource, jarCount, type SavedRecipe } from './lib/db'
+  import { consumeImportHash } from './lib/bookmarklet'
   import RecipeView from './lib/components/RecipeView.svelte'
   import JarView from './lib/components/JarView.svelte'
   import ManualEntry from './lib/components/ManualEntry.svelte'
+  import ImportHelp from './lib/components/ImportHelp.svelte'
 
-  type View = 'home' | 'recipe' | 'jar' | 'add'
+  type View = 'home' | 'recipe' | 'jar' | 'add' | 'import'
 
   let view = $state<View>('home')
   let url = $state('')
   let loading = $state(false)
   let errorMsg = $state('')
+  let blocked = $state(false)
   let recipe = $state<Recipe | null>(null)
   let savedId = $state<number | null>(null)
   let count = $state(0)
@@ -21,12 +24,24 @@
   }
   refreshCount()
 
+  // Recipe handed over by the bookmarklet, if any.
+  async function handleImportHash() {
+    const imported = consumeImportHash()
+    if (!imported) return
+    recipe = imported
+    const existing = await findBySource(imported.sourceUrl)
+    savedId = existing?.id ?? null
+    view = 'recipe'
+  }
+  handleImportHash()
+
   async function getRecipe(e: Event) {
     e.preventDefault()
     const target = url.trim()
     if (!target) return
     loading = true
     errorMsg = ''
+    blocked = false
     try {
       const res = await fetch(`/api/proxy?url=${encodeURIComponent(target)}`)
       if (!res.ok) {
@@ -36,9 +51,8 @@
       const html = await res.text()
       const parsed = parseRecipeFromHtml(html, target)
       if (!parsed) {
-        throw new Error(
-          'No recipe data found on that page. Some sites hide recipes from fetchers; the upcoming bookmarklet will handle those.'
-        )
+        blocked = true
+        throw new Error('No recipe found on that page.')
       }
       recipe = parsed
       const existing = await findBySource(target)
@@ -47,6 +61,8 @@
       url = ''
     } catch (err) {
       errorMsg = err instanceof Error ? err.message : 'Something went wrong'
+      // Any fetch failure is a case the in-browser bookmarklet can rescue.
+      blocked = true
     } finally {
       loading = false
     }
@@ -131,11 +147,18 @@
         </button>
       </form>
       {#if errorMsg}
-        <p class="error" role="alert">{errorMsg}</p>
+        <p class="error" role="alert">
+          {errorMsg}
+          {#if blocked}
+            This site may block fetching. <button class="linklike" onclick={() => (view = 'import')}>Use the bookmarklet →</button>
+          {/if}
+        </p>
       {/if}
       <p class="hint">
         Works with most recipe sites, in any language. Your recipes never touch a server.<br />
-        <button class="linklike" onclick={() => (view = 'add')}>Or type in one of your own →</button>
+        <button class="linklike" onclick={() => (view = 'add')}>Type in one of your own</button>
+        &nbsp;·&nbsp;
+        <button class="linklike" onclick={() => (view = 'import')}>Recipe from a blocked site?</button>
       </p>
     </section>
   {:else if view === 'recipe' && recipe}
@@ -147,6 +170,8 @@
     </p>
   {:else if view === 'add'}
     <ManualEntry oncreate={handleCreate} onback={goHome} />
+  {:else if view === 'import'}
+    <ImportHelp onback={goHome} ontypein={() => (view = 'add')} />
   {/if}
 
   <footer>
