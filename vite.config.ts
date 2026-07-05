@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin, type ViteDevServer } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { VitePWA } from 'vite-plugin-pwa'
 
 const MAX_BYTES = 3_000_000
 
@@ -48,5 +49,32 @@ function devProxy(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [svelte(), devProxy()],
+  plugins: [
+    svelte(),
+    devProxy(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      // Only the app shell is precached. Recipe pages are never cached (they
+      // live on other origins and go through the proxy on demand).
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        navigateFallbackDenylist: [/^\/api\//],
+      },
+      includeAssets: ['favicon.svg'],
+      manifest: {
+        name: 'Recipe Jar',
+        short_name: 'Recipe Jar',
+        description: 'Paste a recipe link, get a clean card, keep it on your device. Free forever.',
+        theme_color: '#33663d',
+        background_color: '#f6f3ec',
+        display: 'standalone',
+        start_url: '/',
+        icons: [
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+      },
+    }),
+  ],
 })

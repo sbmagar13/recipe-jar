@@ -23,6 +23,47 @@
     checked = new Set()
   })
 
+  // Cook mode: keep the screen awake while at the stove.
+  const wakeLockSupported = 'wakeLock' in navigator
+  let awake = $state(false)
+  let sentinel: WakeLockSentinel | null = null
+
+  async function acquireLock() {
+    try {
+      sentinel = await navigator.wakeLock.request('screen')
+      sentinel.addEventListener('release', () => {
+        if (awake) sentinel = null // released by the system; keep intent
+      })
+      awake = true
+    } catch {
+      awake = false
+    }
+  }
+
+  async function toggleAwake() {
+    if (awake) {
+      awake = false
+      await sentinel?.release()
+      sentinel = null
+    } else {
+      await acquireLock()
+    }
+  }
+
+  // Re-acquire after the tab was hidden (browsers drop the lock on blur).
+  function onVisible() {
+    if (awake && sentinel === null && document.visibilityState === 'visible') acquireLock()
+  }
+
+  $effect(() => {
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible)
+      sentinel?.release().catch(() => {})
+      sentinel = null
+    }
+  })
+
   const factor = $derived(baseServings > 0 && servings > 0 ? servings / baseServings : 1)
 
   function toggleIngredient(i: number) {
@@ -71,6 +112,11 @@
       <button onclick={() => (servings = servings + 1)} aria-label="More servings">+</button>
       {#if servings !== baseServings}
         <button class="reset-servings" onclick={() => (servings = baseServings)}>reset</button>
+      {/if}
+      {#if wakeLockSupported}
+        <button class="cook-toggle" class:on={awake} onclick={toggleAwake} aria-pressed={awake}>
+          {awake ? '☀ Screen stays on' : '☾ Keep screen on'}
+        </button>
       {/if}
     </div>
 

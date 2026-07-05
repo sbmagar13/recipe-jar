@@ -67,6 +67,68 @@ export async function findBySource(sourceUrl: string): Promise<SavedRecipe | und
   return db.recipes.where('sourceUrl').equals(sourceUrl).first()
 }
 
+const BACKUP_FORMAT = 'recipe-jar-backup'
+
+interface Backup {
+  format: string
+  version: number
+  exportedAt: number
+  recipes: Array<{ title: string; sourceUrl: string; savedAt: number; tags: string[]; recipe: Recipe }>
+}
+
+/** The whole jar as a single JSON string: the one-file backup a user keeps or shares. */
+export async function exportJar(): Promise<string> {
+  const all = await allRecipes()
+  const backup: Backup = {
+    format: BACKUP_FORMAT,
+    version: 1,
+    exportedAt: Date.now(),
+    recipes: all.map((e) => ({
+      title: e.title,
+      sourceUrl: e.sourceUrl,
+      savedAt: e.savedAt,
+      tags: e.tags ?? [],
+      recipe: e.recipe,
+    })),
+  }
+  return JSON.stringify(backup, null, 2)
+}
+
+/**
+ * Merge a backup file into the jar. Recipes with a sourceUrl already present are
+ * skipped; own-recipes (no sourceUrl) and new ones are added. Never deletes.
+ */
+export async function importJar(json: string): Promise<{ added: number; skipped: number }> {
+  const data = JSON.parse(json) as Partial<Backup>
+  if (data.format !== BACKUP_FORMAT || !Array.isArray(data.recipes)) {
+    throw new Error('That does not look like a Recipe Jar backup file.')
+  }
+  let added = 0
+  let skipped = 0
+  for (const entry of data.recipes) {
+    if (!entry?.recipe || typeof entry.recipe !== 'object') {
+      skipped++
+      continue
+    }
+    if (entry.sourceUrl) {
+      const existing = await db.recipes.where('sourceUrl').equals(entry.sourceUrl).first()
+      if (existing) {
+        skipped++
+        continue
+      }
+    }
+    await db.recipes.add({
+      title: entry.title ?? entry.recipe.title ?? 'Untitled',
+      sourceUrl: entry.sourceUrl ?? '',
+      savedAt: entry.savedAt ?? Date.now(),
+      tags: entry.tags ?? [],
+      recipe: entry.recipe,
+    } as unknown as SavedRecipe)
+    added++
+  }
+  return { added, skipped }
+}
+
 /** Case-insensitive search across title and ingredient text. */
 export function matchesQuery(entry: SavedRecipe, q: string): boolean {
   const needle = q.trim().toLowerCase()

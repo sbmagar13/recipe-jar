@@ -581,3 +581,105 @@ footer {
 .import-steps li {
   margin-bottom: 10px;
 }
+
+/* Backup bar */
+.backup-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.backup-btn {
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+  cursor: pointer;
+}
+
+.backup-btn:hover {
+  border-color: var(--basil);
+  background: var(--sheet);
+}
+
+.backup-msg {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* Print: just the recipe card, nothing else */
+@media print {
+  .top,
+  footer,
+  .card-actions,
+  .servings button,
+  .reset-servings,
+  .again,
+  .backup-bar {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  main {
+    max-width: none;
+    padding: 0;
+  }
+
+  .card {
+    border: none;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .photo {
+    max-height: 200px;
+  }
+
+  .columns {
+    grid-template-columns: 1fr 1.6fr;
+    gap: 24px;
+  }
+
+  .ingredients li,
+  .steps li {
+    break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+/* Cook-mode toggle */
+.cook-toggle {
+  width: auto !important;
+  height: auto !important;
+  border-radius: 999px !important;
+  border: 1.5px solid var(--rule) !important;
+  background: var(--sheet) !important;
+  color: var(--muted) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600;
+  padding: 6px 14px !important;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.cook-toggle.on {
+  border-color: var(--basil) !important;
+  background: var(--basil) !important;
+  color: #fff !important;
+}
+
+.backup-msg.stale {
+  color: var(--tomato);
+}
