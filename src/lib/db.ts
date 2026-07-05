@@ -19,21 +19,32 @@ db.version(1).stores({
   recipes: '++id, title, sourceUrl, savedAt',
 })
 
+/**
+ * Return a plain, structured-cloneable copy of a recipe. Svelte 5 wraps values
+ * assigned to `$state` in a deep reactive Proxy, and IndexedDB's structured
+ * clone throws DataCloneError on proxies. A JSON round-trip reads through the
+ * proxy and yields a plain object. Our Recipe is JSON-only data, so this is loss-free.
+ */
+function toPlainRecipe(recipe: Recipe): Recipe {
+  return JSON.parse(JSON.stringify(recipe)) as Recipe
+}
+
 /** Save a recipe. If the same sourceUrl is already in the jar, update it instead. */
 export async function saveRecipe(recipe: Recipe): Promise<number> {
-  if (recipe.sourceUrl) {
-    const existing = await db.recipes.where('sourceUrl').equals(recipe.sourceUrl).first()
+  const clean = toPlainRecipe(recipe)
+  if (clean.sourceUrl) {
+    const existing = await db.recipes.where('sourceUrl').equals(clean.sourceUrl).first()
     if (existing) {
-      await db.recipes.update(existing.id, { recipe, title: recipe.title, savedAt: Date.now() })
+      await db.recipes.update(existing.id, { recipe: clean, title: clean.title, savedAt: Date.now() })
       return existing.id
     }
   }
   return db.recipes.add({
-    title: recipe.title,
-    sourceUrl: recipe.sourceUrl,
+    title: clean.title,
+    sourceUrl: clean.sourceUrl,
     savedAt: Date.now(),
     tags: [],
-    recipe,
+    recipe: clean,
   } as unknown as SavedRecipe)
 }
 

@@ -54,8 +54,12 @@
 
   async function handleSave() {
     if (!recipe) return
-    savedId = await saveRecipe(recipe)
-    await refreshCount()
+    try {
+      savedId = await saveRecipe(recipe)
+      await refreshCount()
+    } catch (err) {
+      errorMsg = `Could not save: ${err instanceof Error ? err.message : 'unknown error'}`
+    }
   }
 
   async function handleRemove() {
@@ -68,6 +72,7 @@
   function openSaved(entry: SavedRecipe) {
     recipe = entry.recipe
     savedId = entry.id
+    errorMsg = ''
     view = 'recipe'
   }
 
@@ -96,11 +101,15 @@
       <span>Recipe Jar</span>
     </button>
     <nav>
-      <button class="navlink" class:active={view === 'jar'} onclick={() => (view = 'jar')}>
+      <button class="navlink" class:active={view === 'jar'} onclick={() => { errorMsg = ''; view = 'jar' }}>
         My Jar{count > 0 ? ` (${count})` : ''}
       </button>
     </nav>
   </header>
+
+  {#if errorMsg && view !== 'home'}
+    <p class="error" role="alert" style="text-align:center">{errorMsg}</p>
+  {/if}
 
   {#if view === 'home'}
     <section class="hero">

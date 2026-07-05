@@ -25,3 +25,7 @@ dist-ssr
 
 # Copyrighted page snapshots for local parser testing only
 fixtures/
+
+# playwright
+test-results/
+playwright-report/
