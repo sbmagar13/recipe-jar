@@ -29,3 +29,6 @@ fixtures/
 # playwright
 test-results/
 playwright-report/
+
+# generated screenshots
+/tmp/*.png

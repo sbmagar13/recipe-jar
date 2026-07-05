@@ -15,6 +15,13 @@
   let baseServings = $derived(recipe.servings ?? 4)
   let servings = $state(0)
   let checked = $state<Set<number>>(new Set())
+  let imageOk = $state(true)
+
+  // Reset the image guard when the recipe changes.
+  $effect(() => {
+    void recipe.image
+    imageOk = true
+  })
 
   // Reset per-recipe state whenever a different recipe is shown
   $effect(() => {
@@ -82,8 +89,8 @@
 </script>
 
 <article class="card">
-  {#if recipe.image}
-    <img class="photo" src={recipe.image} alt={recipe.title} loading="lazy" />
+  {#if recipe.image && imageOk}
+    <img class="photo" src={recipe.image} alt={recipe.title} loading="lazy" onerror={() => (imageOk = false)} />
   {/if}
   <div class="card-body">
     <div class="card-actions">
@@ -123,24 +130,32 @@
     <div class="columns">
       <section aria-label="Ingredients">
         <h3>Ingredients</h3>
-        <ul class="ingredients">
-          {#each recipe.ingredients as ing, i}
-            <li class:done={checked.has(i)}>
-              <label>
-                <input type="checkbox" checked={checked.has(i)} onchange={() => toggleIngredient(i)} />
-                <span>{scaledLine(ing)}</span>
-              </label>
-            </li>
-          {/each}
-        </ul>
+        {#if recipe.ingredients.length > 0}
+          <ul class="ingredients">
+            {#each recipe.ingredients as ing, i}
+              <li class:done={checked.has(i)}>
+                <label>
+                  <input type="checkbox" checked={checked.has(i)} onchange={() => toggleIngredient(i)} />
+                  <span>{scaledLine(ing)}</span>
+                </label>
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <p class="section-empty">No ingredients were found. Open the source to check.</p>
+        {/if}
       </section>
       <section aria-label="Steps">
         <h3>Method</h3>
-        <ol class="steps">
-          {#each recipe.steps as step}
-            <li>{step}</li>
-          {/each}
-        </ol>
+        {#if recipe.steps.length > 0}
+          <ol class="steps">
+            {#each recipe.steps as step}
+              <li>{step}</li>
+            {/each}
+          </ol>
+        {:else}
+          <p class="section-empty">No steps were found. The <a href={recipe.sourceUrl || '#'} target="_blank" rel="noopener noreferrer">source</a> has the full method.</p>
+        {/if}
       </section>
     </div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Recipe } from '../types'
   import { parseIngredientLine } from '../quantity'
+  import { parseRecipeText } from '../textparse'
 
   interface Props {
     oncreate: (recipe: Recipe) => void
@@ -13,6 +14,18 @@
   let servingsText = $state('4')
   let ingredientsText = $state('')
   let stepsText = $state('')
+
+  let pasteText = $state('')
+  let pasteFilled = $state(false)
+
+  function autofillFromPaste() {
+    const parsed = parseRecipeText(pasteText)
+    if (parsed.title) title = parsed.title
+    if (parsed.servings) servingsText = parsed.servings
+    if (parsed.ingredients) ingredientsText = parsed.ingredients
+    if (parsed.steps) stepsText = parsed.steps
+    pasteFilled = true
+  }
 
   function create(e: Event) {
     e.preventDefault()
@@ -44,8 +57,26 @@
 </script>
 
 <section class="manual">
-  <h1 class="jar-title">Add your own recipe</h1>
-  <p class="sub">For the family recipes that live in your head or on paper. Kept on this device, like everything else.</p>
+  <h1 class="jar-title">Add or paste a recipe</h1>
+  <p class="sub">For family recipes, or any page that would not import. Paste the text to auto-fill, then fix anything that looks off. Kept on this device, like everything else.</p>
+
+  <div class="paste-box">
+    <label>
+      Paste recipe text <small>(optional, we will split it into fields)</small>
+      <textarea
+        bind:value={pasteText}
+        rows="5"
+        placeholder="Paste the whole recipe here — title, ingredients, and steps — then click Auto-fill."
+      ></textarea>
+    </label>
+    <button type="button" class="save" onclick={autofillFromPaste} disabled={!pasteText.trim()}>
+      Auto-fill fields ↓
+    </button>
+    {#if pasteFilled}
+      <span class="backup-msg">Filled below. Review and fix anything, then create.</span>
+    {/if}
+  </div>
+
   <form onsubmit={create} class="manual-form">
     <label>
       Recipe name

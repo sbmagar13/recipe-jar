@@ -689,3 +689,76 @@ footer {
   color: var(--muted);
   font-size: 0.9rem;
 }
+
+/* Paste-to-autofill box */
+.paste-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 560px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: var(--sheet);
+  border: 1px dashed var(--rule);
+  border-radius: 10px;
+}
+
+.paste-box label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--basil-deep);
+}
+
+.paste-box small {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.paste-box textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.paste-box textarea:focus-visible {
+  outline: 3px solid var(--basil);
+  border-color: var(--basil);
+}
+
+.paste-box .save {
+  align-self: flex-start;
+}
+
+.paste-box .save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.section-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Mobile: let the card action rows breathe */
+@media (max-width: 640px) {
+  .card-body {
+    padding: 18px 18px 22px;
+  }
+  .card h2 {
+    font-size: 1.5rem;
+  }
+  .servings {
+    flex-wrap: wrap;
+  }
+  .cook-toggle {
+    margin-left: 0 !important;
+  }
+}

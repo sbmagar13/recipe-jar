@@ -32,9 +32,9 @@
   </ol>
 
   <p class="hint">
-    On a phone, or don't have a bookmarks bar? You can always
-    <button class="linklike" onclick={ontypein}>type the recipe in by hand</button>.
-    A one-tap phone version is coming with the installable app.
+    On a phone, or don't have a bookmarks bar? Copy the recipe text and
+    <button class="linklike" onclick={ontypein}>paste it to auto-fill</button>,
+    then fix anything that looks off. A one-tap phone version is coming with the installable app.
   </p>
 
   <button class="again" onclick={onback}>← Back</button>
