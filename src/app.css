@@ -683,3 +683,9 @@ footer {
 .backup-msg.stale {
   color: var(--tomato);
 }
+
+.try-line {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

@@ -66,3 +66,14 @@ test('add a manual recipe and it appears in the jar', async ({ page }) => {
   await expect(page.getByText('✓ In your jar')).toBeVisible()
   expect(errors, `page errors:\n${errors.join('\n')}`).toEqual([])
 })
+
+test('the sample recipe loads instantly and is savable', async ({ page }) => {
+  await page.getByRole('button', { name: /see a sample recipe/ }).click()
+  await expect(page.getByRole('heading', { name: /Red Lentil Dal/ })).toBeVisible()
+  await expect(page.getByText('1 cup red lentils, rinsed')).toBeVisible()
+  // Servings scaler works on the sample too.
+  await page.getByRole('button', { name: 'More servings' }).click()
+  await expect(page.getByText('5 servings')).toBeVisible()
+  await page.getByRole('button', { name: '+ Save to my jar' }).click()
+  await expect(page.getByText('✓ In your jar')).toBeVisible()
+})

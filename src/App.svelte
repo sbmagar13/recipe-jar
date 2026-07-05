@@ -3,6 +3,7 @@
   import { parseRecipeFromHtml } from './lib/parse'
   import { saveRecipe, removeRecipe, findBySource, jarCount, type SavedRecipe } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
+  import { demoRecipe } from './lib/demo'
   import RecipeView from './lib/components/RecipeView.svelte'
   import JarView from './lib/components/JarView.svelte'
   import ManualEntry from './lib/components/ManualEntry.svelte'
@@ -103,6 +104,13 @@
     view = 'home'
     errorMsg = ''
   }
+
+  function tryDemo() {
+    recipe = demoRecipe
+    savedId = null // demo has no sourceUrl, so it's always shown as savable
+    errorMsg = ''
+    view = 'recipe'
+  }
 </script>
 
 <main>
@@ -146,6 +154,9 @@
           {loading ? 'Fetching…' : 'Get the recipe'}
         </button>
       </form>
+      <p class="try-line">
+        or <button class="linklike" onclick={tryDemo}>see a sample recipe</button> first
+      </p>
       {#if errorMsg}
         <p class="error" role="alert">
           {errorMsg}
