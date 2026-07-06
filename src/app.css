@@ -684,6 +684,67 @@ footer {
   color: var(--tomato);
 }
 
+/* Data-durability nudge: gentle, dismissible reminder to keep a backup */
+.backup-nudge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #fff7ef;
+  border: 1.5px solid #e7cba9;
+  border-left: 4px solid var(--tomato);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.nudge-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.nudge-text {
+  margin: 0;
+  flex: 1 1 240px;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.nudge-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nudge-primary {
+  background: var(--basil);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.nudge-primary:hover {
+  background: var(--basil-deep);
+}
+
+.nudge-later {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 6px;
+}
+
+.nudge-later:hover {
+  color: var(--ink);
+}
+
 .try-line {
   margin-top: 14px;
   color: var(--muted);
@@ -800,8 +861,10 @@ footer {
   }
   .navlink,
   .backup-btn,
-  .linklike {
-    min-height: 40px;
+  .linklike,
+  .nudge-primary,
+  .nudge-later {
+    min-height: 44px;
   }
 }
 

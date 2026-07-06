@@ -10,17 +10,32 @@
 
   let backupMsg = $state('')
   let lastBackup = $state<number | null>(null)
+  let lastBackupCount = $state(0)
+  let nudgeSnoozedUntil = $state(0)
   let fileInput: HTMLInputElement
   let showPasteRestore = $state(false)
   let pasteRestoreText = $state('')
 
   const LAST_BACKUP_KEY = 'recipe-jar:lastBackup'
+  const LAST_BACKUP_COUNT_KEY = 'recipe-jar:lastBackupCount'
+  const NUDGE_SNOOZE_KEY = 'recipe-jar:backupNudgeSnoozed'
+  const SNOOZE_MS = 7 * 86_400_000
 
   function loadLastBackup() {
     const v = localStorage.getItem(LAST_BACKUP_KEY)
     lastBackup = v ? Number(v) : null
+    lastBackupCount = Number(localStorage.getItem(LAST_BACKUP_COUNT_KEY) ?? 0)
+    nudgeSnoozedUntil = Number(localStorage.getItem(NUDGE_SNOOZE_KEY) ?? 0)
   }
   loadLastBackup()
+
+  /** Record a successful backup: stamp the time and the jar size it covered. */
+  function markBackedUp(count: number) {
+    localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
+    localStorage.setItem(LAST_BACKUP_COUNT_KEY, String(count))
+    localStorage.removeItem(NUDGE_SNOOZE_KEY)
+    loadLastBackup()
+  }
 
   function backupAge(): string {
     if (lastBackup === null) return 'never backed up'
@@ -28,6 +43,11 @@
     if (days <= 0) return 'backed up today'
     if (days === 1) return 'backed up yesterday'
     return `backed up ${days} days ago`
+  }
+
+  function snoozeNudge() {
+    nudgeSnoozedUntil = Date.now() + SNOOZE_MS
+    localStorage.setItem(NUDGE_SNOOZE_KEY, String(nudgeSnoozedUntil))
   }
 
   async function handleDelete(entry: SavedRecipe) {
@@ -46,8 +66,7 @@
     a.download = `recipe-jar-backup-${stamp}.json`
     a.click()
     URL.revokeObjectURL(a.href)
-    localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
-    loadLastBackup()
+    markBackedUp(entries.length)
     backupMsg = `Backed up ${entries.length} ${entries.length === 1 ? 'recipe' : 'recipes'}.`
   }
 
@@ -55,8 +74,7 @@
     const json = await exportJar()
     try {
       await navigator.clipboard.writeText(json)
-      localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
-      loadLastBackup()
+      markBackedUp(entries.length)
       backupMsg = 'Backup copied. Paste it somewhere safe (a note, an email to yourself).'
     } catch {
       backupMsg = 'Could not copy. Use "Back up my jar" to download a file instead.'
@@ -108,6 +126,18 @@
 
   const visible = $derived(entries.filter((e) => matchesQuery(e, query)))
 
+  // Recipes saved since the last backup (all of them if never backed up).
+  const unbacked = $derived(Math.max(0, entries.length - lastBackupCount))
+
+  // A gentle, dismissible reminder — IndexedDB can be evicted (iOS clears it
+  // after ~7 idle days) or wiped by "clear browsing data", so nudge before loss.
+  const showNudge = $derived.by(() => {
+    if (entries.length === 0 || Date.now() < nudgeSnoozedUntil) return false
+    if (lastBackup === null) return entries.length >= 3
+    const ageDays = (Date.now() - lastBackup) / 86_400_000
+    return unbacked >= 5 || (unbacked >= 1 && ageDays >= 21)
+  })
+
   function fmtDate(ts: number): string {
     return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
   }
@@ -123,6 +153,24 @@
       placeholder="Search by name or ingredient…"
       aria-label="Search saved recipes"
     />
+  {/if}
+
+  {#if showNudge}
+    <div class="backup-nudge" role="status">
+      <span class="nudge-icon" aria-hidden="true">🛟</span>
+      <p class="nudge-text">
+        {#if lastBackup === null}
+          Your {entries.length} {entries.length === 1 ? 'recipe lives' : 'recipes live'} only on this device.
+          Save a backup so clearing your browser can't erase them.
+        {:else}
+          {unbacked} new {unbacked === 1 ? 'recipe' : 'recipes'} since your last backup. Update it to keep them safe.
+        {/if}
+      </p>
+      <div class="nudge-actions">
+        <button class="nudge-primary" onclick={handleExport}>Back up now</button>
+        <button class="nudge-later" onclick={snoozeNudge}>Later</button>
+      </div>
+    </div>
   {/if}
 
   <div class="backup-bar">
@@ -142,7 +190,9 @@
     {#if backupMsg}
       <span class="backup-msg">{backupMsg}</span>
     {:else if entries.length > 0}
-      <span class="backup-msg" class:stale={lastBackup === null}>{backupAge()}</span>
+      <span class="backup-msg" class:stale={lastBackup === null}>
+        {backupAge()}{#if lastBackup !== null && unbacked > 0} · {unbacked} new since{/if}
+      </span>
     {/if}
   </div>
 
@@ -176,7 +226,7 @@
             <span class="jar-item-text">
               <strong>{entry.title}</strong>
               <small>
-                {entry.recipe.ingredients.length} ingredients
+                {entry.recipe.ingredients.length} {entry.recipe.ingredients.length === 1 ? 'ingredient' : 'ingredients'}
                 {#if entry.recipe.totalTime}· {entry.recipe.totalTime}{/if}
                 · saved {fmtDate(entry.savedAt)}
               </small>
