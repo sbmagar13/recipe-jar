@@ -10,39 +10,11 @@
 //  - content-type allowlist: only HTML-ish pages, never megabytes of binary;
 //  - size + time caps; edge caching so we don't hammer the target sites.
 
+import { isAllowedCaller } from './_caller'
+
 const MAX_BYTES = 3_000_000
 const TIMEOUT_MS = 12_000
 const CACHE_SECONDS = 3_600
-
-// Origins our own app is served from. Same-origin calls are recognised via
-// Sec-Fetch-Site/Referer regardless of host, so this is only a belt-and-braces
-// allowlist for the (rare) cross-origin-but-ours case.
-const ALLOWED_ORIGINS = new Set([
-  'https://recipejar.sagarbudhathoki.com',
-  'https://recipe-jar.pages.dev',
-])
-
-function originOf(value: string | null): string | null {
-  if (!value) return null
-  try {
-    return new URL(value).origin
-  } catch {
-    return null
-  }
-}
-
-/** True when the request demonstrably came from one of our own pages. */
-export function isAllowedCaller(headers: Headers, selfOrigin: string): boolean {
-  // Modern browsers stamp every fetch with Sec-Fetch-Site. Our app calls the
-  // proxy same-origin, so this is the reliable signal.
-  const site = headers.get('Sec-Fetch-Site')
-  if (site) return site === 'same-origin' || site === 'same-site'
-  // Older engines (iOS Safari < 16.4) omit it: fall back to Origin/Referer,
-  // both of which a same-origin fetch still sends.
-  const origin = headers.get('Origin') ?? originOf(headers.get('Referer'))
-  if (!origin) return false // no provenance at all → treat as open-proxy abuse
-  return origin === selfOrigin || ALLOWED_ORIGINS.has(origin)
-}
 
 function isBlockedHost(host: string): boolean {
   return (

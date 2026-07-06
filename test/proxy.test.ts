@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isAllowedCaller } from '../functions/api/proxy'
+import { isAllowedCaller } from '../functions/api/_caller'
 
 const SELF = 'https://recipejar.sagarbudhathoki.com'
 const h = (init: Record<string, string>) => new Headers(init)

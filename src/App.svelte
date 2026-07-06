@@ -3,6 +3,7 @@
   import { parseRecipeFromHtml } from './lib/parse'
   import { saveRecipe, removeRecipe, findBySource, jarCount, type SavedRecipe } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
+  import { reportParseIssue } from './lib/telemetry'
   import { demoRecipe } from './lib/demo'
   import RecipeView from './lib/components/RecipeView.svelte'
   import JarView from './lib/components/JarView.svelte'
@@ -56,6 +57,9 @@
       const parsed = parseRecipeFromHtml(html, target)
       if (!parsed) {
         blocked = true
+        // Fetched fine but no recipe found: a parser gap worth knowing about.
+        // Sends only the hostname, never the recipe or full URL.
+        reportParseIssue(target, 'no-recipe')
         throw new Error('No recipe found on that page.')
       }
       recipe = parsed
