@@ -10,8 +10,9 @@
   import ManualEntry from './lib/components/ManualEntry.svelte'
   import ImportHelp from './lib/components/ImportHelp.svelte'
   import InstallTip from './lib/components/InstallTip.svelte'
+  import AboutView from './lib/components/AboutView.svelte'
 
-  type View = 'home' | 'recipe' | 'jar' | 'add' | 'import'
+  type View = 'home' | 'recipe' | 'jar' | 'add' | 'import' | 'about'
 
   let view = $state<View>('home')
   let url = $state('')
@@ -194,11 +195,17 @@
     <ManualEntry oncreate={handleCreate} onback={goHome} />
   {:else if view === 'import'}
     <ImportHelp onback={goHome} ontypein={() => (view = 'add')} />
+  {:else if view === 'about'}
+    <AboutView onback={goHome} />
   {/if}
 
   <footer>
-    Free forever · No account · Your recipes stay on your device ·
-    <span class="mono">a birthday gift, July 13 2026</span>
+    <span>Free forever · No account · Your recipes stay on your device</span>
+    <span class="footer-links">
+      <button class="linklike" onclick={() => { errorMsg = ''; view = 'about' }}>About &amp; Privacy</button>
+      ·
+      <span class="mono">a birthday gift, July 13 2026</span>
+    </span>
   </footer>
 
   <InstallTip active={count > 0} />

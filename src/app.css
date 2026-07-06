@@ -308,6 +308,80 @@ footer {
   color: var(--muted);
   font-size: 0.8rem;
   margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.footer-links {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-links .linklike {
+  font-size: 0.8rem;
+}
+
+/* About & Privacy */
+.legal {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: left;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.legal .back {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.legal h1 {
+  margin: 0 0 8px;
+}
+
+.legal h2 {
+  margin: 28px 0 8px;
+  font-size: 1.1rem;
+  color: var(--basil-deep);
+}
+
+.legal .lede {
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+
+.legal ul {
+  padding-left: 20px;
+}
+
+.legal li {
+  margin-bottom: 12px;
+}
+
+.legal code {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.85em;
+}
+
+.legal a {
+  color: var(--basil-deep);
+  text-decoration: underline;
+}
+
+.legal .updated {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 @media (prefers-reduced-motion: no-preference) {
