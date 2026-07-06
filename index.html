@@ -2,6 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Send the default *.pages.dev URL to the canonical domain so everyone's
+      // jar lives on one origin (browser storage is per-domain). Runs before the
+      // app loads; preview hash-URLs are untouched, so testing still works.
+      if (location.hostname === 'recipe-jar.pages.dev') {
+        location.replace('https://recipejar.sagarbudhathoki.com' + location.pathname + location.search + location.hash)
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
