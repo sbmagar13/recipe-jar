@@ -32,3 +32,7 @@ playwright-report/
 
 # generated screenshots
 /tmp/*.png
+
+# throwaway local scripts (screenshots, one-off checks)
+_shot-*.ts
+_scratch-*.ts
