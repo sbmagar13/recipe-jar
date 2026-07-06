@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "size": "node scripts/size-budget.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
