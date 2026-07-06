@@ -101,7 +101,7 @@
         <button class="remove" onclick={onremove}>Remove</button>
       {/if}
     </div>
-    <h2>{recipe.title}</h2>
+    <h1>{recipe.title}</h1>
     {#if recipe.description}<p class="desc">{recipe.description}</p>{/if}
     <div class="meta">
       {#if recipe.totalTime}<span>⏱ {recipe.totalTime}</span>{/if}
@@ -129,7 +129,7 @@
 
     <div class="columns">
       <section aria-label="Ingredients">
-        <h3>Ingredients</h3>
+        <h2>Ingredients</h2>
         {#if recipe.ingredients.length > 0}
           <ul class="ingredients">
             {#each recipe.ingredients as ing, i}
@@ -146,7 +146,7 @@
         {/if}
       </section>
       <section aria-label="Steps">
-        <h3>Method</h3>
+        <h2>Method</h2>
         {#if recipe.steps.length > 0}
           <ol class="steps">
             {#each recipe.steps as step}

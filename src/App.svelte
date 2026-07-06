@@ -121,6 +121,7 @@
   }
 </script>
 
+<a class="skip-link" href="#content">Skip to content</a>
 <main>
   <header class="top">
     <button class="brand" onclick={goHome} aria-label="Recipe Jar home">
@@ -143,6 +144,7 @@
     <p class="error" role="alert" style="text-align:center">{errorMsg}</p>
   {/if}
 
+  <div id="content" tabindex="-1">
   {#if view === 'home'}
     <section class="hero">
       <h1>Just the recipe.<br />Yours to keep.</h1>
@@ -198,6 +200,7 @@
   {:else if view === 'about'}
     <AboutView onback={goHome} />
   {/if}
+  </div>
 
   <footer>
     <span>Free forever · No account · Your recipes stay on your device</span>

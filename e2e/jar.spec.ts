@@ -29,7 +29,7 @@ test('save a fetched recipe to the jar and it persists across reload', async ({ 
   await page.getByRole('button', { name: 'Get the recipe' }).click()
 
   // Recipe card renders.
-  await expect(page.getByRole('heading', { level: 2 })).toBeVisible({ timeout: 20_000 })
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 20_000 })
 
   // Save it.
   await page.getByRole('button', { name: '+ Save to my jar' }).click()

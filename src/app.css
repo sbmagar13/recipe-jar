@@ -1,3 +1,25 @@
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -60px;
+  z-index: 100;
+  background: var(--basil-deep);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+#content:focus {
+  outline: none;
+}
+
 :root {
   --paper: #f6f3ec;
   --sheet: #fcfaf4;
@@ -5,7 +27,7 @@
   --basil: #33663d;
   --basil-deep: #275231;
   --tomato: #b8402e;
-  --muted: #767061;
+  --muted: #726c5c; /* AA: 4.7:1 on --paper (was #767061 at 4.44) */
   --rule: #ddd7c7;
 }
 
@@ -156,7 +178,7 @@ main {
   padding: 24px 28px 28px;
 }
 
-.card h2 {
+.card h1 {
   font-family: Georgia, serif;
   font-size: 1.8rem;
   color: var(--basil-deep);
@@ -242,7 +264,7 @@ main {
   }
 }
 
-.columns h3 {
+.columns h2 {
   font-family: Georgia, serif;
   color: var(--basil-deep);
   border-bottom: 2px solid var(--basil);
@@ -887,7 +909,7 @@ footer {
   .card-body {
     padding: 18px 18px 22px;
   }
-  .card h2 {
+  .card h1 {
     font-size: 1.5rem;
   }
   .servings {
