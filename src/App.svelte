@@ -28,6 +28,29 @@
   }
   refreshCount()
 
+  // --- View navigation wired into browser history, so the Back button/gesture
+  //     moves between in-app screens instead of leaving the app (matters most
+  //     for the installed PWA). A forward move pushes a history entry; Back and
+  //     the OS gesture come back as popstate.
+  function go(next: View) {
+    errorMsg = ''
+    if (next !== view && typeof history !== 'undefined') history.pushState({ view: next }, '')
+    view = next
+  }
+
+  function goBack() {
+    if (typeof history !== 'undefined') history.back()
+    else go('home')
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('popstate', (e) => {
+      const state = e.state as { view?: View } | null
+      view = state?.view ?? 'home'
+      errorMsg = ''
+    })
+  }
+
   // Recipe handed over by the bookmarklet, if any.
   async function handleImportHash() {
     const imported = consumeImportHash()
@@ -35,9 +58,12 @@
     recipe = imported
     const existing = await findBySource(imported.sourceUrl)
     savedId = existing?.id ?? null
-    view = 'recipe'
+    go('recipe')
   }
   handleImportHash()
+  // Baseline entry so the very first Back returns here rather than exiting. The
+  // app always starts at 'home' (an import navigates forward asynchronously).
+  if (typeof history !== 'undefined') history.replaceState({ view: 'home' }, '')
 
   async function getRecipe(e: Event) {
     e.preventDefault()
@@ -66,7 +92,7 @@
       recipe = parsed
       const existing = await findBySource(target)
       savedId = existing?.id ?? null
-      view = 'recipe'
+      go('recipe')
       url = ''
     } catch (err) {
       errorMsg = err instanceof Error ? err.message : 'Something went wrong'
@@ -97,27 +123,24 @@
   function openSaved(entry: SavedRecipe) {
     recipe = entry.recipe
     savedId = entry.id
-    errorMsg = ''
-    view = 'recipe'
+    go('recipe')
   }
 
   async function handleCreate(r: Recipe) {
     recipe = r
     savedId = await saveRecipe(r)
     await refreshCount()
-    view = 'recipe'
+    go('recipe')
   }
 
   function goHome() {
-    view = 'home'
-    errorMsg = ''
+    go('home')
   }
 
   function tryDemo() {
     recipe = demoRecipe
     savedId = null // demo has no sourceUrl, so it's always shown as savable
-    errorMsg = ''
-    view = 'recipe'
+    go('recipe')
   }
 </script>
 
@@ -134,7 +157,7 @@
       <span>Recipe Jar</span>
     </button>
     <nav>
-      <button class="navlink" class:active={view === 'jar'} onclick={() => { errorMsg = ''; view = 'jar' }}>
+      <button class="navlink" class:active={view === 'jar'} onclick={() => go('jar')}>
         My Jar{count > 0 ? ` (${count})` : ''}
       </button>
     </nav>
@@ -175,37 +198,37 @@
         <p class="error" role="alert">
           {errorMsg}
           {#if blocked}
-            This site may block fetching. <button class="linklike" onclick={() => (view = 'import')}>Use the bookmarklet →</button>
+            This site may block fetching. <button class="linklike" onclick={() => go('import')}>Use the bookmarklet →</button>
           {/if}
         </p>
       {/if}
       <p class="hint">
         Works with most recipe sites, in any language. Your recipes never touch a server.<br />
-        <button class="linklike" onclick={() => (view = 'add')}>Type in one of your own</button>
+        <button class="linklike" onclick={() => go('add')}>Type in one of your own</button>
         &nbsp;·&nbsp;
-        <button class="linklike" onclick={() => (view = 'import')}>Recipe from a blocked site?</button>
+        <button class="linklike" onclick={() => go('import')}>Recipe from a blocked site?</button>
       </p>
     </section>
   {:else if view === 'recipe' && recipe}
-    <RecipeView {recipe} {savedId} onsave={handleSave} onremove={handleRemove} onback={goHome} />
+    <RecipeView {recipe} {savedId} onsave={handleSave} onremove={handleRemove} onback={goBack} />
   {:else if view === 'jar'}
     <JarView onopen={openSaved} onchanged={refreshCount} />
     <p class="jar-footer">
-      <button class="linklike" onclick={() => (view = 'add')}>+ Add your own recipe</button>
+      <button class="linklike" onclick={() => go('add')}>+ Add your own recipe</button>
     </p>
   {:else if view === 'add'}
-    <ManualEntry oncreate={handleCreate} onback={goHome} />
+    <ManualEntry oncreate={handleCreate} onback={goBack} />
   {:else if view === 'import'}
-    <ImportHelp onback={goHome} ontypein={() => (view = 'add')} />
+    <ImportHelp onback={goBack} ontypein={() => go('add')} />
   {:else if view === 'about'}
-    <AboutView onback={goHome} />
+    <AboutView onback={goBack} />
   {/if}
   </div>
 
   <footer>
     <span>Free forever · No account · Your recipes stay on your device</span>
     <span class="footer-links">
-      <button class="linklike" onclick={() => { errorMsg = ''; view = 'about' }}>About &amp; Privacy</button>
+      <button class="linklike" onclick={() => go('about')}>About &amp; Privacy</button>
       ·
       <span class="mono">a birthday gift, July 13 2026</span>
     </span>
