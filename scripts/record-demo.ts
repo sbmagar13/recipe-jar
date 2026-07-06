@@ -7,6 +7,7 @@ import { join } from 'node:path'
 
 const base = 'http://localhost:5199/'
 const dir = process.env.DEMO_DIR || '/tmp/recipe-jar-demo'
+const recipeUrl = process.env.RECIPE_URL || 'https://www.bbcgoodfood.com/recipes/classic-lasagne-0'
 
 const browser = await chromium.launch()
 const context = await browser.newContext({
@@ -32,7 +33,7 @@ await pause(1200)
 // 1. Type a real recipe link.
 const input = page.getByLabel('Recipe URL')
 await input.click()
-await input.pressSequentially('https://www.koket.se/klassisk-lasagne', { delay: 45 })
+await input.pressSequentially(recipeUrl, { delay: 40 })
 await pause(500)
 await page.getByRole('button', { name: 'Get the recipe' }).click()
 

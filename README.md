@@ -1,47 +1,89 @@
-# Svelte + TS + Vite
+# Recipe Jar
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+**Just the recipe. Yours to keep.**
 
-## Recommended IDE Setup
+Paste a recipe link, get a clean card: ingredients and steps, nothing else. Save
+as many recipes as you want. They live in your browser, on your device, not on a
+server. That is why it is free forever: there is nothing for anyone to pay for.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+No account. No ads. Works offline. Open source.
 
-## Need an official Svelte framework?
+👉 **[recipejar.app](https://recipejar.app)**
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+![Recipe Jar demo](launch/recipe-jar-demo.gif)
 
-## Technical considerations
+## Why
 
-**Why use this over SvelteKit?**
+Recipe sites buried the food under life stories, pop-ups, and autoplaying video,
+and the AI-slop wave in 2025 made it worse. The tools that clean this up then
+started capping how many recipes you can save for free. So this is the boring,
+honest version: paste a link, get the recipe, keep it. Forever. For nothing.
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+## What it does
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+- **Paste any recipe URL** and get a clean card. Works with most recipe sites in
+  any language (it reads the structured recipe data sites already publish for Google).
+- **Scale servings** with real quantity math, including fractions and metric decimals.
+- **Save unlimited recipes** to your own device (IndexedDB). Search them by name
+  or ingredient.
+- **Type in your own** family recipes, or paste recipe text and let it auto-fill
+  the fields.
+- **Blocked sites** (NYT Cooking, AllRecipes, Serious Eats) that block fetching:
+  use the one-click bookmarklet that runs in your own browser.
+- **Back up the whole jar** to a single file, or copy it as text. Restore either way.
+- **Works offline** as an installable app, and prints a clean recipe card.
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+## How it's private and free
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+There is no backend. No accounts, no database, no analytics beyond a cookieless
+page count. Your recipes never leave your device, which also matters because
+recipe PDFs are things people paid for. Static hosting plus on-device storage
+costs nothing to run at any number of users, so "free forever" is a promise the
+architecture keeps, not a pricing decision that can change.
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+The only server-side piece is a tiny stateless proxy (a Cloudflare Pages
+Function) that fetches a page you ask for, the same way your browser's reader
+mode does. It stores nothing.
 
-**Why include `.vscode/extensions.json`?**
+## Honest comparison
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+| | Recipe Jar | JustTheRecipe | Copy Me That | Paprika | Recipe blogs |
+|---|---|---|---|---|---|
+| Free saved recipes | **Unlimited** | 20 | 40 | Paid app | n/a |
+| Account required | **No** | For saving | For saving | No | No |
+| Ads | **None** | Some | Some | None | Many |
+| Works offline | **Yes** | Partial | Partial | Yes | No |
+| Your data leaves device | **Never** | Yes | Yes | Syncs | n/a |
+| Open source | **Yes** | No | No | No | n/a |
+| Price | **Free** | Freemium | Freemium | ~$30 | Free + ads |
 
-**Why enable `allowJs` in the TS template?**
+Scope, honestly: Recipe Jar keeps recipes. It does not plan meals, count
+calories, or socialise. It does one daily chore well.
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+## Tech
 
-**Why is HMR not preserving my local component state?**
+Vite + Svelte + TypeScript, Dexie (IndexedDB), Workbox (offline). Static site on
+Cloudflare Pages with one Pages Function for the fetch proxy. Under ~55 KB
+gzipped. Recipes are parsed from JSON-LD (`schema.org/Recipe`).
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+## Develop
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm install
+npm run dev        # http://localhost:5199
+npm run build      # production build to dist/
+npm run check      # type check
+npx playwright test        # e2e across Chromium, WebKit, and mobile
 ```
+
+Handy scripts: `scripts/test-parse.ts` (parser over fixtures),
+`scripts/check-offline.ts` (offline load against the built app),
+`scripts/record-demo.ts` (the demo video), `scripts/make-icons.ts` /
+`scripts/make-og.ts` (app icons and the social image).
+
+## License
+
+MIT for the code. Recipe content belongs to whoever wrote it; Recipe Jar never
+stores or republishes it server-side.
+
+Made as a birthday gift, 13 July 2026.
