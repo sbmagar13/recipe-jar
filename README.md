@@ -63,8 +63,9 @@ calories, or socialise. It does one daily chore well.
 ## Tech
 
 Vite + Svelte + TypeScript, Dexie (IndexedDB), Workbox (offline). Static site on
-Cloudflare Pages with one Pages Function for the fetch proxy. Under ~55 KB
-gzipped. Recipes are parsed from JSON-LD (`schema.org/Recipe`).
+Cloudflare Pages with Pages Functions for the fetch proxy and a storage-less
+telemetry sink. ~60 KB gzipped. Recipes are parsed from JSON-LD
+(`schema.org/Recipe`), with a microdata fallback.
 
 ## Develop
 
@@ -73,8 +74,14 @@ npm install
 npm run dev        # http://localhost:5199
 npm run build      # production build to dist/
 npm run check      # type check
+npm run test:unit  # Vitest unit tests (parser, quantity, proxy guard)
+npm run size       # gzipped bundle-size budget (run after build)
 npx playwright test        # e2e across Chromium, WebKit, and mobile
 ```
+
+CI (typecheck, unit, build, size budget, and a11y + app e2e) runs on every push
+and PR, and auto-deploys `main` to Cloudflare Pages — see [docs/CI.md](docs/CI.md).
+Privacy-respecting telemetry is documented in [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).
 
 Handy scripts: `scripts/test-parse.ts` (parser over fixtures),
 `scripts/check-offline.ts` (offline load against the built app),

@@ -21,7 +21,7 @@ function collectPageErrors(page: import('@playwright/test').Page): string[] {
   return errors
 }
 
-test('save a fetched recipe to the jar and it persists across reload', async ({ page }) => {
+test('save a fetched recipe to the jar and it persists across reload @network', async ({ page }) => {
   const errors = collectPageErrors(page)
 
   // Fetch a real recipe through the dev proxy (Swedish site, reliable JSON-LD).
@@ -78,7 +78,7 @@ test('the sample recipe loads instantly and is savable', async ({ page }) => {
   await expect(page.getByText('✓ In your jar')).toBeVisible()
 })
 
-test('a bare domain (no https://) still fetches', async ({ page }) => {
+test('a bare domain (no https://) still fetches @network', async ({ page }) => {
   await page.getByLabel('Recipe URL').fill('www.bbcgoodfood.com/recipes/classic-lasagne-0')
   await page.getByRole('button', { name: 'Get the recipe' }).click()
   await expect(page.getByRole('heading', { name: /lasagne/i })).toBeVisible({ timeout: 20000 })
