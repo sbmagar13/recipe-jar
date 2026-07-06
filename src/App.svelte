@@ -38,8 +38,10 @@
 
   async function getRecipe(e: Event) {
     e.preventDefault()
-    const target = url.trim()
+    let target = url.trim()
     if (!target) return
+    // Let people type a bare domain: "bbcgoodfood.com/recipes/..." works.
+    if (!/^https?:\/\//i.test(target)) target = 'https://' + target
     loading = true
     errorMsg = ''
     blocked = false
@@ -144,9 +146,13 @@
       </p>
       <form class="fetchbar" onsubmit={getRecipe}>
         <input
-          type="url"
+          type="text"
+          inputmode="url"
+          autocapitalize="none"
+          autocorrect="off"
+          spellcheck="false"
           bind:value={url}
-          placeholder="https://any-recipe-site.com/…"
+          placeholder="paste or type a recipe link…"
           aria-label="Recipe URL"
           required
         />

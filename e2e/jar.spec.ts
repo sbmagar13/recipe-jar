@@ -77,3 +77,9 @@ test('the sample recipe loads instantly and is savable', async ({ page }) => {
   await page.getByRole('button', { name: '+ Save to my jar' }).click()
   await expect(page.getByText('✓ In your jar')).toBeVisible()
 })
+
+test('a bare domain (no https://) still fetches', async ({ page }) => {
+  await page.getByLabel('Recipe URL').fill('www.bbcgoodfood.com/recipes/classic-lasagne-0')
+  await page.getByRole('button', { name: 'Get the recipe' }).click()
+  await expect(page.getByRole('heading', { name: /lasagne/i })).toBeVisible({ timeout: 20000 })
+})

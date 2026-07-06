@@ -8,9 +8,8 @@
 
   let { onback, ontypein }: Props = $props()
 
-  // In dev this is localhost; in production it bakes in recipejar.app.
-  const origin = location.origin
-  const code = bookmarkletCode(origin)
+  // Always the canonical home (or localhost in dev), so imports land in one jar.
+  const code = bookmarkletCode()
 </script>
 
 <section class="import-help">

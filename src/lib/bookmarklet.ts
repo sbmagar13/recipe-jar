@@ -8,15 +8,27 @@ interface ImportPayload {
   j: string[] // raw JSON-LD script contents
 }
 
+// The one canonical home the bookmarklet always opens, so imported recipes land
+// in the same jar no matter which page you dragged the bookmarklet from.
+// Overridable at build time (e.g. if the site moves to recipejar.app).
+const CANONICAL_ORIGIN =
+  import.meta.env.VITE_CANONICAL_ORIGIN || 'https://recipejar.sagarbudhathoki.com'
+
+function appOrigin(): string {
+  const h = location.hostname
+  if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.local')) return location.origin
+  return CANONICAL_ORIGIN
+}
+
 /**
  * The bookmarklet source. It runs on the recipe page's own origin, so bot
  * walls that block our server proxy don't apply. It grabs every JSON-LD block
  * plus the URL and title, then opens Recipe Jar with them in the hash.
  */
-export function bookmarkletCode(appOrigin: string): string {
-  // Kept as one line; `APP` is substituted with the real origin.
+export function bookmarkletCode(): string {
+  // Kept as one line; `APP` is substituted with the canonical origin.
   const src = `(function(){try{var d=document,j=[].map.call(d.querySelectorAll('script[type=\\"application/ld+json\\"]'),function(e){return e.textContent||''}),p={u:location.href,t:d.title,j:j};var h=encodeURIComponent(JSON.stringify(p));window.open('APP/#import='+h,'_blank')}catch(e){alert('Recipe Jar: could not read this page.')}})()`
-  return 'javascript:' + src.replace('APP', appOrigin)
+  return 'javascript:' + src.replace('APP', appOrigin())
 }
 
 const PREFIX = '#import='
