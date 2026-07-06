@@ -762,3 +762,45 @@ footer {
     margin-left: 0 !important;
   }
 }
+
+/* Paste-to-restore */
+.paste-restore {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 560px;
+  margin: -8px 0 20px;
+}
+
+.paste-restore textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+}
+
+.paste-restore .save {
+  align-self: flex-start;
+}
+
+/* Finger-sized touch targets on touch devices */
+@media (pointer: coarse) {
+  .servings button {
+    width: 44px;
+    height: 44px;
+  }
+  .ingredients input[type='checkbox'] {
+    width: 22px;
+    height: 22px;
+  }
+  .ingredients li {
+    padding: 8px 0;
+  }
+  .navlink,
+  .backup-btn,
+  .linklike {
+    min-height: 40px;
+  }
+}

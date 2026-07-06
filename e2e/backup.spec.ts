@@ -51,3 +51,37 @@ test('export the jar to a file and restore it after wiping', async ({ page }) =>
   await expect(page.getByText('Backup Test Curry')).toBeVisible()
   await expect(page.getByRole('button', { name: /My Jar \(1\)/ })).toBeVisible()
 })
+
+test('restore from pasted backup text (in-app browser path)', async ({ page }) => {
+  await page.getByRole('button', { name: /type in one of your own/i }).click()
+  await page.getByLabel('Recipe name').fill('Paste Restore Soup')
+  await page.getByLabel(/Ingredients/).fill('1 leek\n1 potato')
+  await page.getByLabel(/Steps/).fill('Chop.\nBoil.')
+  await page.getByRole('button', { name: 'Create recipe' }).click()
+
+  // Grab the backup text via the download, then wipe.
+  await page.getByRole('button', { name: /My Jar/ }).click()
+  const dl = page.waitForEvent('download')
+  await page.getByRole('button', { name: /Back up my jar/ }).click()
+  const stream = await (await dl).createReadStream()
+  const chunks: Buffer[] = []
+  for await (const c of stream) chunks.push(c as Buffer)
+  const backupText = Buffer.concat(chunks).toString('utf-8')
+
+  await page.evaluate(
+    () => new Promise<void>((r) => {
+      const req = indexedDB.deleteDatabase('recipe-jar')
+      req.onsuccess = req.onerror = req.onblocked = () => r()
+    })
+  )
+  await page.reload()
+
+  // Restore by pasting the text.
+  await page.getByRole('button', { name: /My Jar/ }).click()
+  await page.getByRole('button', { name: /Paste backup/ }).click()
+  await page.getByLabel('Paste backup text').fill(backupText)
+  await page.getByRole('button', { name: 'Restore', exact: true }).click()
+
+  await expect(page.getByText('Paste Restore Soup')).toBeVisible()
+  await expect(page.getByRole('button', { name: /My Jar \(1\)/ })).toBeVisible()
+})

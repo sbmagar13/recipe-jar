@@ -11,6 +11,8 @@
   let backupMsg = $state('')
   let lastBackup = $state<number | null>(null)
   let fileInput: HTMLInputElement
+  let showPasteRestore = $state(false)
+  let pasteRestoreText = $state('')
 
   const LAST_BACKUP_KEY = 'recipe-jar:lastBackup'
 
@@ -49,20 +51,45 @@
     backupMsg = `Backed up ${entries.length} ${entries.length === 1 ? 'recipe' : 'recipes'}.`
   }
 
+  async function handleCopyBackup() {
+    const json = await exportJar()
+    try {
+      await navigator.clipboard.writeText(json)
+      localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()))
+      loadLastBackup()
+      backupMsg = 'Backup copied. Paste it somewhere safe (a note, an email to yourself).'
+    } catch {
+      backupMsg = 'Could not copy. Use "Back up my jar" to download a file instead.'
+    }
+  }
+
+  async function runImport(text: string) {
+    const { added, skipped } = await importJar(text)
+    await refresh()
+    onchanged()
+    backupMsg = `Added ${added}, skipped ${skipped} already in your jar.`
+  }
+
   async function handleImportFile(e: Event) {
     const input = e.currentTarget as HTMLInputElement
     const file = input.files?.[0]
     if (!file) return
     try {
-      const text = await file.text()
-      const { added, skipped } = await importJar(text)
-      await refresh()
-      onchanged()
-      backupMsg = `Added ${added}, skipped ${skipped} already in your jar.`
+      await runImport(await file.text())
     } catch (err) {
       backupMsg = err instanceof Error ? err.message : 'Could not read that file.'
     } finally {
       input.value = ''
+    }
+  }
+
+  async function handlePasteRestore() {
+    try {
+      await runImport(pasteRestoreText)
+      pasteRestoreText = ''
+      showPasteRestore = false
+    } catch (err) {
+      backupMsg = err instanceof Error ? err.message : 'That backup text could not be read.'
     }
   }
 
@@ -101,8 +128,10 @@
   <div class="backup-bar">
     {#if entries.length > 0}
       <button class="backup-btn" onclick={handleExport}>⤓ Back up my jar</button>
+      <button class="backup-btn" onclick={handleCopyBackup}>⧉ Copy backup</button>
     {/if}
     <button class="backup-btn" onclick={() => fileInput.click()}>⤒ Restore from file</button>
+    <button class="backup-btn" onclick={() => (showPasteRestore = !showPasteRestore)}>⧉ Paste backup</button>
     <input
       bind:this={fileInput}
       type="file"
@@ -116,6 +145,18 @@
       <span class="backup-msg" class:stale={lastBackup === null}>{backupAge()}</span>
     {/if}
   </div>
+
+  {#if showPasteRestore}
+    <div class="paste-restore">
+      <textarea
+        bind:value={pasteRestoreText}
+        rows="4"
+        placeholder="Paste your backup text here…"
+        aria-label="Paste backup text"
+      ></textarea>
+      <button class="save" onclick={handlePasteRestore} disabled={!pasteRestoreText.trim()}>Restore</button>
+    </div>
+  {/if}
 
   {#if loaded && entries.length === 0}
     <p class="jar-empty">
