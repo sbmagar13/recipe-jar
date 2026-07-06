@@ -804,3 +804,74 @@ footer {
     min-height: 40px;
   }
 }
+
+/* Add-to-home-screen tip */
+.install-tip {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--basil-deep);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(39, 82, 49, 0.28);
+  font-size: 0.9rem;
+  z-index: 50;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .install-tip {
+    animation: tip-rise 0.3s ease-out;
+  }
+  @keyframes tip-rise {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+}
+
+.install-jar {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.install-text {
+  flex: 1;
+  line-height: 1.35;
+}
+
+.install-text strong {
+  color: #fff;
+  white-space: nowrap;
+}
+
+.install-go {
+  flex-shrink: 0;
+  background: #fff;
+  color: var(--basil-deep);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.install-x {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  min-height: 40px;
+}
+
+.install-x:hover {
+  color: #fff;
+}

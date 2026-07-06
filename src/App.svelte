@@ -8,6 +8,7 @@
   import JarView from './lib/components/JarView.svelte'
   import ManualEntry from './lib/components/ManualEntry.svelte'
   import ImportHelp from './lib/components/ImportHelp.svelte'
+  import InstallTip from './lib/components/InstallTip.svelte'
 
   type View = 'home' | 'recipe' | 'jar' | 'add' | 'import'
 
@@ -195,4 +196,6 @@
     Free forever · No account · Your recipes stay on your device ·
     <span class="mono">a birthday gift, July 13 2026</span>
   </footer>
+
+  <InstallTip active={count > 0} />
 </main>
