@@ -24,6 +24,11 @@ function devProxy(): Plugin {
           return fail(400, 'Invalid URL')
         }
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return fail(400, 'Only http(s) URLs are supported')
+        if (parsed.port && parsed.port !== '80' && parsed.port !== '443') return fail(400, 'URL not allowed')
+        const host = parsed.hostname
+        if (host === 'localhost' || !host.includes('.') || host.includes(':') || host.endsWith('.local') || host.endsWith('.internal')) {
+          return fail(400, 'URL not allowed')
+        }
         try {
           const upstream = await fetch(parsed.toString(), {
             redirect: 'follow',
@@ -36,6 +41,8 @@ function devProxy(): Plugin {
             },
           })
           if (!upstream.ok) return fail(502, `Site responded with ${upstream.status}`)
+          const ct = upstream.headers.get('content-type') ?? ''
+          if (ct && !/text\/html|application\/xhtml|\/xml|text\/plain/i.test(ct)) return fail(415, 'That link is not a web page we can read')
           const buf = Buffer.from(await upstream.arrayBuffer())
           res.statusCode = 200
           res.setHeader('Content-Type', 'text/plain; charset=utf-8')
