@@ -309,7 +309,7 @@
     <span class="footer-links">
       <button class="linklike" onclick={() => go('about')}>About &amp; Privacy</button>
       ·
-      <span class="mono">a birthday gift, July 13 2026</span>
+      <span class="mono">free &amp; open source, for people who cook</span>
     </span>
   </footer>
 

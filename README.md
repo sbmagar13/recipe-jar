@@ -93,4 +93,4 @@ Handy scripts: `scripts/test-parse.ts` (parser over fixtures),
 MIT for the code. Recipe content belongs to whoever wrote it; Recipe Jar never
 stores or republishes it server-side.
 
-Made as a birthday gift, 13 July 2026.
+Free and open source, made for everyone who cooks.

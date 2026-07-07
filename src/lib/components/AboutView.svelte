@@ -12,7 +12,7 @@
   <h1>About &amp; Privacy</h1>
   <p class="lede">
     Recipe Jar is a free tool that turns a recipe link into a clean card and keeps it on your
-    device. It was made as a birthday gift, for everyone who cooks. No account, no ads, ever.
+    device. It's free and open source, made for everyone who cooks. No account, no ads, ever.
   </p>
 
   <h2>Your privacy</h2>
