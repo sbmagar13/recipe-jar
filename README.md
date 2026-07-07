@@ -77,7 +77,7 @@ calories, or socialise. It does one daily chore well.
 
 Vite + Svelte + TypeScript, Dexie (IndexedDB), Workbox (offline). Static site on
 Cloudflare Pages with Pages Functions for the fetch proxy and a storage-less
-telemetry sink. ~60 KB gzipped. Recipes are parsed from JSON-LD
+telemetry sink. ~70 KB gzipped. Recipes are parsed from JSON-LD
 (`schema.org/Recipe`), with a microdata fallback.
 
 ## Self-host

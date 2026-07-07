@@ -1,16 +1,18 @@
 import { chromium } from 'playwright'
 
+// Every non-canonical host should land on recipejar.app; the apex must stay put.
 const browser = await chromium.launch()
 try {
-  const p1 = await (await browser.newContext()).newPage()
-  await p1.goto('https://recipe-jar.pages.dev/', { waitUntil: 'load' })
-  await p1.waitForTimeout(1500)
-  console.log('pages.dev  ->', new URL(p1.url()).host)
-
-  const p2 = await (await browser.newContext()).newPage()
-  await p2.goto('https://recipejar.sagarbudhathoki.com/', { waitUntil: 'load' })
-  await p2.waitForTimeout(800)
-  console.log('custom     ->', new URL(p2.url()).host, '(should stay, no loop)')
+  for (const host of ['recipe-jar.pages.dev', 'recipejar.sagarbudhathoki.com', 'www.recipejar.app']) {
+    const p = await (await browser.newContext()).newPage()
+    await p.goto(`https://${host}/`, { waitUntil: 'load' })
+    await p.waitForTimeout(1500)
+    console.log(host.padEnd(30), '->', new URL(p.url()).host)
+  }
+  const apex = await (await browser.newContext()).newPage()
+  await apex.goto('https://recipejar.app/', { waitUntil: 'load' })
+  await apex.waitForTimeout(800)
+  console.log('recipejar.app'.padEnd(30), '->', new URL(apex.url()).host, '(should stay, no loop)')
 } catch (e) {
   console.log('ERR:', e instanceof Error ? e.message.split('\n')[0] : String(e))
 }

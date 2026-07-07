@@ -1,7 +1,7 @@
 # Launch posts — Monday, July 13
 
-Replace `[link]` with recipejar.app once the domain is live. Attach
-`launch/recipe-jar-demo.mp4` to the LinkedIn and social posts.
+Links point at https://recipejar.app (live). Attach
+`launch/recipe-jar-demo.mp4` (30s) to the LinkedIn and social posts.
 
 Timing (CEST):
 - 08:00 LinkedIn
@@ -27,10 +27,12 @@ steps, nothing else. Save as many as you want. They live on your device, not my
 server. That is why it is free forever: there is nothing for me to pay for, so
 there is nothing for you to pay for.
 
-No account. No ads. Works offline at the stove. Scale the servings with one tap.
-Type in your family recipes too, and back up the whole jar as one file to pass on.
+No account. No ads. Works offline at the stove, with a step-by-step cook mode
+that keeps the screen on and turns "simmer 20 minutes" into a tap-to-start
+timer. Scale the servings with one tap. Type in your family recipes too, and
+back up the whole jar as one file to pass on.
 
-If someone cooks for you, send them this: [link]
+If someone cooks for you, send them this: https://recipejar.app
 
 ---
 
@@ -58,13 +60,18 @@ Technical bits:
   (NYT, AllRecipes), so nothing is scraped server-side.
 - Legal posture is reader-mode: user-initiated fetch of a page they can already
   read, stored privately on their own device, never republished.
-- Svelte + Dexie + Workbox, ~55 KB gzipped, MIT. One tiny Cloudflare Pages
+- Step timers are parsed out of the instruction text ("simmer 20 mins" becomes a
+  tappable countdown), and a focus cook mode shows one step at a time with a
+  screen wake lock.
+- Sharing a recipe encodes the whole thing into the URL hash (base64url), so a
+  shared link carries the recipe itself — nothing is stored server-side.
+- Svelte + Dexie + Workbox, ~70 KB gzipped, MIT. One tiny Cloudflare Pages
   Function as a stateless fetch proxy; no other backend, no database.
 - Backup is a single JSON file (or copy/paste text, for in-app browsers that
   block downloads).
 
 Try it with the built-in sample recipe, no typing needed. Scope note: it keeps
-recipes, it does not plan meals or count calories. [link]
+recipes, it does not plan meals or count calories. https://recipejar.app
 
 ---
 
@@ -74,7 +81,7 @@ It's my birthday today! Instead of presents, I made everyone something: a free
 recipe keeper. Paste any recipe link and it strips the ads and the life story,
 just ingredients and steps. Save as many as you want, works offline in the
 kitchen, no signup, free forever. Send it to whoever cooks in your family:
-[link]. Sharing it is the only gift I want.
+https://recipejar.app. Sharing it is the only gift I want.
 
 ---
 
@@ -93,5 +100,5 @@ welcome, especially if a site fails to import.
 ## 15-second video caption (TikTok / Reels / Shorts)
 
 POV: you just want the recipe, not the life story. Paste the link → clean card →
-scale it → save it. Free forever, no account, works offline. My birthday gift to
-everyone who cooks. [link]
+scale it → save it → cook it step by step with built-in timers. Free forever, no
+account, works offline. My birthday gift to everyone who cooks. https://recipejar.app

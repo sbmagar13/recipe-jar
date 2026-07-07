@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { isAllowedCaller } from '../functions/api/_caller'
 
-const SELF = 'https://recipejar.sagarbudhathoki.com'
+const SELF = 'https://recipejar.app'
 const h = (init: Record<string, string>) => new Headers(init)
 
 describe('isAllowedCaller (open-proxy guard)', () => {

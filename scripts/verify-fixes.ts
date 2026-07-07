@@ -1,8 +1,8 @@
 // Verify the two live fixes against a deployed URL.
-// Run: npx tsx scripts/verify-fixes.ts https://recipejar.sagarbudhathoki.com/
+// Run: npx tsx scripts/verify-fixes.ts https://recipejar.app/
 import { chromium } from 'playwright'
 
-const base = process.argv[2] || 'https://recipejar.sagarbudhathoki.com/'
+const base = process.argv[2] || 'https://recipejar.app/'
 const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
 const results: string[] = []

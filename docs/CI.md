@@ -9,7 +9,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every push and pull request 
 | Typecheck | `npm run check` | svelte-check + tsc, 0 errors |
 | Unit tests | `npm run test:unit` | Vitest (parser, quantity, textparse, proxy caller) |
 | Build | `npm run build` | production Vite + PWA build |
-| Size budget | `npm run size` | entry JS ≤ 70 KB gz, CSS ≤ 10 KB gz, all ≤ 80 KB gz |
+| Size budget | `npm run size` | entry JS ≤ 78 KB gz, CSS ≤ 12 KB gz, all ≤ 92 KB gz |
 | E2E | `npx playwright test --project=chromium --grep-invert "@network"` | app flows + axe a11y |
 
 ### The `@network` tag
