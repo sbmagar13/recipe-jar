@@ -31,6 +31,8 @@
     servings = recipe.servings ?? 4
     checked = new Set()
     timers = {}
+    cooking = false
+    stepIndex = 0
   })
 
   // Cook mode: keep the screen awake while at the stove.
@@ -162,6 +164,71 @@
     return () => clearInterval(id)
   })
 
+  // --- Focus cook mode: one big step at a time, hands-free at the stove ---
+  let cooking = $state(false)
+  let stepIndex = $state(0)
+  let showCookIngredients = $state(false)
+  let lockFromCook = false
+
+  function startCooking() {
+    ensureAudio() // unlock audio on this gesture so step timers can beep
+    stepIndex = 0
+    showCookIngredients = false
+    cooking = true
+    if (wakeLockSupported && !awake) {
+      lockFromCook = true
+      acquireLock()
+    }
+  }
+
+  function stopCooking() {
+    cooking = false
+    if (lockFromCook) {
+      lockFromCook = false
+      if (awake) toggleAwake()
+    }
+  }
+
+  function nextStep() {
+    if (stepIndex < recipe.steps.length - 1) stepIndex++
+    else stopCooking()
+  }
+
+  function prevStep() {
+    if (stepIndex > 0) stepIndex--
+  }
+
+  // Arrow keys / space / Escape while cooking (desktop + keyboards).
+  $effect(() => {
+    if (!cooking) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault()
+        nextStep()
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        prevStep()
+      } else if (e.key === 'Escape') {
+        stopCooking()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
+
+  // Swipe left/right to move between steps (touch).
+  let touchX = 0
+  function onTouchStart(e: TouchEvent) {
+    touchX = e.changedTouches[0].clientX
+  }
+  function onTouchEnd(e: TouchEvent) {
+    const dx = e.changedTouches[0].clientX - touchX
+    if (Math.abs(dx) > 60) {
+      if (dx < 0) nextStep()
+      else prevStep()
+    }
+  }
+
   // Share the whole card as a link (no server: the recipe rides in the hash).
   let shareMsg = $state('')
   let shareMsgTimer: ReturnType<typeof setTimeout> | undefined
@@ -188,106 +255,158 @@
   }
 </script>
 
-<article class="card">
-  {#if recipe.image && imageOk}
+{#snippet timerChip(i: number, j: number, t: { label: string; seconds: number })}
+  {@const key = `${i}-${j}`}
+  <button
+    class="timer-chip"
+    class:running={timers[key]?.running}
+    class:paused={timers[key] && !timers[key].running && !timers[key].done}
+    class:done={timers[key]?.done}
+    onclick={() => toggleTimer(key, t.seconds)}
+    aria-label={timers[key]?.done
+      ? `Timer finished for ${t.label}. Restart`
+      : timers[key]?.running
+        ? `Pause timer, ${formatClock(timers[key].remaining)} remaining`
+        : timers[key]
+          ? `Resume timer, ${formatClock(timers[key].remaining)} remaining`
+          : `Start a ${t.label} timer`}
+  >
+    {#if timers[key]?.done}
+      ✓ Done
+    {:else if timers[key]}
+      {timers[key].running ? '⏸' : '▶'} {formatClock(timers[key].remaining)}
+    {:else}
+      ⏱ {t.label}
+    {/if}
+  </button>
+{/snippet}
+
+<article class="card" class:cooking>
+  {#if recipe.image && imageOk && !cooking}
     <img class="photo" src={recipe.image} alt={recipe.title} loading="lazy" onerror={() => (imageOk = false)} />
   {/if}
   <div class="card-body">
-    <div class="card-actions">
-      {#if savedId === null}
-        <button class="save" onclick={onsave}>+ Save to my jar</button>
-      {:else}
-        <span class="saved-badge">✓ In your jar</span>
-        <button class="remove" onclick={onremove}>Remove</button>
-      {/if}
-      <button class="share" onclick={shareRecipe}>↗ Share</button>
-      {#if shareMsg}<span class="share-msg" role="status">{shareMsg}</span>{/if}
-    </div>
-    <h1>{recipe.title}</h1>
-    {#if recipe.description}<p class="desc">{recipe.description}</p>{/if}
-    <div class="meta">
-      {#if recipe.totalTime}<span>⏱ {recipe.totalTime}</span>{/if}
-      {#if recipe.author}<span>by {recipe.author}</span>{/if}
-      {#if recipe.sourceUrl}
-        <a href={recipe.sourceUrl} target="_blank" rel="noopener noreferrer">source</a>
-      {:else}
-        <span>your own recipe</span>
-      {/if}
-    </div>
-
-    <div class="servings" role="group" aria-label="Servings">
-      <button onclick={() => (servings = Math.max(1, servings - 1))} aria-label="Fewer servings">−</button>
-      <span>{servings} {servings === 1 ? 'serving' : 'servings'}</span>
-      <button onclick={() => (servings = servings + 1)} aria-label="More servings">+</button>
-      {#if servings !== baseServings}
-        <button class="reset-servings" onclick={() => (servings = baseServings)}>reset</button>
-      {/if}
-      {#if wakeLockSupported}
-        <button class="cook-toggle" class:on={awake} onclick={toggleAwake} aria-pressed={awake}>
-          {awake ? '☀ Screen stays on' : '☾ Keep screen on'}
-        </button>
-      {/if}
-    </div>
-
-    <div class="columns">
-      <section aria-label="Ingredients">
-        <h2>Ingredients</h2>
+    {#if cooking}
+      <div class="cook" role="group" aria-label="Cooking steps, swipe left or right to move" ontouchstart={onTouchStart} ontouchend={onTouchEnd}>
+        <div class="cook-top">
+          <h1 class="cook-title">{recipe.title}</h1>
+          <button class="cook-exit" onclick={stopCooking} aria-label="Exit cook mode">✕</button>
+        </div>
+        <div class="cook-progress" aria-hidden="true">
+          <div class="cook-progress-fill" style="width:{((stepIndex + 1) / recipe.steps.length) * 100}%"></div>
+        </div>
+        <p class="cook-counter">Step {stepIndex + 1} of {recipe.steps.length}</p>
+        <p class="cook-step">{recipe.steps[stepIndex]}</p>
+        {#if stepTimers[stepIndex].length > 0}
+          <div class="cook-timers">
+            {#each stepTimers[stepIndex] as t, j (j)}
+              {@render timerChip(stepIndex, j, t)}
+            {/each}
+          </div>
+        {/if}
         {#if recipe.ingredients.length > 0}
-          <ul class="ingredients">
-            {#each recipe.ingredients as ing, i}
-              <li class:done={checked.has(i)}>
-                <label>
-                  <input type="checkbox" checked={checked.has(i)} onchange={() => toggleIngredient(i)} />
-                  <span>{scaledLine(ing)}</span>
-                </label>
-              </li>
-            {/each}
-          </ul>
-        {:else}
-          <p class="section-empty">No ingredients were found. Open the source to check.</p>
+          <button
+            class="cook-ing-toggle"
+            onclick={() => (showCookIngredients = !showCookIngredients)}
+            aria-expanded={showCookIngredients}
+          >
+            {showCookIngredients ? 'Hide ingredients' : 'Show ingredients'}
+          </button>
+          {#if showCookIngredients}
+            <ul class="cook-ingredients">
+              {#each recipe.ingredients as ing}
+                <li>{scaledLine(ing)}</li>
+              {/each}
+            </ul>
+          {/if}
         {/if}
-      </section>
-      <section aria-label="Steps">
-        <h2>Method</h2>
+        <div class="cook-nav">
+          <button class="cook-prev" onclick={prevStep} disabled={stepIndex === 0}>◀ Back</button>
+          {#if stepIndex < recipe.steps.length - 1}
+            <button class="cook-next" onclick={nextStep}>Next ▶</button>
+          {:else}
+            <button class="cook-next cook-finish" onclick={stopCooking}>✓ Done</button>
+          {/if}
+        </div>
+      </div>
+    {:else}
+      <div class="card-actions">
+        {#if savedId === null}
+          <button class="save" onclick={onsave}>+ Save to my jar</button>
+        {:else}
+          <span class="saved-badge">✓ In your jar</span>
+          <button class="remove" onclick={onremove}>Remove</button>
+        {/if}
+        <button class="share" onclick={shareRecipe}>↗ Share</button>
         {#if recipe.steps.length > 0}
-          <ol class="steps">
-            {#each recipe.steps as step, i}
-              <li>
-                <span class="step-text">{step}</span>
-                {#each stepTimers[i] as t, j (j)}
-                  {@const key = `${i}-${j}`}
-                  <button
-                    class="timer-chip"
-                    class:running={timers[key]?.running}
-                    class:paused={timers[key] && !timers[key].running && !timers[key].done}
-                    class:done={timers[key]?.done}
-                    onclick={() => toggleTimer(key, t.seconds)}
-                    aria-label={timers[key]?.done
-                      ? `Timer finished for ${t.label}. Restart`
-                      : timers[key]?.running
-                        ? `Pause timer, ${formatClock(timers[key].remaining)} remaining`
-                        : timers[key]
-                          ? `Resume timer, ${formatClock(timers[key].remaining)} remaining`
-                          : `Start a ${t.label} timer`}
-                  >
-                    {#if timers[key]?.done}
-                      ✓ Done
-                    {:else if timers[key]}
-                      {timers[key].running ? '⏸' : '▶'} {formatClock(timers[key].remaining)}
-                    {:else}
-                      ⏱ {t.label}
-                    {/if}
-                  </button>
-                {/each}
-              </li>
-            {/each}
-          </ol>
-        {:else}
-          <p class="section-empty">No steps were found. The <a href={recipe.sourceUrl || '#'} target="_blank" rel="noopener noreferrer">source</a> has the full method.</p>
+          <button class="cook-start" onclick={startCooking}>▶ Cook</button>
         {/if}
-      </section>
-    </div>
+        {#if shareMsg}<span class="share-msg" role="status">{shareMsg}</span>{/if}
+      </div>
+      <h1>{recipe.title}</h1>
+      {#if recipe.description}<p class="desc">{recipe.description}</p>{/if}
+      <div class="meta">
+        {#if recipe.totalTime}<span>⏱ {recipe.totalTime}</span>{/if}
+        {#if recipe.author}<span>by {recipe.author}</span>{/if}
+        {#if recipe.sourceUrl}
+          <a href={recipe.sourceUrl} target="_blank" rel="noopener noreferrer">source</a>
+        {:else}
+          <span>your own recipe</span>
+        {/if}
+      </div>
 
-    <button class="again" onclick={onback}>← Back</button>
+      <div class="servings" role="group" aria-label="Servings">
+        <button onclick={() => (servings = Math.max(1, servings - 1))} aria-label="Fewer servings">−</button>
+        <span>{servings} {servings === 1 ? 'serving' : 'servings'}</span>
+        <button onclick={() => (servings = servings + 1)} aria-label="More servings">+</button>
+        {#if servings !== baseServings}
+          <button class="reset-servings" onclick={() => (servings = baseServings)}>reset</button>
+        {/if}
+        {#if wakeLockSupported}
+          <button class="cook-toggle" class:on={awake} onclick={toggleAwake} aria-pressed={awake}>
+            {awake ? '☀ Screen stays on' : '☾ Keep screen on'}
+          </button>
+        {/if}
+      </div>
+
+      <div class="columns">
+        <section aria-label="Ingredients">
+          <h2>Ingredients</h2>
+          {#if recipe.ingredients.length > 0}
+            <ul class="ingredients">
+              {#each recipe.ingredients as ing, i}
+                <li class:done={checked.has(i)}>
+                  <label>
+                    <input type="checkbox" checked={checked.has(i)} onchange={() => toggleIngredient(i)} />
+                    <span>{scaledLine(ing)}</span>
+                  </label>
+                </li>
+              {/each}
+            </ul>
+          {:else}
+            <p class="section-empty">No ingredients were found. Open the source to check.</p>
+          {/if}
+        </section>
+        <section aria-label="Steps">
+          <h2>Method</h2>
+          {#if recipe.steps.length > 0}
+            <ol class="steps">
+              {#each recipe.steps as step, i}
+                <li>
+                  <span class="step-text">{step}</span>
+                  {#each stepTimers[i] as t, j (j)}
+                    {@render timerChip(i, j, t)}
+                  {/each}
+                </li>
+              {/each}
+            </ol>
+          {:else}
+            <p class="section-empty">No steps were found. The <a href={recipe.sourceUrl || '#'} target="_blank" rel="noopener noreferrer">source</a> has the full method.</p>
+          {/if}
+        </section>
+      </div>
+
+      <button class="again" onclick={onback}>← Back</button>
+    {/if}
   </div>
 </article>

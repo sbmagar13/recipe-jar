@@ -44,6 +44,13 @@ test('sample recipe view is accessible', async ({ page }) => {
   await audit(page, 'recipe')
 })
 
+test('cook mode is accessible', async ({ page }) => {
+  await page.getByRole('button', { name: /see a sample recipe/ }).click()
+  await page.getByRole('button', { name: '▶ Cook' }).click()
+  await expect(page.getByText('Step 1 of 5')).toBeVisible()
+  await audit(page, 'cook-mode')
+})
+
 test('jar view is accessible (with a saved recipe)', async ({ page }) => {
   await page.getByRole('button', { name: /see a sample recipe/ }).click()
   await page.getByRole('button', { name: '+ Save to my jar' }).click()

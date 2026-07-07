@@ -13,10 +13,12 @@ const ASSETS = 'dist/assets'
 
 // Budgets in KB of gzipped output. Set with ~15% headroom over current size so
 // they catch real regressions without nagging on small, deliberate additions.
+// Raised once for the Phase 1 cook features (timers + focus cook mode). Still
+// lean for a full offline capture/cook/share app; catches real regressions.
 const BUDGETS = [
-  { label: 'entry JS  (gz)', match: (f) => /^index-.*\.js$/.test(f), maxKB: 70 },
-  { label: 'entry CSS (gz)', match: (f) => /^index-.*\.css$/.test(f), maxKB: 10 },
-  { label: 'all assets (gz)', match: (f) => /\.(js|css)$/.test(f), maxKB: 80 },
+  { label: 'entry JS  (gz)', match: (f) => /^index-.*\.js$/.test(f), maxKB: 78 },
+  { label: 'entry CSS (gz)', match: (f) => /^index-.*\.css$/.test(f), maxKB: 12 },
+  { label: 'all assets (gz)', match: (f) => /\.(js|css)$/.test(f), maxKB: 92 },
 ]
 
 if (!existsSync(ASSETS)) {
