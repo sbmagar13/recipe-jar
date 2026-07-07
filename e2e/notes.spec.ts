@@ -55,7 +55,11 @@ test('a backup carries notes and cook stats', async ({ page, browserName }) => {
 
   // Back up through the real UI and confirm the personal data rode along.
   await page.getByRole('button', { name: /My Jar/ }).click()
+  await page.bringToFront() // clipboard needs a focused document on CI
   await page.getByRole('button', { name: /Copy backup/ }).click()
+  // The copy is async (exportJar reads IndexedDB first) — wait for the app to
+  // confirm before reading the clipboard, or CI reads it empty.
+  await expect(page.getByText(/Backup copied/)).toBeVisible()
   const backup = await page.evaluate(() => navigator.clipboard.readText())
   const parsed = JSON.parse(backup)
   expect(parsed.recipes[0].notes).toBe('My note')
