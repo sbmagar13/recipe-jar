@@ -1,0 +1,44 @@
+name: 🧩 A site didn't import
+description: A recipe page that came back empty or wrong. This is the most useful report you can file.
+title: "Parser: <site name>"
+labels: ["parser"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping! Most recipe sites publish structured data that Recipe Jar reads automatically — when one doesn't, this report is what lets us teach the parser a new trick.
+  - type: input
+    id: url
+    attributes:
+      label: Recipe URL
+      description: The exact page you tried to import.
+      placeholder: https://example.com/recipes/red-lentil-dal
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: What happened?
+      options:
+        - "No recipe found on that page"
+        - "Imported, but ingredients are missing or wrong"
+        - "Imported, but steps are missing or wrong"
+        - "Imported, but the title / times / servings are wrong"
+        - "The site blocked fetching entirely"
+        - "Something else (describe below)"
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What did you expect vs. get?
+      description: A sentence or two is plenty. If some fields came through and others didn't, say which.
+    validations:
+      required: false
+  - type: input
+    id: browser
+    attributes:
+      label: Browser & device
+      placeholder: e.g. Chrome on Android, Safari on iPhone, Brave on macOS
+    validations:
+      required: false

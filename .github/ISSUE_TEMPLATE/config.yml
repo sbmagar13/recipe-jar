@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & ideas
+    url: https://github.com/sbmagar13/recipe-jar/discussions
+    about: Ask a question, share an idea, or say hello. Not sure if it's a bug? Start here.
+  - name: 🍳 Try the app
+    url: https://recipejar.app
+    about: Recipe Jar runs in your browser — no install needed.

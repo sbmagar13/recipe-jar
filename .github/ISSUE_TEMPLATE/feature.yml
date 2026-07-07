@@ -1,0 +1,28 @@
+name: 💡 Feature idea
+description: Suggest something Recipe Jar could do.
+title: "Idea: <short summary>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Recipe Jar tries to do one thing well — keep recipes, privately, for free. Ideas that fit that scope (and don't require an account or a server-side copy of anyone's data) are the easiest to say yes to.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem or need?
+      description: What are you trying to do that's hard or impossible today?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like it to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you've tried or considered?
+    validations:
+      required: false

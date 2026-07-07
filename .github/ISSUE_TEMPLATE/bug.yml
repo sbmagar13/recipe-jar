@@ -1,0 +1,43 @@
+name: 🐛 Bug report
+description: Something in the app is broken or behaving wrong.
+title: "Bug: <short summary>"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What's wrong?
+      description: What happened, and what did you expect to happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to …
+        2. Tap …
+        3. See …
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Browser, device & OS
+      placeholder: e.g. Safari 18 on iPhone 13, or Firefox on Windows 11
+    validations:
+      required: true
+  - type: input
+    id: installed
+    attributes:
+      label: Installed as an app (PWA) or in a browser tab?
+      placeholder: e.g. installed to home screen / normal browser tab
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
+      description: Drag images in here. If there's a console error, paste it.
+    validations:
+      required: false
