@@ -10,11 +10,13 @@
     notes?: string
     cookedCount?: number
     lastCooked?: number | null
+    tags?: string[]
     onsave: () => void
     onremove: () => void
     onback: () => void
     onsavenotes?: (notes: string) => void
     oncooked?: () => void
+    onsavetags?: (tags: string[]) => void
   }
 
   let {
@@ -23,11 +25,13 @@
     notes = '',
     cookedCount = 0,
     lastCooked = null,
+    tags = [],
     onsave,
     onremove,
     onback,
     onsavenotes = () => {},
     oncooked = () => {},
+    onsavetags = () => {},
   }: Props = $props()
 
   let baseServings = $derived(recipe.servings ?? 4)
@@ -280,6 +284,32 @@
     return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
   }
 
+  // --- Tags ---
+  let tagInput = $state('')
+
+  function normalizeTag(s: string): string {
+    return s.trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 30)
+  }
+
+  function addTag() {
+    const t = normalizeTag(tagInput)
+    if (t && !tags.includes(t)) onsavetags([...tags, t])
+    tagInput = ''
+  }
+
+  function removeTag(tag: string) {
+    onsavetags(tags.filter((x) => x !== tag))
+  }
+
+  function onTagKey(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      addTag()
+    } else if (e.key === 'Backspace' && tagInput === '' && tags.length > 0) {
+      removeTag(tags[tags.length - 1])
+    }
+  }
+
   // Share the whole card as a link (no server: the recipe rides in the hash).
   let shareMsg = $state('')
   let shareMsgTimer: ReturnType<typeof setTimeout> | undefined
@@ -416,6 +446,25 @@
                 : ''}
             </span>
           {/if}
+        </div>
+
+        <div class="tags-edit">
+          {#each tags as tag (tag)}
+            <span class="tag-chip">
+              #{tag}
+              <button class="tag-remove" onclick={() => removeTag(tag)} aria-label={`Remove tag ${tag}`}>✕</button>
+            </span>
+          {/each}
+          <input
+            class="tag-input"
+            bind:value={tagInput}
+            onkeydown={onTagKey}
+            onblur={addTag}
+            placeholder={tags.length ? 'Add tag…' : 'Tag it (vegan, quick, dinner)…'}
+            aria-label="Add a tag"
+            autocapitalize="none"
+            autocorrect="off"
+          />
         </div>
       {/if}
 

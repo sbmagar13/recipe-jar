@@ -83,6 +83,11 @@ export async function setNotes(id: number, notes: string): Promise<void> {
   await db.recipes.update(id, { notes })
 }
 
+/** Save the tags on a jar entry. */
+export async function setTags(id: number, tags: string[]): Promise<void> {
+  await db.recipes.update(id, { tags })
+}
+
 /** Record an "I cooked this": bump the count and stamp the time. */
 export async function markCooked(id: number): Promise<number> {
   const entry = await db.recipes.get(id)
@@ -173,5 +178,6 @@ export function matchesQuery(entry: SavedRecipe, q: string): boolean {
   const needle = q.trim().toLowerCase()
   if (!needle) return true
   if (entry.title.toLowerCase().includes(needle)) return true
+  if ((entry.tags ?? []).some((t) => t.toLowerCase().includes(needle))) return true
   return entry.recipe.ingredients.some((i) => i.raw.toLowerCase().includes(needle))
 }

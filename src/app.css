@@ -824,8 +824,92 @@ footer {
   font-weight: 600;
 }
 
+/* Tag editor (on a saved recipe) */
+.tags-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--sheet);
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  padding: 4px 6px 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 4px 5px;
+  border-radius: 999px;
+}
+
+.tag-remove:hover {
+  color: var(--tomato);
+}
+
+.tag-input {
+  flex: 1;
+  min-width: 150px;
+  border: none;
+  border-bottom: 1.5px dashed var(--rule);
+  background: none;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 5px 2px;
+  color: var(--ink);
+}
+
+.tag-input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--basil);
+}
+
+/* Tag filter row (in the jar) */
+.tag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tag-filter {
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+  cursor: pointer;
+}
+
+.tag-filter:hover {
+  border-color: var(--basil);
+}
+
+.tag-filter.active {
+  background: var(--basil);
+  color: #fff;
+  border-color: var(--basil);
+}
+
 @media (pointer: coarse) {
-  .cooked-btn {
+  .cooked-btn,
+  .tag-filter {
     min-height: 40px;
   }
 }
@@ -1056,7 +1140,9 @@ footer {
   .again,
   .backup-bar,
   .timer-chip,
-  .cooked-row {
+  .cooked-row,
+  .tags-edit,
+  .tag-filters {
     display: none !important;
   }
 

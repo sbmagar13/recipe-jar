@@ -8,6 +8,7 @@
     jarCount,
     getRecipeById,
     setNotes,
+    setTags,
     markCooked,
     type SavedRecipe,
   } from './lib/db'
@@ -57,6 +58,12 @@
     if (savedId === null) return
     const cookedCount = await markCooked(savedId)
     if (savedEntry) savedEntry = { ...savedEntry, cookedCount, lastCooked: Date.now() }
+  }
+
+  async function handleSaveTags(tags: string[]) {
+    if (savedId === null) return
+    await setTags(savedId, tags)
+    if (savedEntry) savedEntry = { ...savedEntry, tags }
   }
 
   async function refreshCount() {
@@ -275,11 +282,13 @@
       notes={savedEntry?.notes ?? ''}
       cookedCount={savedEntry?.cookedCount ?? 0}
       lastCooked={savedEntry?.lastCooked ?? null}
+      tags={savedEntry?.tags ?? []}
       onsave={handleSave}
       onremove={handleRemove}
       onback={goBack}
       onsavenotes={handleSaveNotes}
       oncooked={handleCooked}
+      onsavetags={handleSaveTags}
     />
   {:else if view === 'jar'}
     <JarView onopen={openSaved} onchanged={refreshCount} />

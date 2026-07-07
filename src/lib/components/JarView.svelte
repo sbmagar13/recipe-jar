@@ -113,6 +113,7 @@
 
   let entries = $state<SavedRecipe[]>([])
   let query = $state('')
+  let activeTag = $state<string | null>(null)
   let loaded = $state(false)
 
   export async function refresh() {
@@ -124,7 +125,17 @@
     refresh()
   })
 
-  const visible = $derived(entries.filter((e) => matchesQuery(e, query)))
+  // Every tag in the jar, for the filter row.
+  const allTags = $derived([...new Set(entries.flatMap((e) => e.tags ?? []))].sort())
+
+  // Drop the active tag if its last recipe was removed/retagged.
+  $effect(() => {
+    if (activeTag !== null && !allTags.includes(activeTag)) activeTag = null
+  })
+
+  const visible = $derived(
+    entries.filter((e) => matchesQuery(e, query) && (activeTag === null || (e.tags ?? []).includes(activeTag)))
+  )
 
   // Recipes saved since the last backup (all of them if never backed up).
   const unbacked = $derived(Math.max(0, entries.length - lastBackupCount))
@@ -150,9 +161,24 @@
       class="jar-search"
       type="search"
       bind:value={query}
-      placeholder="Search by name or ingredient…"
+      placeholder="Search by name, ingredient, or tag…"
       aria-label="Search saved recipes"
     />
+  {/if}
+
+  {#if allTags.length > 0}
+    <div class="tag-filters" role="group" aria-label="Filter by tag">
+      {#each allTags as tag (tag)}
+        <button
+          class="tag-filter"
+          class:active={activeTag === tag}
+          aria-pressed={activeTag === tag}
+          onclick={() => (activeTag = activeTag === tag ? null : tag)}
+        >
+          #{tag}
+        </button>
+      {/each}
+    </div>
   {/if}
 
   {#if showNudge}
