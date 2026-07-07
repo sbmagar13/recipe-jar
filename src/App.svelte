@@ -11,6 +11,7 @@
   import ImportHelp from './lib/components/ImportHelp.svelte'
   import InstallTip from './lib/components/InstallTip.svelte'
   import AboutView from './lib/components/AboutView.svelte'
+  import UpdatePrompt from './lib/components/UpdatePrompt.svelte'
 
   type View = 'home' | 'recipe' | 'jar' | 'add' | 'import' | 'about'
 
@@ -146,6 +147,7 @@
 
 <a class="skip-link" href="#content">Skip to content</a>
 <main>
+  <UpdatePrompt />
   <header class="top">
     <button class="brand" onclick={goHome} aria-label="Recipe Jar home">
       <svg width="28" height="32" viewBox="0 0 64 72" aria-hidden="true">

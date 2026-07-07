@@ -60,7 +60,9 @@ export default defineConfig({
     svelte(),
     devProxy(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' (not autoUpdate): a new deploy shows a "Refresh" banner instead
+      // of silently reloading the page, which would be jarring mid-recipe.
+      registerType: 'prompt',
       // Only the app shell is precached. Recipe pages are never cached (they
       // live on other origins and go through the proxy on demand).
       workbox: {

@@ -1034,3 +1034,73 @@ footer {
 .install-x:hover {
   color: #fff;
 }
+
+/* New-version banner — in-flow sticky bar at the very top of the app, so it
+   pushes the header down instead of covering it, and stays visible on scroll. */
+.update-tip {
+  position: sticky;
+  top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  background: var(--basil);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(39, 82, 49, 0.28);
+  font-size: 0.9rem;
+  z-index: 60;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .update-tip {
+    animation: update-drop 0.3s ease-out;
+  }
+  @keyframes update-drop {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+}
+
+.update-spark {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.update-text {
+  flex: 1;
+  line-height: 1.35;
+}
+
+.update-go {
+  flex-shrink: 0;
+  background: #fff;
+  color: var(--basil-deep);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.update-x {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.update-x:hover {
+  color: #fff;
+}
+
+@media (pointer: coarse) {
+  .update-go,
+  .update-x {
+    min-height: 44px;
+  }
+}
