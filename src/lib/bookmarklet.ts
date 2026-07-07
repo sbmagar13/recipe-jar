@@ -14,7 +14,7 @@ interface ImportPayload {
 const CANONICAL_ORIGIN =
   import.meta.env.VITE_CANONICAL_ORIGIN || 'https://recipejar.sagarbudhathoki.com'
 
-function appOrigin(): string {
+export function appOrigin(): string {
   const h = location.hostname
   if (h === 'localhost' || h === '127.0.0.1' || h.endsWith('.local')) return location.origin
   return CANONICAL_ORIGIN

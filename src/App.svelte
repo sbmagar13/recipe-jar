@@ -3,6 +3,7 @@
   import { parseRecipeFromHtml } from './lib/parse'
   import { saveRecipe, removeRecipe, findBySource, jarCount, type SavedRecipe } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
+  import { consumeShareHash } from './lib/share'
   import { reportParseIssue } from './lib/telemetry'
   import { demoRecipe } from './lib/demo'
   import RecipeView from './lib/components/RecipeView.svelte'
@@ -50,21 +51,39 @@
       view = state?.view ?? 'home'
       errorMsg = ''
     })
+    // A share/import link opened in an already-running tab (pasted into the
+    // address bar, or clicked while the app is open) arrives as a hash change,
+    // not a page load — consume it the same way.
+    window.addEventListener('hashchange', () => handleImportHash())
   }
 
-  // Recipe handed over by the bookmarklet, if any.
+  // Recipe handed over by the bookmarklet (#import=) or a shared link (#recipe=).
   async function handleImportHash() {
-    const imported = consumeImportHash()
+    const imported = consumeImportHash() ?? consumeShareHash()
     if (!imported) return
     recipe = imported
-    const existing = await findBySource(imported.sourceUrl)
+    const existing = imported.sourceUrl ? await findBySource(imported.sourceUrl) : undefined
     savedId = existing?.id ?? null
     go('recipe')
   }
   handleImportHash()
+
+  // URL shared into the installed app via the Web Share Target (Android): the
+  // OS puts it in ?url=/?text=/?title=. Pull out the first http(s) link.
+  function consumeShareTargetQuery(): string | null {
+    const params = new URLSearchParams(location.search)
+    const raw = [params.get('url'), params.get('text'), params.get('title')].filter(Boolean).join(' ')
+    if (!raw) return null
+    history.replaceState(null, '', location.pathname + location.hash)
+    const m = raw.match(/https?:\/\/\S+/)
+    return m ? m[0] : null
+  }
+  const sharedTargetUrl = consumeShareTargetQuery()
+
   // Baseline entry so the very first Back returns here rather than exiting. The
   // app always starts at 'home' (an import navigates forward asynchronously).
   if (typeof history !== 'undefined') history.replaceState({ view: 'home' }, '')
+  if (sharedTargetUrl) fetchRecipe(sharedTargetUrl)
 
   async function getRecipe(e: Event) {
     e.preventDefault()
@@ -72,6 +91,10 @@
     if (!target) return
     // Let people type a bare domain: "bbcgoodfood.com/recipes/..." works.
     if (!/^https?:\/\//i.test(target)) target = 'https://' + target
+    await fetchRecipe(target)
+  }
+
+  async function fetchRecipe(target: string) {
     loading = true
     errorMsg = ''
     blocked = false

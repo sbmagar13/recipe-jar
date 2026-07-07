@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Recipe } from '../types'
   import { formatQty } from '../quantity'
+  import { recipeShareUrl } from '../share'
 
   interface Props {
     recipe: Recipe
@@ -86,6 +87,31 @@
     const end = ing.qtyEnd !== null ? `–${formatQty(ing.qtyEnd * factor)}` : ''
     return `${q}${end} ${ing.rest}`
   }
+
+  // Share the whole card as a link (no server: the recipe rides in the hash).
+  let shareMsg = $state('')
+  let shareMsgTimer: ReturnType<typeof setTimeout> | undefined
+
+  async function shareRecipe() {
+    const link = recipeShareUrl(recipe)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.title, url: link })
+        return
+      } catch (err) {
+        // User closed the sheet: done. Anything else: fall through to copy.
+        if (err instanceof Error && err.name === 'AbortError') return
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(link)
+      shareMsg = 'Link copied — send it to anyone.'
+    } catch {
+      shareMsg = 'Could not copy the link.'
+    }
+    clearTimeout(shareMsgTimer)
+    shareMsgTimer = setTimeout(() => (shareMsg = ''), 4000)
+  }
 </script>
 
 <article class="card">
@@ -100,6 +126,8 @@
         <span class="saved-badge">✓ In your jar</span>
         <button class="remove" onclick={onremove}>Remove</button>
       {/if}
+      <button class="share" onclick={shareRecipe}>↗ Share</button>
+      {#if shareMsg}<span class="share-msg" role="status">{shareMsg}</span>{/if}
     </div>
     <h1>{recipe.title}</h1>
     {#if recipe.description}<p class="desc">{recipe.description}</p>{/if}

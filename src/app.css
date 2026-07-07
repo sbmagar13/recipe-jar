@@ -492,6 +492,27 @@ footer {
   font-size: 0.85rem;
 }
 
+.card-actions .share {
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+  cursor: pointer;
+}
+
+.card-actions .share:hover {
+  border-color: var(--basil);
+  background: var(--sheet);
+}
+
+.share-msg {
+  font-size: 0.82rem;
+  color: var(--basil-deep);
+}
+
 /* Jar view */
 .jar-title {
   font-family: Georgia, serif;

@@ -78,6 +78,13 @@ export default defineConfig({
         background_color: '#f6f3ec',
         display: 'standalone',
         start_url: '/',
+        // Android: lets people share a recipe URL from any app straight into
+        // Recipe Jar (appears in the system share sheet once installed).
+        share_target: {
+          action: '/',
+          method: 'GET',
+          params: { url: 'url', text: 'text', title: 'title' },
+        },
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
