@@ -7,12 +7,28 @@
   interface Props {
     recipe: Recipe
     savedId: number | null
+    notes?: string
+    cookedCount?: number
+    lastCooked?: number | null
     onsave: () => void
     onremove: () => void
     onback: () => void
+    onsavenotes?: (notes: string) => void
+    oncooked?: () => void
   }
 
-  let { recipe, savedId, onsave, onremove, onback }: Props = $props()
+  let {
+    recipe,
+    savedId,
+    notes = '',
+    cookedCount = 0,
+    lastCooked = null,
+    onsave,
+    onremove,
+    onback,
+    onsavenotes = () => {},
+    oncooked = () => {},
+  }: Props = $props()
 
   let baseServings = $derived(recipe.servings ?? 4)
   let servings = $state(0)
@@ -33,6 +49,8 @@
     timers = {}
     cooking = false
     stepIndex = 0
+    noteDirty = false
+    noteSaved = false
   })
 
   // Cook mode: keep the screen awake while at the stove.
@@ -229,6 +247,39 @@
     }
   }
 
+  // --- Personal notes + "I cooked this" (only for saved recipes) ---
+  let noteText = $state('')
+  let noteDirty = $state(false)
+  let noteSaved = $state(false)
+  let noteTimer: ReturnType<typeof setTimeout> | undefined
+
+  // Pull the saved note in, unless the user is mid-edit (don't clobber typing).
+  $effect(() => {
+    if (!noteDirty) noteText = notes
+  })
+
+  function persistNote() {
+    onsavenotes(noteText.trim())
+    noteDirty = false
+    noteSaved = true
+  }
+
+  function onNoteInput() {
+    noteDirty = true
+    noteSaved = false
+    clearTimeout(noteTimer)
+    noteTimer = setTimeout(persistNote, 800)
+  }
+
+  function onNoteBlur() {
+    clearTimeout(noteTimer)
+    if (noteDirty) persistNote()
+  }
+
+  function fmtCookedDate(ts: number): string {
+    return new Date(ts).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+  }
+
   // Share the whole card as a link (no server: the recipe rides in the hash).
   let shareMsg = $state('')
   let shareMsgTimer: ReturnType<typeof setTimeout> | undefined
@@ -355,6 +406,19 @@
         {/if}
       </div>
 
+      {#if savedId !== null}
+        <div class="cooked-row">
+          <button class="cooked-btn" onclick={oncooked}>🍳 I cooked this</button>
+          {#if cookedCount > 0}
+            <span class="cooked-stat">
+              Cooked {cookedCount} {cookedCount === 1 ? 'time' : 'times'}{lastCooked
+                ? ` · last ${fmtCookedDate(lastCooked)}`
+                : ''}
+            </span>
+          {/if}
+        </div>
+      {/if}
+
       <div class="servings" role="group" aria-label="Servings">
         <button onclick={() => (servings = Math.max(1, servings - 1))} aria-label="Fewer servings">−</button>
         <span>{servings} {servings === 1 ? 'serving' : 'servings'}</span>
@@ -405,6 +469,22 @@
           {/if}
         </section>
       </div>
+
+      {#if savedId !== null}
+        <section class="notes" aria-label="Your notes">
+          <h2>Your notes</h2>
+          <textarea
+            class="notes-input"
+            bind:value={noteText}
+            oninput={onNoteInput}
+            onblur={onNoteBlur}
+            rows="3"
+            aria-label="Your notes for this recipe"
+            placeholder="Tweaks, swaps, what worked… kept on this device."
+          ></textarea>
+          {#if noteSaved}<span class="notes-saved" role="status">Saved ✓</span>{/if}
+        </section>
+      {/if}
 
       <button class="again" onclick={onback}>← Back</button>
     {/if}

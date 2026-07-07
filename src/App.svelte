@@ -1,7 +1,16 @@
 <script lang="ts">
   import type { Recipe } from './lib/types'
   import { parseRecipeFromHtml } from './lib/parse'
-  import { saveRecipe, removeRecipe, findBySource, jarCount, type SavedRecipe } from './lib/db'
+  import {
+    saveRecipe,
+    removeRecipe,
+    findBySource,
+    jarCount,
+    getRecipeById,
+    setNotes,
+    markCooked,
+    type SavedRecipe,
+  } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
   import { consumeShareHash } from './lib/share'
   import { reportParseIssue } from './lib/telemetry'
@@ -23,7 +32,32 @@
   let blocked = $state(false)
   let recipe = $state<Recipe | null>(null)
   let savedId = $state<number | null>(null)
+  let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
+
+  // Keep the saved entry (notes / cook stats) in sync with whatever is saved.
+  $effect(() => {
+    const id = savedId
+    if (id === null) {
+      savedEntry = null
+      return
+    }
+    getRecipeById(id).then((entry) => {
+      if (savedId === id) savedEntry = entry ?? null
+    })
+  })
+
+  async function handleSaveNotes(notes: string) {
+    if (savedId === null) return
+    await setNotes(savedId, notes)
+    if (savedEntry) savedEntry = { ...savedEntry, notes }
+  }
+
+  async function handleCooked() {
+    if (savedId === null) return
+    const cookedCount = await markCooked(savedId)
+    if (savedEntry) savedEntry = { ...savedEntry, cookedCount, lastCooked: Date.now() }
+  }
 
   async function refreshCount() {
     count = await jarCount()
@@ -235,7 +269,18 @@
       </p>
     </section>
   {:else if view === 'recipe' && recipe}
-    <RecipeView {recipe} {savedId} onsave={handleSave} onremove={handleRemove} onback={goBack} />
+    <RecipeView
+      {recipe}
+      {savedId}
+      notes={savedEntry?.notes ?? ''}
+      cookedCount={savedEntry?.cookedCount ?? 0}
+      lastCooked={savedEntry?.lastCooked ?? null}
+      onsave={handleSave}
+      onremove={handleRemove}
+      onback={goBack}
+      onsavenotes={handleSaveNotes}
+      oncooked={handleCooked}
+    />
   {:else if view === 'jar'}
     <JarView onopen={openSaved} onchanged={refreshCount} />
     <p class="jar-footer">

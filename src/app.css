@@ -757,6 +757,79 @@ footer {
   color: var(--basil-deep);
 }
 
+/* "I cooked this" + cook stats */
+.cooked-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.cooked-btn {
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+  cursor: pointer;
+}
+
+.cooked-btn:hover {
+  border-color: var(--basil);
+  background: var(--sheet);
+}
+
+.cooked-stat {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Personal notes */
+.notes {
+  margin-top: 24px;
+}
+
+.notes h2 {
+  font-family: Georgia, serif;
+  color: var(--basil-deep);
+  font-size: 1.15rem;
+  margin: 0 0 10px;
+}
+
+.notes-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+  resize: vertical;
+}
+
+.notes-input:focus-visible {
+  outline: 3px solid var(--basil);
+  border-color: var(--basil);
+}
+
+.notes-saved {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--basil-deep);
+  font-weight: 600;
+}
+
+@media (pointer: coarse) {
+  .cooked-btn {
+    min-height: 40px;
+  }
+}
+
 /* Jar view */
 .jar-title {
   font-family: Georgia, serif;
@@ -982,7 +1055,8 @@ footer {
   .reset-servings,
   .again,
   .backup-bar,
-  .timer-chip {
+  .timer-chip,
+  .cooked-row {
     display: none !important;
   }
 

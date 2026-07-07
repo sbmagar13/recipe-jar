@@ -228,7 +228,7 @@
               <small>
                 {entry.recipe.ingredients.length} {entry.recipe.ingredients.length === 1 ? 'ingredient' : 'ingredients'}
                 {#if entry.recipe.totalTime}· {entry.recipe.totalTime}{/if}
-                · saved {fmtDate(entry.savedAt)}
+                {#if entry.cookedCount}· cooked {entry.cookedCount}×{:else}· saved {fmtDate(entry.savedAt)}{/if}
               </small>
             </span>
           </button>

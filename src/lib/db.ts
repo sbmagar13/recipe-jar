@@ -8,6 +8,12 @@ export interface SavedRecipe {
   savedAt: number
   tags: string[]
   recipe: Recipe
+  /** The cook's own scribbles ("used less sugar"). */
+  notes?: string
+  /** Timestamp of the last "I cooked this". */
+  lastCooked?: number
+  /** How many times they've cooked it. */
+  cookedCount?: number
 }
 
 export const db = new Dexie('recipe-jar') as Dexie & {
@@ -67,13 +73,40 @@ export async function findBySource(sourceUrl: string): Promise<SavedRecipe | und
   return db.recipes.where('sourceUrl').equals(sourceUrl).first()
 }
 
+/** Load a single saved entry by id (to read its notes / cooked stats). */
+export async function getRecipeById(id: number): Promise<SavedRecipe | undefined> {
+  return db.recipes.get(id)
+}
+
+/** Save the cook's personal notes on a jar entry. */
+export async function setNotes(id: number, notes: string): Promise<void> {
+  await db.recipes.update(id, { notes })
+}
+
+/** Record an "I cooked this": bump the count and stamp the time. */
+export async function markCooked(id: number): Promise<number> {
+  const entry = await db.recipes.get(id)
+  const cookedCount = (entry?.cookedCount ?? 0) + 1
+  await db.recipes.update(id, { cookedCount, lastCooked: Date.now() })
+  return cookedCount
+}
+
 const BACKUP_FORMAT = 'recipe-jar-backup'
 
 interface Backup {
   format: string
   version: number
   exportedAt: number
-  recipes: Array<{ title: string; sourceUrl: string; savedAt: number; tags: string[]; recipe: Recipe }>
+  recipes: Array<{
+    title: string
+    sourceUrl: string
+    savedAt: number
+    tags: string[]
+    recipe: Recipe
+    notes?: string
+    lastCooked?: number
+    cookedCount?: number
+  }>
 }
 
 /** The whole jar as a single JSON string: the one-file backup a user keeps or shares. */
@@ -89,6 +122,9 @@ export async function exportJar(): Promise<string> {
       savedAt: e.savedAt,
       tags: e.tags ?? [],
       recipe: e.recipe,
+      ...(e.notes ? { notes: e.notes } : {}),
+      ...(e.lastCooked ? { lastCooked: e.lastCooked } : {}),
+      ...(e.cookedCount ? { cookedCount: e.cookedCount } : {}),
     })),
   }
   return JSON.stringify(backup, null, 2)
@@ -123,6 +159,9 @@ export async function importJar(json: string): Promise<{ added: number; skipped:
       savedAt: entry.savedAt ?? Date.now(),
       tags: entry.tags ?? [],
       recipe: entry.recipe,
+      notes: entry.notes ?? '',
+      lastCooked: entry.lastCooked,
+      cookedCount: entry.cookedCount ?? 0,
     } as unknown as SavedRecipe)
     added++
   }
