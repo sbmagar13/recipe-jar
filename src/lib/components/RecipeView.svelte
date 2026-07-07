@@ -2,6 +2,7 @@
   import type { Recipe } from '../types'
   import { formatQty } from '../quantity'
   import { recipeShareUrl } from '../share'
+  import { extractStepTimers, formatClock } from '../timers'
 
   interface Props {
     recipe: Recipe
@@ -29,6 +30,7 @@
     void recipe
     servings = recipe.servings ?? 4
     checked = new Set()
+    timers = {}
   })
 
   // Cook mode: keep the screen awake while at the stove.
@@ -87,6 +89,78 @@
     const end = ing.qtyEnd !== null ? `–${formatQty(ing.qtyEnd * factor)}` : ''
     return `${q}${end} ${ing.rest}`
   }
+
+  // --- Step timers: turn "simmer 20 minutes" into a tappable kitchen timer ---
+  const stepTimers = $derived(recipe.steps.map((s) => extractStepTimers(s)))
+  type TimerState = { remaining: number; running: boolean; done: boolean }
+  let timers = $state<Record<string, TimerState>>({})
+  let audioCtx: AudioContext | null = null
+
+  function ensureAudio() {
+    // Must be created/resumed from a user gesture (iOS unlocks audio that way).
+    try {
+      const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      audioCtx ??= new Ctor()
+      if (audioCtx.state === 'suspended') audioCtx.resume()
+    } catch {
+      /* no audio; timers still count down visually */
+    }
+  }
+
+  function fireAlarm() {
+    try {
+      if (audioCtx) {
+        const now = audioCtx.currentTime
+        for (let i = 0; i < 3; i++) {
+          const o = audioCtx.createOscillator()
+          const g = audioCtx.createGain()
+          o.type = 'sine'
+          o.frequency.value = 880
+          o.connect(g)
+          g.connect(audioCtx.destination)
+          const t = now + i * 0.3
+          g.gain.setValueAtTime(0.0001, t)
+          g.gain.exponentialRampToValueAtTime(0.3, t + 0.02)
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22)
+          o.start(t)
+          o.stop(t + 0.24)
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    navigator.vibrate?.([200, 100, 200, 100, 200])
+  }
+
+  function toggleTimer(key: string, seconds: number) {
+    ensureAudio()
+    const cur = timers[key]
+    if (!cur || cur.done) {
+      timers = { ...timers, [key]: { remaining: seconds, running: true, done: false } }
+    } else {
+      timers = { ...timers, [key]: { ...cur, running: !cur.running } }
+    }
+  }
+
+  // One ticker drives every timer. Reads/writes happen in the callback (not the
+  // effect's sync body), so this effect sets up once and isn't re-run each tick.
+  $effect(() => {
+    const id = setInterval(() => {
+      let changed = false
+      const next: Record<string, TimerState> = { ...timers }
+      for (const k in next) {
+        const t = next[k]
+        if (t.running && t.remaining > 0) {
+          const remaining = t.remaining - 1
+          next[k] = { remaining, running: remaining > 0, done: remaining === 0 }
+          if (remaining === 0) fireAlarm()
+          changed = true
+        }
+      }
+      if (changed) timers = next
+    }, 1000)
+    return () => clearInterval(id)
+  })
 
   // Share the whole card as a link (no server: the recipe rides in the hash).
   let shareMsg = $state('')
@@ -177,8 +251,35 @@
         <h2>Method</h2>
         {#if recipe.steps.length > 0}
           <ol class="steps">
-            {#each recipe.steps as step}
-              <li>{step}</li>
+            {#each recipe.steps as step, i}
+              <li>
+                <span class="step-text">{step}</span>
+                {#each stepTimers[i] as t, j (j)}
+                  {@const key = `${i}-${j}`}
+                  <button
+                    class="timer-chip"
+                    class:running={timers[key]?.running}
+                    class:paused={timers[key] && !timers[key].running && !timers[key].done}
+                    class:done={timers[key]?.done}
+                    onclick={() => toggleTimer(key, t.seconds)}
+                    aria-label={timers[key]?.done
+                      ? `Timer finished for ${t.label}. Restart`
+                      : timers[key]?.running
+                        ? `Pause timer, ${formatClock(timers[key].remaining)} remaining`
+                        : timers[key]
+                          ? `Resume timer, ${formatClock(timers[key].remaining)} remaining`
+                          : `Start a ${t.label} timer`}
+                  >
+                    {#if timers[key]?.done}
+                      ✓ Done
+                    {:else if timers[key]}
+                      {timers[key].running ? '⏸' : '▶'} {formatClock(timers[key].remaining)}
+                    {:else}
+                      ⏱ {t.label}
+                    {/if}
+                  </button>
+                {/each}
+              </li>
             {/each}
           </ol>
         {:else}
