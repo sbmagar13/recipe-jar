@@ -8,7 +8,7 @@ Recipe Jar turns any recipe link into a clean card — ingredients and steps,
 nothing else — and keeps it on **your** device. No account, no ads, no limits,
 free forever. This is the first public release.
 
-**Try it:** https://recipejar.sagarbudhathoki.com · **Self-host it:** [README → Self-host](https://github.com/sbmagar13/recipe-jar#self-host)
+**Try it:** https://recipejar.app · **Self-host it:** [README → Self-host](https://github.com/sbmagar13/recipe-jar#self-host)
 
 ## Highlights
 

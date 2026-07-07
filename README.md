@@ -13,7 +13,7 @@ server. That is why it is free forever: there is nothing for anyone to pay for.
 
 No account. No ads. Works offline. Open source.
 
-👉 **[recipejar.sagarbudhathoki.com](https://recipejar.sagarbudhathoki.com)**
+👉 **[recipejar.app](https://recipejar.app)**
 
 ![Recipe Jar demo](launch/recipe-jar-demo.gif)
 

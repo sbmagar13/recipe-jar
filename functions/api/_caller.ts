@@ -5,6 +5,7 @@
 // Sec-Fetch-Site/Referer regardless of host, so this is only a belt-and-braces
 // allowlist for the (rare) cross-origin-but-ours case.
 const ALLOWED_ORIGINS = new Set([
+  'https://recipejar.app',
   'https://recipejar.sagarbudhathoki.com',
   'https://recipe-jar.pages.dev',
 ])

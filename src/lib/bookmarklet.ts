@@ -10,9 +10,8 @@ interface ImportPayload {
 
 // The one canonical home the bookmarklet always opens, so imported recipes land
 // in the same jar no matter which page you dragged the bookmarklet from.
-// Overridable at build time (e.g. if the site moves to recipejar.app).
-const CANONICAL_ORIGIN =
-  import.meta.env.VITE_CANONICAL_ORIGIN || 'https://recipejar.sagarbudhathoki.com'
+// Overridable at build time (e.g. for a self-hosted copy).
+const CANONICAL_ORIGIN = import.meta.env.VITE_CANONICAL_ORIGIN || 'https://recipejar.app'
 
 export function appOrigin(): string {
   const h = location.hostname

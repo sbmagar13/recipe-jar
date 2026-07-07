@@ -3,11 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // Send the default *.pages.dev URL to the canonical domain so everyone's
+      // Send the non-canonical hosts to the canonical domain so everyone's
       // jar lives on one origin (browser storage is per-domain). Runs before the
       // app loads; preview hash-URLs are untouched, so testing still works.
-      if (location.hostname === 'recipe-jar.pages.dev') {
-        location.replace('https://recipejar.sagarbudhathoki.com' + location.pathname + location.search + location.hash)
+      if (
+        location.hostname === 'recipe-jar.pages.dev' ||
+        location.hostname === 'recipejar.sagarbudhathoki.com' ||
+        location.hostname === 'www.recipejar.app'
+      ) {
+        location.replace('https://recipejar.app' + location.pathname + location.search + location.hash)
       }
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
