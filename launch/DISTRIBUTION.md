@@ -32,7 +32,7 @@ Core posts (HN, r/InternetIsBeautiful, WhatsApp, video caption) live in
 | Wed Jul 8, evening | AlternativeTo + SaaSHub | Listings, 10 min |
 | **Thu Jul 9** | Product Hunt live (09:01 CEST) | Maker comment ready; reply all day |
 | Thu Jul 9 | r/selfhosted | After PH is live, so the listing looks alive |
-| Thu Jul 9 | r/Cooking modmail | Ask permission now; post whenever they say yes |
+| Thu Jul 9 | ~~r/Cooking~~ | CLOSED: mods declined Jul 8. Do not post. |
 | **Fri Jul 10** | r/opensource + r/coolgithubprojects | |
 | **Sat Jul 11** | r/webdev **Showoff Saturday thread** + r/SideProject | |
 | **Sun Jul 12** | r/sveltejs + r/degoogle + r/Nepal | |
