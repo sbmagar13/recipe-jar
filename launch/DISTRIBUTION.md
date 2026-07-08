@@ -175,7 +175,7 @@ don't repost.
 > Recipe Jar: paste a recipe URL, get a clean card, keep it on-device.
 > Svelte 5 PWA, no backend, 70 KB gz, MIT. https://recipejar.app
 
-### r/Cooking — modmail FIRST (their rules require it). Send this:
+### r/Cooking — CLOSED: mods declined (asked Jul 8, "not allowed, thanks for asking first"). Do not post.
 > Hi mods, I built a free, open-source recipe keeper (no account, no ads,
 > recipes stored on the user's own device): https://recipejar.app. Would a
 > single post sharing it be okay, and if so, with what flair? Happy to follow
