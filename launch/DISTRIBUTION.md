@@ -50,7 +50,7 @@ Schedule it in advance (Launches → New). Thursday is a solid PH day, and it
 lands the day after the HN wave, spacing the traffic across the week.
 
 - **Name:** Recipe Jar
-- **Tagline:** Just the recipe, yours to keep — free, offline, unlimited
+- **Tagline:** Just the recipe, yours to keep. Free, offline, unlimited
 - **Topics:** Cooking, Open Source, Privacy, Productivity
 - **Links:** https://recipejar.app + the GitHub repo
 - **Gallery:** `public/og.png` first, then screenshots (`docs/screenshots/`:
@@ -58,7 +58,7 @@ lands the day after the HN wave, spacing the traffic across the week.
 
 **Description (~250 chars):**
 > Paste a recipe link, get a clean card: ingredients and steps, nothing else.
-> Save unlimited recipes — they live in your browser, not on a server. Cook mode
+> Save unlimited recipes; they live in your browser, not on a server. Cook mode
 > with step timers. No account, no ads, works offline, open source (MIT).
 
 **Maker's first comment:**
@@ -69,7 +69,7 @@ lands the day after the HN wave, spacing the traffic across the week.
 > Recipe Jar is the boring, honest version: paste a link → clean card → keep it
 > forever. Everything is stored in your own browser (IndexedDB), so there's no
 > account, no server copy of your data, and nothing that costs me money per
-> user — which is why "free forever" is the architecture, not a pricing page.
+> user. That's why "free forever" is the architecture, not a pricing page.
 >
 > Nice bits: cook mode shows one step at a time and keeps your screen awake,
 > "simmer 20 mins" becomes a tappable timer, servings scale with real fraction
@@ -77,7 +77,7 @@ lands the day after the HN wave, spacing the traffic across the week.
 >
 > It's MIT-licensed and self-hostable in one click. Honest scope: it keeps
 > recipes; it doesn't plan meals or count calories. If a site fails to import,
-> tell me — parser fixes are my favourite bug reports.
+> tell me; parser fixes are my favourite bug reports.
 
 ---
 
@@ -88,16 +88,16 @@ day you post — they change. If a post gets removed, message the mods politely,
 don't repost.
 
 ### r/selfhosted (Thu) — flair: Release
-**Title:** Recipe Jar — a local-first recipe keeper, MIT, self-hostable as one static site + one tiny proxy function
+**Title:** Recipe Jar: a local-first recipe keeper, MIT, self-hostable as one static site + one tiny proxy function
 
 > Paste a recipe URL, get a clean card (ingredients + steps), save unlimited
-> recipes. Everything lives in the user's browser via IndexedDB — there's no
+> recipes. Everything lives in the user's browser via IndexedDB. There's no
 > database, no accounts, and nothing to back up server-side by design.
 >
 > Self-hosting is deliberately boring: `npm run build` gives you a static
 > `dist/` that runs anywhere; the only server code is a stateless fetch proxy
 > (Cloudflare Pages Function) with SSRF guards and caller checks. No Docker
-> needed — though the proxy does want a CF-workers-compatible runtime; the
+> needed, though the proxy does want a CF-workers-compatible runtime; the
 > in-browser bookmarklet import works even without it.
 >
 > Live: https://recipejar.app · Repo: https://github.com/sbmagar13/recipe-jar
@@ -107,7 +107,7 @@ don't repost.
 > very welcome.
 
 ### r/opensource (Fri)
-**Title:** Recipe Jar (MIT) — paste a recipe link, get a clean card, save unlimited recipes on-device. No account, no ads, no server-side storage
+**Title:** Recipe Jar (MIT): paste a recipe link, get a clean card, save unlimited recipes on-device. No account, no ads, no server-side storage
 
 > The "just the recipe" tools went freemium (20–40 saves, then pay). This one
 > can't, structurally: recipes are stored in the browser (IndexedDB), the site
@@ -116,16 +116,16 @@ don't repost.
 >
 > Svelte 5 + TypeScript + Dexie, ~70 KB gzipped, WCAG-audited, e2e-tested on
 > four engines. The most useful contribution is teaching the parser a recipe
-> site that doesn't import — CONTRIBUTING.md has a step-by-step guide.
+> site that doesn't import; CONTRIBUTING.md has a step-by-step guide.
 >
 > Live: https://recipejar.app · Repo: https://github.com/sbmagar13/recipe-jar
 
 ### r/coolgithubprojects (Fri) — must link the repo, flair: TYPESCRIPT
-**Title:** recipe-jar — local-first recipe keeper: paste a URL, get a clean card, unlimited on-device saves (Svelte 5, MIT)
+**Title:** recipe-jar: local-first recipe keeper. Paste a URL, get a clean card, unlimited on-device saves (Svelte 5, MIT)
 **Link post to:** https://github.com/sbmagar13/recipe-jar
 
 ### r/SideProject (Sat)
-**Title:** I built a recipe keeper that can't rug-pull you — your recipes live in your browser, not my server
+**Title:** I built a recipe keeper that can't rug-pull you: your recipes live in your browser, not my server
 
 > Every recipe tool eventually caps free saves and charges. I wanted one that
 > physically can't: Recipe Jar stores everything in your own browser, the site
@@ -135,16 +135,16 @@ don't repost.
 > Paste a link → clean card → cook mode with step timers. Works offline,
 > installable, no account. Open source (MIT).
 >
-> https://recipejar.app — would love feedback, especially recipe sites that
+> https://recipejar.app. Would love feedback, especially recipe sites that
 > fail to import.
 
 ### r/sveltejs (Sun)
-**Title:** Recipe Jar — a Svelte 5 PWA with no backend: runes, Dexie, and one Cloudflare function (MIT)
+**Title:** Recipe Jar, a Svelte 5 PWA with no backend: runes, Dexie, and one Cloudflare function (MIT)
 
 > Things that might interest this sub: full runes ($state/$derived/$effect +
 > snippets), shared reactive state in a `.svelte.ts` module for the SW update
 > prompt, Dexie for unlimited on-device storage (gotcha: $state proxies throw
-> DataCloneError in IndexedDB — JSON round-trip at the db boundary), history
+> DataCloneError in IndexedDB; JSON round-trip at the db boundary), history
 > API wired to in-app views so Back works in the installed PWA, and a
 > CI-enforced 78 KB gzip budget. Playwright e2e across 4 engines + axe a11y
 > audits.
@@ -152,7 +152,7 @@ don't repost.
 > Live: https://recipejar.app · Repo: https://github.com/sbmagar13/recipe-jar
 
 ### r/degoogle (Sun)
-**Title:** FOSS alternative for recipe keeping — no account, no cloud, recipes stay on your device
+**Title:** FOSS alternative for recipe keeping: no account, no cloud, recipes stay on your device
 
 > Recipe Jar: paste a recipe link, get a clean card, save unlimited recipes in
 > your browser's own storage. No sign-in, no analytics profile, no server copy
@@ -160,10 +160,10 @@ don't repost.
 > https://recipejar.app
 
 ### r/Nepal (Sun) — flair: Technology
-**Title:** Made a free recipe keeper — works offline on any phone, no account needed (Nepali UI coming)
+**Title:** Made a free recipe keeper: works offline on any phone, no account needed (Nepali UI coming)
 
 > Namaste! I'm a Nepali dev living in Sweden. I built a free tool that turns
-> any recipe link into a clean card — just ingredients and steps, no ads, no
+> any recipe link into a clean card: just ingredients and steps, no ads, no
 > life story. It saves recipes on your own phone, so it works even with spotty
 > internet once loaded, and it's free forever (no account, nothing to buy).
 >
@@ -172,11 +172,11 @@ don't repost.
 > https://recipejar.app
 
 ### r/webdev (Sat) — ONLY inside the Showoff Saturday thread
-> Recipe Jar — paste a recipe URL, get a clean card, keep it on-device.
+> Recipe Jar: paste a recipe URL, get a clean card, keep it on-device.
 > Svelte 5 PWA, no backend, 70 KB gz, MIT. https://recipejar.app
 
 ### r/Cooking — modmail FIRST (their rules require it). Send this:
-> Hi mods — I built a free, open-source recipe keeper (no account, no ads,
+> Hi mods, I built a free, open-source recipe keeper (no account, no ads,
 > recipes stored on the user's own device): https://recipejar.app. Would a
 > single post sharing it be okay, and if so, with what flair? Happy to follow
 > whatever format you prefer, or skip it entirely if it's not a fit. Thanks!
@@ -192,7 +192,7 @@ r/privacy, r/PrivacyGuides, r/recipes, r/EatCheapAndHealthy, r/food.
 > 1/ Recipe sites: 1,400 words of life story, 4 ads, then the recipe.
 > "Clean-up" tools: free for 20 saves, then pay.
 >
-> I built the version that can't do that to you. Recipe Jar — just the recipe,
+> I built the version that can't do that to you. Recipe Jar: just the recipe,
 > yours to keep. Free forever, no account. https://recipejar.app
 
 > 2/ Paste a link → clean card → save unlimited recipes. They live in YOUR
@@ -200,11 +200,11 @@ r/privacy, r/PrivacyGuides, r/recipes, r/EatCheapAndHealthy, r/food.
 > timer and keeps your screen awake at the stove. Works offline. 🧵
 
 > 3/ It's open source (MIT) and self-hostable in one click. No ads, no
-> analytics profile, no server copy of your data — the architecture IS the
+> analytics profile, no server copy of your data. The architecture IS the
 > privacy policy. Repo: https://github.com/sbmagar13/recipe-jar
 
 ### Mastodon (fosstodon.org — FOSS crowd, use the tags)
-> Recipe Jar — a local-first recipe keeper. Paste a link, get a clean card
+> Recipe Jar: a local-first recipe keeper. Paste a link, get a clean card
 > (ingredients + steps, nothing else), save unlimited recipes in your own
 > browser. No account, no ads, works offline, MIT.
 >
@@ -238,11 +238,11 @@ r/privacy, r/PrivacyGuides, r/recipes, r/EatCheapAndHealthy, r/food.
 
 **160-char blurb:**
 > Paste a recipe link, get a clean card. Save unlimited recipes on your own
-> device — no account, no ads, works offline. Free forever, open source (MIT).
+> device. No account, no ads, works offline. Free forever, open source (MIT).
 
 **50-word blurb:**
-> Recipe Jar turns any recipe link into a clean card — ingredients and steps,
-> nothing else — and keeps it in your browser's own storage. Unlimited saves,
+> Recipe Jar turns any recipe link into a clean card (ingredients and steps,
+> nothing else) and keeps it in your browser's own storage. Unlimited saves,
 > serving scaler, cook mode with step timers, offline PWA, one-file backup.
 > No account, no ads, no server-side storage. MIT-licensed and self-hostable.
 

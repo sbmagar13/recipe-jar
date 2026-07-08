@@ -46,7 +46,7 @@ Technical bits:
   tappable countdown), and a focus cook mode shows one step at a time with a
   screen wake lock.
 - Sharing a recipe encodes the whole thing into the URL hash (base64url), so a
-  shared link carries the recipe itself — nothing is stored server-side.
+  shared link carries the recipe itself; nothing is stored server-side.
 - Svelte + Dexie + Workbox, ~70 KB gzipped, MIT. One tiny Cloudflare Pages
   Function as a stateless fetch proxy; no other backend, no database.
 - Backup is a single JSON file (or copy/paste text, for in-app browsers that
@@ -85,7 +85,7 @@ this was my gift to everyone who cooks."
 ## Social story caption (short, over a screenshot or the demo clip)
 
 This week I quietly launched something I've been building. Today's my
-birthday — so here's the reveal: a free recipe keeper, my gift to everyone
+birthday, so here's the reveal: a free recipe keeper, my gift to everyone
 who cooks. 🫙 No ads, no account, yours forever. recipejar.app
 
 ## WhatsApp (08:30) — to family and friends
@@ -99,7 +99,7 @@ https://recipejar.app. Sharing it is the only gift I want.
 ## LinkedIn (optional) — attach the demo video
 
 Today is my birthday. Instead of receiving a gift, I made one, for everyone who
-cooks — and it's been quietly live all week.
+cooks. And it's been quietly live all week.
 
 You know the drill. You open a recipe and get a life story, four ad breaks, two
 pop-ups, and an autoplaying video before the ingredients. And the tools that fix
