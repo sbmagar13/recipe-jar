@@ -1,0 +1,8 @@
+# Cloudflare Pages response headers (this file ships in dist/ and Pages reads it).
+# Deliberately no CSP: the app inlines its redirect script and the risk/benefit
+# of a strict CSP two days before launch is wrong. Revisit post-launch.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
