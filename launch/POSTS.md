@@ -9,8 +9,9 @@ Timing (CEST):
 - 14:30 Show HN (this is early morning US East, when HN is most active)
 - 15:00 Reddit (r/InternetIsBeautiful, r/Cooking only if a mod okays it) + post the
   video to TikTok / Reels / Shorts
-- Through the week: launch boards (Uneed, Microlaunch, Fazier). Skip Product Hunt
-  as a strategy; it is a badge now, not a channel.
+- Tue Jul 14: Product Hunt (scheduled 12:01 AM PT — kit in DISTRIBUTION.md).
+- Through the week: everything else — the full channel-by-channel plan, with
+  per-community copy and timing, is in [DISTRIBUTION.md](DISTRIBUTION.md).
 
 ---
 
