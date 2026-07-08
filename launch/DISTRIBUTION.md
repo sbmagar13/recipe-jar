@@ -18,34 +18,36 @@ Core posts (HN, r/InternetIsBeautiful, WhatsApp, video caption) live in
 
 ---
 
-## Calendar
+## Calendar — mass push THIS WEEK; Jul 13 stays free for the personal reveal
 
 | When | Channel | Note |
 |---|---|---|
-| **NOW (this week)** | Uneed queue | Free queue fills up days ahead — submit today, pick July 13 |
-| NOW | Product Hunt draft | Create the launch, schedule for July 14, 12:01 AM PT |
-| NOW | Accounts check | PH, Uneed, Bluesky, Mastodon (fosstodon.org), Indie Hackers |
-| **Mon Jul 13** | X + Bluesky + Mastodon | 08:00 CEST, with the demo video |
-| Mon Jul 13 | Show HN | 14:30 CEST (copy in POSTS.md) |
-| Mon Jul 13 | r/InternetIsBeautiful | 15:00 CEST (copy in POSTS.md) |
-| Mon Jul 13 | TikTok / Shorts | 15:00 CEST (caption in POSTS.md) |
-| Mon Jul 13 | AlternativeTo + SaaSHub | Listings, 10 min |
-| **Tue Jul 14** | Product Hunt goes live | Maker comment ready at 09:00 CEST; reply all day |
-| Tue Jul 14 | r/selfhosted | After PH is live, so the listing looks alive |
-| **Wed Jul 15** | r/opensource + r/coolgithubprojects | |
-| **Thu Jul 16** | r/SideProject + r/sveltejs | |
-| **Fri Jul 17** | r/degoogle + r/Nepal | |
-| **Sat Jul 18** | r/webdev | **Showoff Saturday thread only** |
-| Week 1 | Microlaunch, Fazier, Peerlist, opensourcealternative.to, selfh.st | Directories, ~30 min total |
-| Week 2 | dev.to technical write-up, Indie Hackers | Second wave |
-| **~Nov 13, 2026** | awesome-selfhosted PR | Their rule: first release must be 4+ months old. v1.0.0 on Jul 13 starts the clock — calendar it. |
+| **Wed Jul 8 (today), morning** | Tag v1.0.0 + GitHub Release | The repo must look launched before the traffic arrives |
+| Wed Jul 8, morning | Phone QA (PHONE-QA.md) | 15 min — do it BEFORE the HN post, not after |
+| Wed Jul 8, morning | Uneed submit + PH draft + accounts | Uneed queue fills days ahead; schedule PH for **Thu Jul 9, 12:01 AM PT** |
+| Wed Jul 8, midday | X + Bluesky + Mastodon | With the demo video |
+| Wed Jul 8, **14:30 CEST** | **Show HN** | Copy in POSTS.md; stay at the keyboard 2–3h for comments |
+| Wed Jul 8, 15:00 | r/InternetIsBeautiful | Copy in POSTS.md |
+| Wed Jul 8, 15:00 | TikTok / Shorts | Caption in POSTS.md |
+| Wed Jul 8, evening | AlternativeTo + SaaSHub | Listings, 10 min |
+| **Thu Jul 9** | Product Hunt live (09:01 CEST) | Maker comment ready; reply all day |
+| Thu Jul 9 | r/selfhosted | After PH is live, so the listing looks alive |
+| Thu Jul 9 | r/Cooking modmail | Ask permission now; post whenever they say yes |
+| **Fri Jul 10** | r/opensource + r/coolgithubprojects | |
+| **Sat Jul 11** | r/webdev **Showoff Saturday thread** + r/SideProject | |
+| **Sun Jul 12** | r/sveltejs + r/degoogle + r/Nepal | |
+| Sun Jul 12 | Microlaunch, Fazier, opensourcealternative.to, selfh.st | Directories, ~30 min total |
+| **Mon Jul 13** | 🎂 Personal reveal only (stories, WhatsApp, LinkedIn) | Phase 2 in POSTS.md — no new community posts today |
+| Mon Jul 13 | Peerlist Launchpad | Launches Mondays — fits the reveal day |
+| Week 2 | dev.to technical write-up, Indie Hackers retro | Second wave |
+| **~Nov 8, 2026** | awesome-selfhosted PR | Their rule: first release must be 4+ months old. v1.0.0 today starts the clock — calendar it. |
 
 ---
 
-## Product Hunt (launch Tue Jul 14, 12:01 AM PT)
+## Product Hunt (launch Thu Jul 9, 12:01 AM PT)
 
-Schedule it in advance (Launches → New). Monday is the most crowded day on PH;
-Tuesday gets you better placement and spaces your launch traffic across two days.
+Schedule it in advance (Launches → New). Thursday is a solid PH day, and it
+lands the day after the HN wave, spacing the traffic across the week.
 
 - **Name:** Recipe Jar
 - **Tagline:** Just the recipe, yours to keep — free, offline, unlimited
@@ -85,7 +87,7 @@ One post per sub, staggered per the calendar. Read each sub's sidebar rules the
 day you post — they change. If a post gets removed, message the mods politely,
 don't repost.
 
-### r/selfhosted (Tue) — flair: Release
+### r/selfhosted (Thu) — flair: Release
 **Title:** Recipe Jar — a local-first recipe keeper, MIT, self-hostable as one static site + one tiny proxy function
 
 > Paste a recipe URL, get a clean card (ingredients + steps), save unlimited
@@ -104,7 +106,7 @@ don't repost.
 > Honest scope: keeps recipes, nothing else. Feedback and parser-gap reports
 > very welcome.
 
-### r/opensource (Wed)
+### r/opensource (Fri)
 **Title:** Recipe Jar (MIT) — paste a recipe link, get a clean card, save unlimited recipes on-device. No account, no ads, no server-side storage
 
 > The "just the recipe" tools went freemium (20–40 saves, then pay). This one
@@ -118,11 +120,11 @@ don't repost.
 >
 > Live: https://recipejar.app · Repo: https://github.com/sbmagar13/recipe-jar
 
-### r/coolgithubprojects (Wed) — must link the repo, flair: TYPESCRIPT
+### r/coolgithubprojects (Fri) — must link the repo, flair: TYPESCRIPT
 **Title:** recipe-jar — local-first recipe keeper: paste a URL, get a clean card, unlimited on-device saves (Svelte 5, MIT)
 **Link post to:** https://github.com/sbmagar13/recipe-jar
 
-### r/SideProject (Thu)
+### r/SideProject (Sat)
 **Title:** I built a recipe keeper that can't rug-pull you — your recipes live in your browser, not my server
 
 > Every recipe tool eventually caps free saves and charges. I wanted one that
@@ -136,7 +138,7 @@ don't repost.
 > https://recipejar.app — would love feedback, especially recipe sites that
 > fail to import.
 
-### r/sveltejs (Thu)
+### r/sveltejs (Sun)
 **Title:** Recipe Jar — a Svelte 5 PWA with no backend: runes, Dexie, and one Cloudflare function (MIT)
 
 > Things that might interest this sub: full runes ($state/$derived/$effect +
@@ -149,7 +151,7 @@ don't repost.
 >
 > Live: https://recipejar.app · Repo: https://github.com/sbmagar13/recipe-jar
 
-### r/degoogle (Fri)
+### r/degoogle (Sun)
 **Title:** FOSS alternative for recipe keeping — no account, no cloud, recipes stay on your device
 
 > Recipe Jar: paste a recipe link, get a clean card, save unlimited recipes in
@@ -157,7 +159,7 @@ don't repost.
 > to subpoena. Honors DNT/GPC. MIT-licensed and self-hostable.
 > https://recipejar.app
 
-### r/Nepal (Fri) — flair: Technology
+### r/Nepal (Sun) — flair: Technology
 **Title:** Made a free recipe keeper — works offline on any phone, no account needed (Nepali UI coming)
 
 > Namaste! I'm a Nepali dev living in Sweden. I built a free tool that turns

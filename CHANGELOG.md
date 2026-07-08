@@ -4,10 +4,9 @@ All notable changes to Recipe Jar are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project aims to
 follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] — 2026-07-08
 
-The first public release (**1.0.0**) is planned for launch. It brings together
-everything below.
+The first public release. Everything below ships on day one.
 
 ### Added
 
@@ -34,4 +33,4 @@ everything below.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/commits/main
+[1.0.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.0.0
