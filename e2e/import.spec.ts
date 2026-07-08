@@ -39,7 +39,7 @@ test('the import help screen offers a draggable bookmarklet', async ({ page }) =
   await page.goto('/')
   await page.getByRole('button', { name: /Recipe from a blocked site/ }).click()
 
-  const bm = page.getByRole('link', { name: /Save to Recipe Jar/ })
+  const bm = page.getByRole('link', { name: /Recipe Jar/ })
   await expect(bm).toBeVisible()
   const href = await bm.getAttribute('href')
   expect(href).toContain('javascript:')

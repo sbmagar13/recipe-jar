@@ -21,13 +21,16 @@
   </p>
 
   <p class="bm-wrap">
-    <a class="bm-button" href={code} onclick={(e) => e.preventDefault()}>🫙 Save to Recipe Jar</a>
+    <!-- The link text becomes the bookmark's name, so keep it short: a long name
+         truncates in the bookmarks bar, and the emoji stands in for a favicon
+         (browsers won't attach icons to javascript: bookmarks). -->
+    <a class="bm-button" href={code} onclick={(e) => e.preventDefault()}>🫙 Recipe Jar</a>
   </p>
 
   <ol class="import-steps">
     <li>Drag the green button above onto your browser's bookmarks bar.</li>
     <li>Open any recipe page, even one that failed here.</li>
-    <li>Click the <strong>Save to Recipe Jar</strong> bookmark. The recipe opens here, ready to keep.</li>
+    <li>Click the <strong>🫙 Recipe Jar</strong> bookmark. The recipe opens here, ready to keep.</li>
   </ol>
 
   <figure class="bm-demo">

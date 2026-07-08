@@ -18,7 +18,7 @@ try {
   // 2. Bookmarklet points at the canonical domain, not localhost.
   await page.goto(base, { waitUntil: 'load' }) // fresh load resets the SPA to home
   await page.getByRole('button', { name: /Recipe from a blocked site/ }).click()
-  const href = (await page.getByRole('link', { name: /Save to Recipe Jar/ }).getAttribute('href')) ?? ''
+  const href = (await page.getByRole('link', { name: /Recipe Jar/ }).getAttribute('href')) ?? ''
   const host = new URL(base).host
   const pointsToCanonical = href.includes(host)
   const pointsToLocalhost = href.includes('localhost')
