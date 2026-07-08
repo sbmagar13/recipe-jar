@@ -11,8 +11,9 @@ test('About & Privacy is reachable from the footer and links back', async ({ pag
 
   // Copyright / opt-out contact is present as a mailto link.
   await expect(page.getByRole('link', { name: /@/ }).first()).toHaveAttribute('href', /^mailto:/)
-  // Source link is present.
-  await expect(page.getByRole('link', { name: /github\.com/ })).toBeVisible()
+  // Source link and the maker's profile are both present.
+  await expect(page.getByRole('link', { name: /github\.com\/sbmagar13\/recipe-jar/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Who made this/ })).toBeVisible()
 
   await page.getByRole('button', { name: '← Back' }).click()
   await expect(page.getByRole('heading', { name: /Just the recipe/ })).toBeVisible()
