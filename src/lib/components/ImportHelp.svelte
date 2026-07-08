@@ -48,6 +48,13 @@
   </figure>
 
   <p class="hint">
+    Want the bookmark to show the real jar icon? Bookmark this page normally first
+    (the browser fetches our icon), then edit that bookmark and replace its address
+    with the button's code (right-click the green button, copy link). The icon stays.
+    Thanks to a launch-day Redditor for this trick.
+  </p>
+
+  <p class="hint">
     On a phone, or don't have a bookmarks bar? Copy the recipe text and
     <button class="linklike" onclick={ontypein}>paste it to auto-fill</button>,
     then fix anything that looks off. A one-tap phone version is coming with the installable app.
