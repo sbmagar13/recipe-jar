@@ -1100,6 +1100,24 @@ footer {
   margin-bottom: 10px;
 }
 
+.bm-demo {
+  margin: 22px 0;
+  max-width: 640px;
+}
+
+.bm-demo video {
+  width: 100%;
+  border: 1.5px solid var(--rule);
+  border-radius: 10px;
+  background: #000;
+}
+
+.bm-demo figcaption {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 /* Backup bar */
 .backup-bar {
   display: flex;
@@ -1142,7 +1160,8 @@ footer {
   .timer-chip,
   .cooked-row,
   .tags-edit,
-  .tag-filters {
+  .tag-filters,
+  .bm-demo {
     display: none !important;
   }
 

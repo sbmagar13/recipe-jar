@@ -30,6 +30,20 @@
     <li>Click the <strong>Save to Recipe Jar</strong> bookmark. The recipe opens here, ready to keep.</li>
   </ol>
 
+  <figure class="bm-demo">
+    <!-- Served from our own origin: no third-party embed, nothing loads until play. -->
+    <video
+      src="/bookmarklet-demo.mp4"
+      poster="/bookmarklet-demo-poster.jpg"
+      controls
+      muted
+      playsinline
+      preload="none"
+      aria-label="Silent half-minute demo: the Save to Recipe Jar button is dragged to the bookmarks bar, a blocked recipe page is opened, and clicking the bookmark imports it as a clean card"
+    ></video>
+    <figcaption>The whole flow, half a minute start to finish.</figcaption>
+  </figure>
+
   <p class="hint">
     On a phone, or don't have a bookmarks bar? Copy the recipe text and
     <button class="linklike" onclick={ontypein}>paste it to auto-fill</button>,
