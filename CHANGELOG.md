@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-09
+
 ### Added
 
 - Search-engine basics: a real `robots.txt` and `sitemap.xml`, `WebApplication`
@@ -70,6 +72,7 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.1.1
 [1.1.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.1.0
 [1.0.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.0.0
