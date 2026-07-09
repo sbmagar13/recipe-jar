@@ -33,6 +33,29 @@ test('steps forward and back through the recipe, then finishes', async ({ page }
   await expect(page.getByRole('button', { name: '▶ Cook' })).toBeVisible()
 })
 
+test('a timer set on one step stays visible from other steps, and tapping it jumps back', async ({ page }) => {
+  // Start the 20 min timer that lives on step 1.
+  await page.getByRole('button', { name: 'Start a 20 min timer' }).click()
+  // While on its own step it is not a "background" timer, so the tray stays away.
+  await expect(page.getByRole('group', { name: 'Timers running on other steps' })).toBeHidden()
+
+  // Move off step 1: the still-running timer follows into the cross-step tray.
+  await page.getByRole('button', { name: 'Next' }).click()
+  await expect(page.getByText('Step 2 of 5')).toBeVisible()
+
+  const tray = page.getByRole('group', { name: 'Timers running on other steps' })
+  await expect(tray).toBeVisible()
+  const trayTimer = tray.getByRole('button', { name: /Step 1 timer.*Go to step 1/ })
+  await expect(trayTimer).toBeVisible()
+
+  // Tapping the tray timer jumps back to its step, where its own chip is now a
+  // Pause control and the tray (nothing running elsewhere) disappears again.
+  await trayTimer.click()
+  await expect(page.getByText('Step 1 of 5')).toBeVisible()
+  await expect(page.getByRole('button', { name: /Pause timer/ })).toBeVisible()
+  await expect(page.getByRole('group', { name: 'Timers running on other steps' })).toBeHidden()
+})
+
 test('ingredients can be peeked without leaving the step', async ({ page }) => {
   await page.getByRole('button', { name: 'Show ingredients' }).click()
   await expect(page.getByText('1 cup red lentils, rinsed')).toBeVisible()

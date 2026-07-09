@@ -4,3 +4,6 @@
 export const CONTACT_EMAIL = 'sbmagar.sbm99@gmail.com'
 export const REPO_URL = 'https://github.com/sbmagar13/recipe-jar'
 export const LEGAL_UPDATED = 'July 2026'
+
+// The running app version, injected from package.json at build time.
+export const APP_VERSION = __APP_VERSION__

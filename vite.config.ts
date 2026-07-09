@@ -1,8 +1,14 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig, type Plugin, type ViteDevServer } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const MAX_BYTES = 3_000_000
+
+// Single source of truth for the app version: package.json. Injected at build
+// time as __APP_VERSION__ so the About page and the in-app "What's new" note
+// always match the release that was shipped.
+const APP_VERSION = (JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8')) as { version: string }).version
 
 // Dev-only mirror of functions/api/proxy.ts so `npm run dev` works without wrangler.
 function devProxy(): Plugin {
@@ -56,6 +62,9 @@ function devProxy(): Plugin {
 }
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(APP_VERSION),
+  },
   plugins: [
     svelte(),
     devProxy(),

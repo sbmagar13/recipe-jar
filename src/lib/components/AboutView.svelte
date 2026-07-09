@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CONTACT_EMAIL, REPO_URL, LEGAL_UPDATED } from '../site'
+  import { CONTACT_EMAIL, REPO_URL, LEGAL_UPDATED, APP_VERSION } from '../site'
 
   interface Props {
     onback: () => void
@@ -71,5 +71,8 @@
     or <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
   </p>
 
-  <p class="updated">Last updated: {LEGAL_UPDATED} · Questions? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
+  <p class="updated">
+    Recipe Jar v{APP_VERSION} · Last updated: {LEGAL_UPDATED} · Questions?
+    <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+  </p>
 </section>

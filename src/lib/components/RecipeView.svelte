@@ -220,6 +220,25 @@
     if (stepIndex > 0) stepIndex--
   }
 
+  // Jump straight to a step — e.g. tapping a background timer in the cook tray.
+  function goToStep(i: number) {
+    if (i >= 0 && i < recipe.steps.length) stepIndex = i
+  }
+
+  // Every timer still going on a step you're not currently looking at. Drives the
+  // always-visible tray in cook mode, so a timer set on an earlier step can't get
+  // lost when you move on. Tapping one jumps back to its step.
+  type ActiveTimer = { key: string; stepIndex: number; label: string; state: TimerState }
+  const bgTimers = $derived<ActiveTimer[]>(
+    Object.entries(timers)
+      .flatMap(([key, state]) => {
+        const [i, j] = key.split('-').map(Number)
+        const meta = stepTimers[i]?.[j]
+        return meta && i !== stepIndex ? [{ key, stepIndex: i, label: meta.label, state }] : []
+      })
+      .sort((a, b) => a.stepIndex - b.stepIndex || a.key.localeCompare(b.key))
+  )
+
   // Arrow keys / space / Escape while cooking (desktop + keyboards).
   $effect(() => {
     if (!cooking) return
@@ -377,6 +396,27 @@
           <div class="cook-progress-fill" style="width:{((stepIndex + 1) / recipe.steps.length) * 100}%"></div>
         </div>
         <p class="cook-counter">Step {stepIndex + 1} of {recipe.steps.length}</p>
+        {#if bgTimers.length > 0}
+          <div class="cook-tray" role="group" aria-label="Timers running on other steps">
+            {#each bgTimers as at (at.key)}
+              <button
+                class="tray-timer"
+                class:running={at.state.running}
+                class:paused={!at.state.running && !at.state.done}
+                class:done={at.state.done}
+                onclick={() => goToStep(at.stepIndex)}
+                aria-label={at.state.done
+                  ? `Step ${at.stepIndex + 1} timer finished. Go to step ${at.stepIndex + 1}`
+                  : at.state.running
+                    ? `Step ${at.stepIndex + 1} timer, ${formatClock(at.state.remaining)} remaining. Go to step ${at.stepIndex + 1}`
+                    : `Step ${at.stepIndex + 1} timer paused, ${formatClock(at.state.remaining)} remaining. Go to step ${at.stepIndex + 1}`}
+              >
+                <span class="tray-step">Step {at.stepIndex + 1}</span>
+                <span class="tray-time">{at.state.done ? '✓' : formatClock(at.state.remaining)}</span>
+              </button>
+            {/each}
+          </div>
+        {/if}
         <p class="cook-step">{recipe.steps[stepIndex]}</p>
         {#if stepTimers[stepIndex].length > 0}
           <div class="cook-timers">

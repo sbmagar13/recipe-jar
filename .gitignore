@@ -37,3 +37,6 @@ playwright-report/
 _shot-*.ts
 _scratch-*.ts
 .claude/settings.local.json
+
+# transient release-notes file written by scripts/release.mjs
+.release-notes.tmp.md
