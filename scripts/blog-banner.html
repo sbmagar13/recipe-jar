@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1600px; height: 840px; }
+  body {
+    background: #f6f3ec;
+    font-family: Georgia, serif;
+    color: #2a2a25;
+    position: relative;
+    overflow: hidden;
+  }
+  /* subtle top rule accents echoing the app card */
+  .frame {
+    position: absolute;
+    inset: 56px;
+    border: 2px solid #ddd7c7;
+    border-radius: 24px;
+    background: #fcfaf4;
+    box-shadow: 0 30px 80px rgba(39,82,49,0.10);
+    padding: 84px 96px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .top { display: flex; align-items: center; gap: 22px; }
+  .brand { font-size: 34px; font-weight: bold; color: #275231; letter-spacing: 0.2px; }
+  .kicker {
+    margin-left: auto;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 20px;
+    color: #726c5c;
+    letter-spacing: 1px;
+  }
+  h1 {
+    font-size: 84px;
+    line-height: 1.06;
+    color: #275231;
+    max-width: 1180px;
+    letter-spacing: -0.5px;
+  }
+  h1 .accent { color: #b8402e; }
+  .sub {
+    font-size: 30px;
+    color: #726c5c;
+    max-width: 1000px;
+    line-height: 1.4;
+  }
+  .foot {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 22px;
+    color: #726c5c;
+  }
+  .foot .dot { color: #ddd7c7; }
+  .foot .site { color: #33663d; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="top">
+      <svg width="52" height="60" viewBox="0 0 64 72" aria-hidden="true">
+        <rect x="18" y="6" width="28" height="8" rx="2" fill="#33663d" />
+        <path d="M16 18 Q12 24 12 32 V58 Q12 66 20 66 H44 Q52 66 52 58 V32 Q52 24 48 18 Z" fill="none" stroke="#33663d" stroke-width="4" />
+        <line x1="20" y1="34" x2="44" y2="34" stroke="#b8402e" stroke-width="3" stroke-linecap="round" />
+        <line x1="20" y1="46" x2="40" y2="46" stroke="#33663d" stroke-width="3" stroke-linecap="round" opacity="0.5" />
+      </svg>
+      <span class="brand">Recipe Jar</span>
+      <span class="kicker">BUILD NOTES</span>
+    </div>
+
+    <h1>Free forever is an <span class="accent">architecture</span>,<br>not a pricing decision</h1>
+
+    <div class="sub">
+      A recipe keeper with no backend: local-first storage, one stateless proxy,
+      and why the cost curve is the whole feature.
+    </div>
+
+    <div class="foot">
+      <span>Svelte 5</span><span class="dot">·</span>
+      <span>IndexedDB</span><span class="dot">·</span>
+      <span>Cloudflare</span><span class="dot">·</span>
+      <span>MIT</span>
+      <span class="dot">·</span>
+      <span class="site">recipejar.app</span>
+    </div>
+  </div>
+</body>
+</html>
