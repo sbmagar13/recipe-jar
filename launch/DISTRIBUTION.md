@@ -162,7 +162,7 @@ don't repost.
 ### r/Nepal (Sun) — flair: Technology
 **Title:** Made a free recipe keeper: works offline on any phone, no account needed (Nepali UI coming)
 
-> Namaste! I'm a Nepali dev living in Sweden. I built a free tool that turns
+> Namaste! I'm a dev here in Kathmandu. I built a free tool that turns
 > any recipe link into a clean card: just ingredients and steps, no ads, no
 > life story. It saves recipes on your own phone, so it works even with spotty
 > internet once loaded, and it's free forever (no account, nothing to buy).

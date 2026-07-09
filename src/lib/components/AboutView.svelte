@@ -64,7 +64,7 @@
 
   <h2>Who made this</h2>
   <p>
-    One person: Sagar Budhathoki, a Nepali DevOps engineer living in Sweden, who got tired of
+    One person: Sagar Budhathoki, a DevOps engineer in Kathmandu, Nepal, who got tired of
     scrolling past life stories to reach the ingredients. No company, no investors, no growth
     team. That's also why nothing here needs to make money. Say hi:
     <a href="https://github.com/sbmagar13" target="_blank" rel="noopener">github.com/sbmagar13</a>

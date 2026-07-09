@@ -6,6 +6,21 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Search-engine basics: a real `robots.txt` and `sitemap.xml`, `WebApplication`
+  structured data (JSON-LD), and a no-JavaScript content fallback so crawlers and
+  no-JS visitors get real text and a heading.
+
+### Changed
+
+- Keyword-focused, dash-free page title and meta description, so the landing page
+  targets what people actually search (recipe keeper, no account, no ads, offline).
+
+### Fixed
+
+- Corrected the maker's location in the About page (Kathmandu, Nepal).
+
 ## [1.1.0] - 2026-07-09
 
 ### Added

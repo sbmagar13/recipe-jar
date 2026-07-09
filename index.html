@@ -20,16 +20,16 @@
     <meta name="theme-color" content="#33663d" />
     <meta
       name="description"
-      content="Paste a recipe link, get a clean card: ingredients and steps, nothing else. Save unlimited recipes on your own device. No account, no ads, free forever."
+      content="A clean recipe keeper with no account or ads. Paste a link to save any recipe as a card of just the ingredients and steps, kept on your device and available offline. Free forever."
     />
-    <title>Recipe Jar — just the recipe, yours to keep</title>
+    <title>Recipe Jar: just the recipe, no account or ads</title>
 
     <!-- Social unfurl (WhatsApp, Messenger, Facebook, Twitter). Scrapers want
          absolute URLs for og:url/og:image, so these name the canonical domain. -->
     <link rel="canonical" href="https://recipejar.app/" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://recipejar.app/" />
-    <meta property="og:title" content="Recipe Jar — just the recipe, yours to keep" />
+    <meta property="og:title" content="Recipe Jar: just the recipe, yours to keep" />
     <meta
       property="og:description"
       content="Paste a recipe link, get a clean card. Save unlimited recipes on your own device. No account, no ads, free forever."
@@ -38,15 +38,53 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Recipe Jar — just the recipe, yours to keep" />
+    <meta name="twitter:title" content="Recipe Jar: just the recipe, yours to keep" />
     <meta
       name="twitter:description"
       content="Paste a recipe link, get a clean card. Save unlimited recipes on your own device. Free forever."
     />
     <meta name="twitter:image" content="https://recipejar.app/og.png" />
+
+    <!-- Structured data: lets search engines describe the app (free, category,
+         maker) and can earn a richer result. Kept in the static head so crawlers
+         read it without executing the app. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Recipe Jar",
+        "url": "https://recipejar.app/",
+        "description": "A clean, local-first recipe keeper. Paste a link to save any recipe as a card of just the ingredients and steps, kept on your own device and available offline. No account, no ads, free forever.",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript. Installable and works offline as a PWA.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "isAccessibleForFree": true,
+        "author": {
+          "@type": "Person",
+          "name": "Sagar Budhathoki",
+          "url": "https://github.com/sbmagar13"
+        },
+        "license": "https://opensource.org/licenses/MIT"
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <div style="max-width:640px;margin:3rem auto;padding:0 1.25rem;font-family:Georgia,serif;line-height:1.6;color:#2a2a25">
+        <h1>Recipe Jar: just the recipe, yours to keep</h1>
+        <p>
+          Recipe Jar is a free, local-first recipe keeper. Paste a recipe link and it gives you a
+          clean card of just the ingredients and steps, saved on your own device. No account, no
+          ads, works offline.
+        </p>
+        <p>
+          It needs JavaScript to run. Learn more at
+          <a href="https://github.com/sbmagar13/recipe-jar">the open-source project on GitHub</a>.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
