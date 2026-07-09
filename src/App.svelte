@@ -269,7 +269,7 @@
         </p>
       {/if}
       <p class="hint">
-        Works with most recipe sites, in any language. Your recipes never touch a server.<br />
+        Works with most recipe sites, in any language. Your saved recipes stay on your device.<br />
         <button class="linklike" onclick={() => go('add')}>Type in one of your own</button>
         &nbsp;·&nbsp;
         <button class="linklike" onclick={() => go('import')}>Recipe from a blocked site?</button>
