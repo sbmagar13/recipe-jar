@@ -119,7 +119,9 @@ step('Stamp CHANGELOG')
 const clPath = join(ROOT, 'CHANGELOG.md')
 let cl = readFileSync(clPath, 'utf-8')
 
-const unreleasedHead = /^## \[Unreleased\]\s*$/m
+// [ \t]* (not \s*) so the match never swallows the newline / blank line that
+// follows the heading, which would glue the new version onto its first section.
+const unreleasedHead = /^## \[Unreleased\][ \t]*$/m
 if (!unreleasedHead.test(cl)) die('CHANGELOG.md has no "## [Unreleased]" heading to stamp.')
 
 // Grab what is under Unreleased so we can sanity-check it is non-empty and reuse

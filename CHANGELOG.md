@@ -7,6 +7,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ## [1.1.0] - 2026-07-09
+
 ### Added
 
 - **Cross-step timer tray in cook mode.** Every timer running on a step you are
