@@ -346,7 +346,7 @@
     }
     try {
       await navigator.clipboard.writeText(link)
-      shareMsg = 'Link copied — send it to anyone.'
+      shareMsg = 'Link copied. Send it to anyone.'
     } catch {
       shareMsg = 'Could not copy the link.'
     }

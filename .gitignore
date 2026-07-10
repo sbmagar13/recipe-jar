@@ -40,3 +40,6 @@ _scratch-*.ts
 
 # transient release-notes file written by scripts/release.mjs
 .release-notes.tmp.md
+
+# demo videos live in docs/screenshots but are too big to track (keep PNGs, not video)
+docs/screenshots/*.mp4

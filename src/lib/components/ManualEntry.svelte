@@ -66,7 +66,7 @@
       <textarea
         bind:value={pasteText}
         rows="5"
-        placeholder="Paste the whole recipe here — title, ingredients, and steps — then click Auto-fill."
+        placeholder="Paste the whole recipe here: title, ingredients, and steps. Then click Auto-fill."
       ></textarea>
     </label>
     <button type="button" class="save" onclick={autofillFromPaste} disabled={!pasteText.trim()}>

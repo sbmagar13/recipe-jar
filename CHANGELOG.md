@@ -6,6 +6,10 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Small copy polish across the paste screen, share toast, and About page.
+
 ## [1.1.1] - 2026-07-09
 
 ### Added

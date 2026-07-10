@@ -20,7 +20,7 @@
     <li>
       <strong>Your recipes stay on your device.</strong> Everything you save lives in your
       browser's own storage (IndexedDB). It is never uploaded to us, and there is no account and
-      no server-side copy. Clear your browser and it's gone — so keep a backup from
+      no server-side copy. Clear your browser and it's gone, so keep a backup from
       <strong>My Jar</strong> now and then.
     </li>
     <li>
@@ -46,14 +46,14 @@
     Recipe Jar is a reader tool, like a browser's reading mode. When you ask for a link, the
     recipe is fetched from its original site <em>at your request</em> and shown to you; every card
     links back to the source and keeps the author's name. Recipe Jar does not host, index, or
-    republish anyone's recipes — the copy that's saved is <em>your</em> copy, on your own device,
+    republish anyone's recipes. The copy that's saved is <em>your</em> copy, on your own device,
     for personal use.
   </p>
   <p>
     If you own a recipe site and would like it excluded, email
     <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and it will be added to a fetch
     blocklist. Recipe names, ingredients, and the recipes you type in yourself belong to their
-    respective authors — please cook, share, and credit kindly.
+    respective authors. Please cook, share, and credit kindly.
   </p>
 
   <h2>Open source</h2>
