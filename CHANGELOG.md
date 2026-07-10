@@ -6,6 +6,11 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Tapping a finished timer now only stops its alarm; it no longer restarts the
+  timer by accident. Use the reset button (↺) to clear it back to the start.
+
 ## [1.3.0] - 2026-07-10
 
 ### Added

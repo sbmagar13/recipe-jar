@@ -183,9 +183,12 @@
 
   function toggleTimer(key: string, seconds: number) {
     ensureAudio()
-    silenceAlarm(key) // tapping a ringing timer stops its alarm
+    silenceAlarm(key) // a tap always hushes the alarm first
     const cur = timers[key]
-    if (!cur || cur.done) {
+    // A finished timer: the tap only stops the alarm, it does not restart. Use
+    // the reset (↺) to clear it, then tap the fresh chip to run it again.
+    if (cur?.done) return
+    if (!cur) {
       timers = { ...timers, [key]: { remaining: seconds, running: true, done: false } }
     } else {
       timers = { ...timers, [key]: { ...cur, running: !cur.running } }
@@ -428,7 +431,7 @@
       class:done={timers[key]?.done}
       onclick={() => toggleTimer(key, t.seconds)}
       aria-label={timers[key]?.done
-        ? `Timer finished for ${t.label}. Restart`
+        ? `Timer finished for ${t.label}. Tap to stop the alarm`
         : timers[key]?.running
           ? `Pause timer, ${formatClock(timers[key].remaining)} remaining`
           : timers[key]
