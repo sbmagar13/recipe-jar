@@ -369,6 +369,43 @@ main {
   }
 }
 
+/* A timer chip plus its little reset button, kept together on one line. */
+.timer-chip-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: baseline;
+}
+
+.timer-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.timer-reset:hover {
+  border-color: var(--basil);
+  color: var(--basil-deep);
+}
+
+@media (pointer: coarse) {
+  .timer-reset {
+    width: 34px;
+    height: 34px;
+  }
+}
+
 .again {
   margin-top: 24px;
   background: none;

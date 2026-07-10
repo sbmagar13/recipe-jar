@@ -13,6 +13,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.2.0': [
     'Turn any recipe into a shopping list. Tick off what you already have, then copy or share what is left, scaled to the servings you picked.',
   ],
+  '1.3.0': [
+    'Kitchen timers got friendlier. A finished timer now keeps a gentle alarm going until you come back or tap it, instead of one short beep that is easy to miss. And every timer has a reset button for when you start it too early.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

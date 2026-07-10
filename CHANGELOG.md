@@ -6,6 +6,18 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Timer reset.** Every running or finished step timer now has a small reset
+  button (↺) that clears it back to the start, for when you begin one too early.
+
+### Changed
+
+- **A finished timer keeps alerting** until you come back to it, instead of one
+  short beep that is easy to miss once you have stepped away. It sounds a gentle
+  alarm every couple of seconds; tapping the timer, hitting reset, or moving
+  between steps in cook mode stops it.
+
 ## [1.2.1] - 2026-07-10
 
 ### Fixed

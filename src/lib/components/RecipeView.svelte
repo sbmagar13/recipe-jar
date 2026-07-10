@@ -53,6 +53,7 @@
     servings = recipe.servings ?? 4
     checked = new Set()
     timers = {}
+    alarming = {}
     cooking = false
     showShopping = false
     stepIndex = 0
@@ -126,6 +127,14 @@
   let timers = $state<Record<string, TimerState>>({})
   let audioCtx: AudioContext | null = null
 
+  // Keys of finished timers still sounding their alarm, each with a countdown of
+  // how many more beeps to give before we stop (so a left-open tab can't ring
+  // forever). A finished timer keeps gently alerting until you tap it or move
+  // steps, so a single short beep missed while you stepped away doesn't leave
+  // the pot going.
+  let alarming = $state<Record<string, number>>({})
+  const ALARM_BEEPS = 48 // ~2 minutes at one alert every 2.5s
+
   function ensureAudio() {
     // Must be created/resumed from a user gesture (iOS unlocks audio that way).
     try {
@@ -162,8 +171,19 @@
     navigator.vibrate?.([200, 100, 200, 100, 200])
   }
 
+  function silenceAlarm(key: string) {
+    if (!(key in alarming)) return
+    const { [key]: _drop, ...rest } = alarming
+    alarming = rest
+  }
+
+  function silenceAllAlarms() {
+    if (Object.keys(alarming).length > 0) alarming = {}
+  }
+
   function toggleTimer(key: string, seconds: number) {
     ensureAudio()
+    silenceAlarm(key) // tapping a ringing timer stops its alarm
     const cur = timers[key]
     if (!cur || cur.done) {
       timers = { ...timers, [key]: { remaining: seconds, running: true, done: false } }
@@ -172,23 +192,56 @@
     }
   }
 
+  // Clear a timer back to its untouched "⏱ label" state, for when you start one
+  // too early or just want it gone.
+  function resetTimer(key: string) {
+    silenceAlarm(key)
+    if (!(key in timers)) return
+    const { [key]: _drop, ...rest } = timers
+    timers = rest
+  }
+
   // One ticker drives every timer. Reads/writes happen in the callback (not the
   // effect's sync body), so this effect sets up once and isn't re-run each tick.
   $effect(() => {
     const id = setInterval(() => {
       let changed = false
       const next: Record<string, TimerState> = { ...timers }
+      const justFinished: string[] = []
       for (const k in next) {
         const t = next[k]
         if (t.running && t.remaining > 0) {
           const remaining = t.remaining - 1
           next[k] = { remaining, running: remaining > 0, done: remaining === 0 }
-          if (remaining === 0) fireAlarm()
+          if (remaining === 0) justFinished.push(k)
           changed = true
         }
       }
       if (changed) timers = next
+      if (justFinished.length > 0) {
+        fireAlarm() // the first alert, right as it finishes
+        const nextAlarming = { ...alarming }
+        for (const k of justFinished) nextAlarming[k] = ALARM_BEEPS
+        alarming = nextAlarming
+      }
     }, 1000)
+    return () => clearInterval(id)
+  })
+
+  // Keep a finished timer gently alarming until it's acknowledged: one alert
+  // every 2.5s, each ring counting down so a forgotten tab won't ring forever.
+  $effect(() => {
+    const id = setInterval(() => {
+      const keys = Object.keys(alarming)
+      if (keys.length === 0) return
+      fireAlarm()
+      const next: Record<string, number> = {}
+      for (const k of keys) {
+        const left = alarming[k] - 1
+        if (left > 0) next[k] = left
+      }
+      alarming = next
+    }, 2500)
     return () => clearInterval(id)
   })
 
@@ -210,6 +263,7 @@
   }
 
   function stopCooking() {
+    silenceAllAlarms()
     cooking = false
     if (lockFromCook) {
       lockFromCook = false
@@ -218,16 +272,19 @@
   }
 
   function nextStep() {
+    silenceAllAlarms() // moving on counts as "I've got it"
     if (stepIndex < recipe.steps.length - 1) stepIndex++
     else stopCooking()
   }
 
   function prevStep() {
+    silenceAllAlarms()
     if (stepIndex > 0) stepIndex--
   }
 
   // Jump straight to a step — e.g. tapping a background timer in the cook tray.
   function goToStep(i: number) {
+    silenceAllAlarms()
     if (i >= 0 && i < recipe.steps.length) stepIndex = i
   }
 
@@ -363,28 +420,40 @@
 
 {#snippet timerChip(i: number, j: number, t: { label: string; seconds: number })}
   {@const key = `${i}-${j}`}
-  <button
-    class="timer-chip"
-    class:running={timers[key]?.running}
-    class:paused={timers[key] && !timers[key].running && !timers[key].done}
-    class:done={timers[key]?.done}
-    onclick={() => toggleTimer(key, t.seconds)}
-    aria-label={timers[key]?.done
-      ? `Timer finished for ${t.label}. Restart`
-      : timers[key]?.running
-        ? `Pause timer, ${formatClock(timers[key].remaining)} remaining`
-        : timers[key]
-          ? `Resume timer, ${formatClock(timers[key].remaining)} remaining`
-          : `Start a ${t.label} timer`}
-  >
-    {#if timers[key]?.done}
-      ✓ Done
-    {:else if timers[key]}
-      {timers[key].running ? '⏸' : '▶'} {formatClock(timers[key].remaining)}
-    {:else}
-      ⏱ {t.label}
+  <span class="timer-chip-group">
+    <button
+      class="timer-chip"
+      class:running={timers[key]?.running}
+      class:paused={timers[key] && !timers[key].running && !timers[key].done}
+      class:done={timers[key]?.done}
+      onclick={() => toggleTimer(key, t.seconds)}
+      aria-label={timers[key]?.done
+        ? `Timer finished for ${t.label}. Restart`
+        : timers[key]?.running
+          ? `Pause timer, ${formatClock(timers[key].remaining)} remaining`
+          : timers[key]
+            ? `Resume timer, ${formatClock(timers[key].remaining)} remaining`
+            : `Start a ${t.label} timer`}
+    >
+      {#if timers[key]?.done}
+        ✓ Done
+      {:else if timers[key]}
+        {timers[key].running ? '⏸' : '▶'} {formatClock(timers[key].remaining)}
+      {:else}
+        ⏱ {t.label}
+      {/if}
+    </button>
+    {#if timers[key]}
+      <button
+        class="timer-reset"
+        onclick={() => resetTimer(key)}
+        aria-label={`Reset ${t.label} timer`}
+        title="Reset timer"
+      >
+        ↺
+      </button>
     {/if}
-  </button>
+  </span>
 {/snippet}
 
 <article class="card" class:cooking>

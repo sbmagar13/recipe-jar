@@ -56,6 +56,16 @@ test('a timer set on one step stays visible from other steps, and tapping it jum
   await expect(page.getByRole('group', { name: 'Timers running on other steps' })).toBeHidden()
 })
 
+test('a running timer can be reset back to the start', async ({ page }) => {
+  await page.getByRole('button', { name: 'Start a 20 min timer' }).click()
+  await expect(page.getByRole('button', { name: /Pause timer/ })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Reset 20 min timer' }).click()
+  // Back to the untouched "start" state, and the reset control is gone.
+  await expect(page.getByRole('button', { name: 'Start a 20 min timer' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Reset 20 min timer' })).toBeHidden()
+})
+
 test('ingredients can be peeked without leaving the step', async ({ page }) => {
   await page.getByRole('button', { name: 'Show ingredients' }).click()
   await expect(page.getByText('1 cup red lentils, rinsed')).toBeVisible()
