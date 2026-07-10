@@ -56,6 +56,34 @@ function pathOf(file?: string): string {
   }
 }
 
+const COUNT_ENDPOINT = '/api/count'
+
+/**
+ * Anonymous, aggregate product counter. It tells the server only that "an event
+ * happened" (e.g. a recipe was saved), with no identifier, no content, and no
+ * hostname. It exists so the maker can see rough usage trends, nothing more.
+ * Honors Do-Not-Track / Global Privacy Control via trackingAllowed(), and can
+ * never throw. Unlike reportParseIssue it does not dedupe: each real save counts.
+ */
+export function countEvent(event: 'save'): void {
+  try {
+    if (!trackingAllowed()) return
+    const body = JSON.stringify({ event })
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(COUNT_ENDPOINT, new Blob([body], { type: 'application/json' }))
+    } else {
+      fetch(COUNT_ENDPOINT, {
+        method: 'POST',
+        body,
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+      }).catch(() => {})
+    }
+  } catch {
+    /* a counter must never break the app */
+  }
+}
+
 /** Report that a fetched page couldn't be turned into a recipe. Hostname only. */
 export function reportParseIssue(url: string, reason = 'no-recipe'): void {
   let host = ''

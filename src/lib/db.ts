@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { Recipe } from './types'
 import { autoRequestPersistOnce } from './storage'
+import { countEvent } from './telemetry'
 
 export interface SavedRecipe {
   id: number
@@ -48,13 +49,16 @@ export async function saveRecipe(recipe: Recipe): Promise<number> {
       return existing.id
     }
   }
-  return db.recipes.add({
+  const id = await db.recipes.add({
     title: clean.title,
     sourceUrl: clean.sourceUrl,
     savedAt: Date.now(),
     tags: [],
     recipe: clean,
   } as unknown as SavedRecipe)
+  // A new recipe entered a jar: bump the anonymous, aggregate saves counter.
+  countEvent('save')
+  return id
 }
 
 export async function removeRecipe(id: number): Promise<void> {
