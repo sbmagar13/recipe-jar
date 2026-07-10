@@ -6,6 +6,12 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- On narrow phones, the recipe action buttons (Save, Share, Shopping list, Cook)
+  now wrap onto a second row instead of overflowing. The Cook button no longer
+  gets pushed out of view once the shopping list button is present.
+
 ## [1.2.0] - 2026-07-10
 
 ### Added

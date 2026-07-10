@@ -768,9 +768,16 @@ footer {
 /* Card actions */
 .card-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 12px;
+}
+
+/* Keep each action on one line; let the row wrap instead of squishing a button
+   into a tall stack of words (matters on narrow phones with 4-5 actions). */
+.card-actions > button {
+  white-space: nowrap;
 }
 
 .save {
