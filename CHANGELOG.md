@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-07-10
+
 ### Added
 
 - **Shopping list.** Turn any recipe into a checkable shopping list, scaled to
@@ -93,7 +95,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.2.0
 [1.1.2]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.1.2
 [1.1.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.1.1
 [1.1.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.1.0
