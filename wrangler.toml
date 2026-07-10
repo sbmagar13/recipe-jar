@@ -1,3 +1,7 @@
 name = "recipe-jar"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-07-01"
+
+[[kv_namespaces]]
+binding = "STATS"
+id = "3e557e97aece488b98e1b4fa0418108f"
