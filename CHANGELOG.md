@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-07-10
+
 ### Fixed
 
 - Tapping a finished timer now only stops its alarm; it no longer restarts the
@@ -122,7 +124,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.3.1
 [1.3.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.3.0
 [1.2.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.2.1
 [1.2.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.2.0
