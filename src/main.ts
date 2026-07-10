@@ -7,13 +7,9 @@ import { initPwaUpdates } from './lib/pwa.svelte'
 initTelemetry()
 initPwaUpdates()
 
-// Ask the browser to keep our IndexedDB data from being evicted. This is the
-// core "your recipes stay" promise; installed PWAs are granted it automatically.
-if (navigator.storage?.persist) {
-  navigator.storage.persisted().then((already) => {
-    if (!already) navigator.storage.persist().catch(() => {})
-  })
-}
+// Persistence (keeping IndexedDB from being evicted) is requested from the first
+// save instead of here, so prompt-showing browsers don't nag on every cold boot.
+// See autoRequestPersistOnce in ./lib/storage.
 
 const app = mount(App, {
   target: document.getElementById('app')!,

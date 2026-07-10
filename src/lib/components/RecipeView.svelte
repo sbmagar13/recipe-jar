@@ -3,6 +3,7 @@
   import { formatQty } from '../quantity'
   import { recipeShareUrl } from '../share'
   import { extractStepTimers, formatClock } from '../timers'
+  import ShoppingList from './ShoppingList.svelte'
 
   interface Props {
     recipe: Recipe
@@ -38,6 +39,7 @@
   let servings = $state(0)
   let checked = $state<Set<number>>(new Set())
   let imageOk = $state(true)
+  let showShopping = $state(false)
 
   // Reset the image guard when the recipe changes.
   $effect(() => {
@@ -52,6 +54,7 @@
     checked = new Set()
     timers = {}
     cooking = false
+    showShopping = false
     stepIndex = 0
     noteDirty = false
     noteSaved = false
@@ -113,6 +116,9 @@
     const end = ing.qtyEnd !== null ? `–${formatQty(ing.qtyEnd * factor)}` : ''
     return `${q}${end} ${ing.rest}`
   }
+
+  // Ingredient lines, scaled to the chosen servings, for the shopping list.
+  const shoppingItems = $derived(recipe.ingredients.map(scaledLine))
 
   // --- Step timers: turn "simmer 20 minutes" into a tappable kitchen timer ---
   const stepTimers = $derived(recipe.steps.map((s) => extractStepTimers(s)))
@@ -450,6 +456,14 @@
           {/if}
         </div>
       </div>
+    {:else if showShopping}
+      <ShoppingList
+        title={recipe.title}
+        {servings}
+        items={shoppingItems}
+        storageKey={savedId !== null ? `recipe-jar:shop:${savedId}` : null}
+        onclose={() => (showShopping = false)}
+      />
     {:else}
       <div class="card-actions">
         {#if savedId === null}
@@ -459,6 +473,9 @@
           <button class="remove" onclick={onremove}>Remove</button>
         {/if}
         <button class="share" onclick={shareRecipe}>↗ Share</button>
+        {#if recipe.ingredients.length > 0}
+          <button class="shop-open" onclick={() => (showShopping = true)}>🛒 Shopping list</button>
+        {/if}
         {#if recipe.steps.length > 0}
           <button class="cook-start" onclick={startCooking}>▶ Cook</button>
         {/if}

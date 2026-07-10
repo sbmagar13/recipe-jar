@@ -10,6 +10,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.1.0': [
     'Cook mode now keeps a strip of every timer running on other steps, so nothing gets lost when you have a few going at once for different parts of the dish. Tap one to jump straight to that step.',
   ],
+  '1.2.0': [
+    'Turn any recipe into a shopping list. Tick off what you already have, then copy or share what is left, scaled to the servings you picked.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

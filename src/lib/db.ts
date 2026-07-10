@@ -1,5 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { Recipe } from './types'
+import { autoRequestPersistOnce } from './storage'
 
 export interface SavedRecipe {
   id: number
@@ -37,6 +38,8 @@ function toPlainRecipe(recipe: Recipe): Recipe {
 
 /** Save a recipe. If the same sourceUrl is already in the jar, update it instead. */
 export async function saveRecipe(recipe: Recipe): Promise<number> {
+  // First save is a good moment to ask the browser to keep the jar around.
+  void autoRequestPersistOnce()
   const clean = toPlainRecipe(recipe)
   if (clean.sourceUrl) {
     const existing = await db.recipes.where('sourceUrl').equals(clean.sourceUrl).first()

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { allRecipes, matchesQuery, removeRecipe, exportJar, importJar, type SavedRecipe } from '../db'
+  import { persistState, requestPersist, type PersistState } from '../storage'
 
   interface Props {
     onopen: (entry: SavedRecipe) => void
@@ -48,6 +49,24 @@
   function snoozeNudge() {
     nudgeSnoozedUntil = Date.now() + SNOOZE_MS
     localStorage.setItem(NUDGE_SNOOZE_KEY, String(nudgeSnoozedUntil))
+  }
+
+  // Whether the browser has promised to keep our storage (vs. evicting it when
+  // space runs low). Shown as reassurance, with a button to ask when it hasn't.
+  let persist = $state<PersistState>('unsupported')
+  let persistBusy = $state(false)
+
+  $effect(() => {
+    persistState().then((s) => (persist = s))
+  })
+
+  async function handleProtect() {
+    persistBusy = true
+    persist = await requestPersist()
+    persistBusy = false
+    if (persist !== 'persisted') {
+      backupMsg = 'Your browser grants this as you keep using the app. A backup is the sure way to keep your recipes.'
+    }
   }
 
   async function handleDelete(entry: SavedRecipe) {
@@ -221,6 +240,18 @@
       </span>
     {/if}
   </div>
+
+  {#if entries.length > 0 && persist !== 'unsupported'}
+    {#if persist === 'persisted'}
+      <p class="storage-status protected">🔒 Your recipes are protected from your browser's automatic cleanup.</p>
+    {:else}
+      <p class="storage-status">
+        <button class="linklike" onclick={handleProtect} disabled={persistBusy}>
+          🛡 Keep my recipes on this device
+        </button>
+      </p>
+    {/if}
+  {/if}
 
   {#if showPasteRestore}
     <div class="paste-restore">

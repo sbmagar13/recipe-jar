@@ -1213,6 +1213,97 @@ footer {
   color: var(--muted);
 }
 
+/* Storage protection status (My Jar) */
+.storage-status {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.storage-status.protected {
+  color: var(--basil-deep);
+}
+
+/* Shopping list: open button on the recipe card */
+.shop-open {
+  background: none;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--basil-deep);
+  cursor: pointer;
+}
+
+.shop-open:hover {
+  border-color: var(--basil);
+  background: var(--sheet);
+}
+
+/* Shopping list: the takeover view */
+.shop {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 40vh;
+}
+
+.shop-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shop-title {
+  margin: 0;
+  font-family: Georgia, serif;
+  color: var(--basil-deep);
+}
+
+.shop-sub {
+  margin: -6px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.shop-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shop-list li {
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--rule);
+}
+
+.shop-list label {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  cursor: pointer;
+}
+
+.shop-list input[type='checkbox'] {
+  accent-color: var(--basil);
+  flex-shrink: 0;
+  transform: translateY(2px);
+}
+
+.shop-list li.got span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.shop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
 /* Print: just the recipe card, nothing else */
 @media print {
   .top,

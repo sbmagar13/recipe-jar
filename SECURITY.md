@@ -13,7 +13,7 @@ Report privately, either way:
 
 - Use GitHub's **[private vulnerability reporting](https://github.com/sbmagar13/recipe-jar/security/advisories/new)**
   (Security → Report a vulnerability), or
-- email **sbmagar.sbm99@gmail.com** with the details.
+- email **sagar@sagarbudhathoki.com** with the details.
 
 Please include:
 

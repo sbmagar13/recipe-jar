@@ -6,6 +6,21 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Shopping list.** Turn any recipe into a checkable shopping list, scaled to
+  the servings you picked. Tick off what you already have, then copy or share
+  what is left. Ticks are remembered per saved recipe.
+
+### Changed
+
+- Project contact email is now `sagar@sagarbudhathoki.com` (About page, security
+  policy, and code of conduct).
+- Persistent storage is now requested from your first save rather than on every
+  cold boot, so browsers that prompt for it no longer ask on each visit. My Jar
+  shows whether your recipes are protected from automatic cleanup, with a button
+  to ask for it.
+
 ## [1.1.2] - 2026-07-10
 
 ### Changed
