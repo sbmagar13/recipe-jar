@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Recipes with sections in their method (like an "Instant Pot Adaptation" or a
+  dried-beans variant) now show real section headings on the card, with step
+  numbers restarting under each one, the way the source page shows them. Cook
+  mode shows the section name above the step and no longer counts section
+  markers as steps you swipe past. ([#9])
+
 ## [1.4.2] - 2026-07-11
 
 ### Fixed

@@ -3,6 +3,7 @@
   import { formatQty } from '../quantity'
   import { recipeShareUrl } from '../share'
   import { extractStepTimers, formatClock } from '../timers'
+  import { stepGroups, cookSteps } from '../steps'
   import ShoppingList from './ShoppingList.svelte'
 
   interface Props {
@@ -120,6 +121,14 @@
 
   // Ingredient lines, scaled to the chosen servings, for the shopping list.
   const shoppingItems = $derived(recipe.ingredients.map(scaledLine))
+
+  // Steps grouped into sections ("— Using Dried Beans —" markers become real
+  // headings; numbering restarts per section like the source page).
+  const groups = $derived(stepGroups(recipe.steps))
+  // Cook mode walks only real steps; a step knows its section for the label.
+  const cookList = $derived(cookSteps(recipe.steps))
+  // original step index → cook position, for the timer tray's jump + label
+  const cookPosByIndex = $derived(new Map(cookList.map((c, p) => [c.index, p])))
 
   // --- Step timers: turn "simmer 20 minutes" into a tappable kitchen timer ---
   const stepTimers = $derived(recipe.steps.map((s) => extractStepTimers(s)))
@@ -249,12 +258,14 @@
   })
 
   // --- Focus cook mode: one big step at a time, hands-free at the stove ---
+  // stepIndex is a position in cookList (real steps only), not recipe.steps.
   let cooking = $state(false)
   let stepIndex = $state(0)
   let showCookIngredients = $state(false)
   let lockFromCook = false
 
   function startCooking() {
+    if (cookList.length === 0) return // nothing but section markers
     ensureAudio() // unlock audio on this gesture so step timers can beep
     stepIndex = 0
     showCookIngredients = false
@@ -276,7 +287,7 @@
 
   function nextStep() {
     silenceAllAlarms() // moving on counts as "I've got it"
-    if (stepIndex < recipe.steps.length - 1) stepIndex++
+    if (stepIndex < cookList.length - 1) stepIndex++
     else stopCooking()
   }
 
@@ -285,24 +296,28 @@
     if (stepIndex > 0) stepIndex--
   }
 
-  // Jump straight to a step — e.g. tapping a background timer in the cook tray.
-  function goToStep(i: number) {
+  // Jump straight to a step (cook position) — e.g. tapping a tray timer.
+  function goToStep(pos: number) {
     silenceAllAlarms()
-    if (i >= 0 && i < recipe.steps.length) stepIndex = i
+    if (pos >= 0 && pos < cookList.length) stepIndex = pos
   }
 
   // Every timer still going on a step you're not currently looking at. Drives the
   // always-visible tray in cook mode, so a timer set on an earlier step can't get
-  // lost when you move on. Tapping one jumps back to its step.
-  type ActiveTimer = { key: string; stepIndex: number; label: string; state: TimerState }
+  // lost when you move on. Tapping one jumps back to its step. `pos` is the cook
+  // position (what the cook sees); the key stays in original-step-index space.
+  type ActiveTimer = { key: string; pos: number; label: string; state: TimerState }
   const bgTimers = $derived<ActiveTimer[]>(
     Object.entries(timers)
       .flatMap(([key, state]) => {
         const [i, j] = key.split('-').map(Number)
         const meta = stepTimers[i]?.[j]
-        return meta && i !== stepIndex ? [{ key, stepIndex: i, label: meta.label, state }] : []
+        const pos = cookPosByIndex.get(i)
+        return meta && pos !== undefined && pos !== stepIndex
+          ? [{ key, pos, label: meta.label, state }]
+          : []
       })
-      .sort((a, b) => a.stepIndex - b.stepIndex || a.key.localeCompare(b.key))
+      .sort((a, b) => a.pos - b.pos || a.key.localeCompare(b.key))
   )
 
   // Arrow keys / space / Escape while cooking (desktop + keyboards).
@@ -471,9 +486,9 @@
           <button class="cook-exit" onclick={stopCooking} aria-label="Exit cook mode">✕</button>
         </div>
         <div class="cook-progress" aria-hidden="true">
-          <div class="cook-progress-fill" style="width:{((stepIndex + 1) / recipe.steps.length) * 100}%"></div>
+          <div class="cook-progress-fill" style="width:{((stepIndex + 1) / cookList.length) * 100}%"></div>
         </div>
-        <p class="cook-counter">Step {stepIndex + 1} of {recipe.steps.length}</p>
+        <p class="cook-counter">Step {stepIndex + 1} of {cookList.length}</p>
         {#if bgTimers.length > 0}
           <div class="cook-tray" role="group" aria-label="Timers running on other steps">
             {#each bgTimers as at (at.key)}
@@ -482,24 +497,27 @@
                 class:running={at.state.running}
                 class:paused={!at.state.running && !at.state.done}
                 class:done={at.state.done}
-                onclick={() => goToStep(at.stepIndex)}
+                onclick={() => goToStep(at.pos)}
                 aria-label={at.state.done
-                  ? `Step ${at.stepIndex + 1} timer finished. Go to step ${at.stepIndex + 1}`
+                  ? `Step ${at.pos + 1} timer finished. Go to step ${at.pos + 1}`
                   : at.state.running
-                    ? `Step ${at.stepIndex + 1} timer, ${formatClock(at.state.remaining)} remaining. Go to step ${at.stepIndex + 1}`
-                    : `Step ${at.stepIndex + 1} timer paused, ${formatClock(at.state.remaining)} remaining. Go to step ${at.stepIndex + 1}`}
+                    ? `Step ${at.pos + 1} timer, ${formatClock(at.state.remaining)} remaining. Go to step ${at.pos + 1}`
+                    : `Step ${at.pos + 1} timer paused, ${formatClock(at.state.remaining)} remaining. Go to step ${at.pos + 1}`}
               >
-                <span class="tray-step">Step {at.stepIndex + 1}</span>
+                <span class="tray-step">Step {at.pos + 1}</span>
                 <span class="tray-time">{at.state.done ? '✓' : formatClock(at.state.remaining)}</span>
               </button>
             {/each}
           </div>
         {/if}
-        <p class="cook-step">{recipe.steps[stepIndex]}</p>
-        {#if stepTimers[stepIndex].length > 0}
+        {#if cookList[stepIndex].section}
+          <p class="cook-section">{cookList[stepIndex].section}</p>
+        {/if}
+        <p class="cook-step">{cookList[stepIndex].text}</p>
+        {#if stepTimers[cookList[stepIndex].index].length > 0}
           <div class="cook-timers">
-            {#each stepTimers[stepIndex] as t, j (j)}
-              {@render timerChip(stepIndex, j, t)}
+            {#each stepTimers[cookList[stepIndex].index] as t, j (j)}
+              {@render timerChip(cookList[stepIndex].index, j, t)}
             {/each}
           </div>
         {/if}
@@ -521,7 +539,7 @@
         {/if}
         <div class="cook-nav">
           <button class="cook-prev" onclick={prevStep} disabled={stepIndex === 0}>◀ Back</button>
-          {#if stepIndex < recipe.steps.length - 1}
+          {#if stepIndex < cookList.length - 1}
             <button class="cook-next" onclick={nextStep}>Next ▶</button>
           {:else}
             <button class="cook-next cook-finish" onclick={stopCooking}>✓ Done</button>
@@ -632,16 +650,23 @@
         <section aria-label="Steps">
           <h2>Method</h2>
           {#if recipe.steps.length > 0}
-            <ol class="steps">
-              {#each recipe.steps as step, i}
-                <li>
-                  <span class="step-text">{step}</span>
-                  {#each stepTimers[i] as t, j (j)}
-                    {@render timerChip(i, j, t)}
+            {#each groups as group}
+              {#if group.title}
+                <h3 class="step-section">{group.title}</h3>
+              {/if}
+              {#if group.steps.length > 0}
+                <ol class="steps">
+                  {#each group.steps as sr (sr.index)}
+                    <li>
+                      <span class="step-text">{sr.text}</span>
+                      {#each stepTimers[sr.index] as t, j (j)}
+                        {@render timerChip(sr.index, j, t)}
+                      {/each}
+                    </li>
                   {/each}
-                </li>
-              {/each}
-            </ol>
+                </ol>
+              {/if}
+            {/each}
           {:else}
             <p class="section-empty">No steps were found. The <a href={recipe.sourceUrl || '#'} target="_blank" rel="noopener noreferrer">source</a> has the full method.</p>
           {/if}

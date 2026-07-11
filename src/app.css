@@ -311,6 +311,18 @@ main {
   max-width: 62ch;
 }
 
+/* Section heading inside the method ("Using Dried Beans"); the numbered list
+   restarts under each one, like the source page. */
+.step-section {
+  margin: 20px 0 10px;
+  font-size: 1.02rem;
+  color: var(--basil);
+}
+
+.steps + .step-section {
+  margin-top: 26px;
+}
+
 /* Step timers: "simmer 20 minutes" → a tappable countdown chip */
 .timer-chip {
   display: inline-flex;
@@ -504,6 +516,16 @@ main {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* The section the current cook step belongs to ("Using Dried Beans"). */
+.cook-section {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--basil);
 }
 
 .cook-step {
