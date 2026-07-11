@@ -168,6 +168,79 @@ describe('parseRecipeFromJsonLdStrings (bookmarklet path)', () => {
   })
 })
 
+// Recipeland-shaped pages (issue #9): JSON-LD lists bare ingredient names while
+// the amounts only exist in the visible table. The bookmarklet now also sends
+// the visible lines; the parser swaps them in when they are clearly better.
+describe('amount-less JSON-LD ingredients (Recipeland shape, issue #9)', () => {
+  const NAMES_ONLY = JSON.stringify({
+    '@type': 'Recipe',
+    name: 'Escarole Soup',
+    recipeYield: '12',
+    recipeIngredient: ['pork ribs', 'olive oil', 'onions', 'escarole'],
+    recipeInstructions: 'Simmer everything.',
+  })
+
+  it('uses captured visible lines when JSON-LD has no amounts', () => {
+    // innerText of recipeland rows: amount, newline, UNIT NAME, newline, note
+    const captured = [
+      '2\nPOUNDS PORK RIB\ncountry style',
+      '2\nTABLESPOONS OLIVE OIL',
+      '2\nLARGE ONIONS',
+      '1\nMEDIUM HEAD ESCAROLE',
+    ]
+    const r = parseRecipeFromJsonLdStrings([NAMES_ONLY], SRC, undefined, captured)!
+    expect(r.ingredients.map((i) => i.raw)).toEqual([
+      '2 pounds pork rib, country style',
+      '2 tablespoons olive oil',
+      '2 large onions',
+      '1 medium head escarole',
+    ])
+    expect(r.ingredients[0].qty).toBe(2)
+    expect(r.title).toBe('Escarole Soup') // everything else still from JSON-LD
+    expect(r.servings).toBe(12)
+  })
+
+  it('keeps JSON-LD ingredients when they already have amounts', () => {
+    const withAmounts = JSON.stringify({
+      '@type': 'Recipe',
+      name: 'Fine As Is',
+      recipeIngredient: ['2 cups flour', '1 egg', '100 g butter'],
+      recipeInstructions: 'Bake.',
+    })
+    const r = parseRecipeFromJsonLdStrings([withAmounts], SRC, undefined, ['9\nCUPS NONSENSE', '9\nCUPS MORE'])!
+    expect(r.ingredients.map((i) => i.raw)).toEqual(['2 cups flour', '1 egg', '100 g butter'])
+  })
+
+  it('rejects captured lines that are no better (no amounts either)', () => {
+    const r = parseRecipeFromJsonLdStrings([NAMES_ONLY], SRC, undefined, ['ribs', 'oil', 'onions', 'greens'])!
+    expect(r.ingredients.map((i) => i.raw)).toEqual(['pork ribs', 'olive oil', 'onions', 'escarole'])
+  })
+
+  it('rejects a suspiciously incomplete captured list', () => {
+    const r = parseRecipeFromJsonLdStrings([NAMES_ONLY], SRC, undefined, ['2 pounds pork ribs'])!
+    expect(r.ingredients.map((i) => i.raw)).toEqual(['pork ribs', 'olive oil', 'onions', 'escarole'])
+  })
+
+  it('upgrades from microdata on the HTML path when JSON-LD is amount-less', () => {
+    const html = `<!doctype html><html><head>
+      <script type="application/ld+json">${NAMES_ONLY}</script></head><body>
+      <div itemscope itemtype="https://schema.org/Recipe">
+        <li itemprop="recipeIngredient">2 pounds pork ribs</li>
+        <li itemprop="recipeIngredient">2 tbsp olive oil</li>
+        <li itemprop="recipeIngredient">2 onions</li>
+        <li itemprop="recipeIngredient">1 head escarole</li>
+      </div></body></html>`
+    const r = parseRecipeFromHtml(html, SRC)!
+    expect(r.title).toBe('Escarole Soup')
+    expect(r.ingredients.map((i) => i.raw)).toEqual([
+      '2 pounds pork ribs',
+      '2 tbsp olive oil',
+      '2 onions',
+      '1 head escarole',
+    ])
+  })
+})
+
 describe('humanDuration', () => {
   it('converts ISO 8601 durations', () => {
     expect(humanDuration('PT30M')).toBe('30 min')

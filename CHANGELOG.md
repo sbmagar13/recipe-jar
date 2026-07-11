@@ -6,6 +6,17 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Some sites (like Recipeland) publish recipe data whose ingredient list has no
+  amounts, so recipes imported with "olive oil" instead of "2 tablespoons olive
+  oil". The save-a-recipe button (bookmarklet) now also reads the ingredient
+  list you actually see on the page, and the app uses whichever list has real
+  amounts. If you added the button to your bookmarks before, drag it in again
+  to get the smarter version. ([#9])
+
+[#9]: https://github.com/sbmagar13/recipe-jar/issues/9
+
 ## [1.4.0] - 2026-07-11
 
 ### Added
