@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Recipes whose instructions arrive as one numbered text blob no longer show
+  doubled step numbers ("1. 1. Prep…"). Markdown headings inside the text
+  ("### Using Dried Beans") now render as proper section dividers, stray bold
+  markers are removed, and sloppy time formats like "P1H" display as "1 h".
+  More fallout from the Recipeland report. ([#9])
+
 ## [1.4.1] - 2026-07-11
 
 ### Fixed

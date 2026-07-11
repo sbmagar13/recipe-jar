@@ -98,6 +98,31 @@ describe('parseRecipeFromHtml — JSON-LD', () => {
     expect(r.steps[3]).toContain('Bake for twenty five minutes')
   })
 
+  it('strips source numbering and renders markdown headings as dividers (issue #9)', () => {
+    // Recipeland-style blob: self-numbered steps, then a markdown-heading
+    // section whose numbering restarts.
+    const blob =
+      '1. Prep the escarole while the soup base cooks and wash the cut leaves in a large bowl of cold water to release all the grit. ' +
+      '2. Heat the olive oil in a large heavy pot over medium-high heat and brown the ribs on all sides in batches so they do not steam. ' +
+      '3. Ladle into bowls and serve hot with crusty bread for dipping and a drizzle of good olive oil over the top of each serving. ' +
+      '### Using Dried Beans (Instead of Canned) ' +
+      '1. Use one pound of dried beans and soak them covered by cold water overnight before draining and rinsing again.'
+    const html = pageWithJsonLd({
+      '@type': 'Recipe',
+      name: 'Numbered Soup',
+      recipeIngredient: ['1 head escarole'],
+      recipeInstructions: blob,
+    })
+    const r = parseRecipeFromHtml(html, SRC)!
+    expect(r.steps).toEqual([
+      'Prep the escarole while the soup base cooks and wash the cut leaves in a large bowl of cold water to release all the grit.',
+      'Heat the olive oil in a large heavy pot over medium-high heat and brown the ribs on all sides in batches so they do not steam.',
+      'Ladle into bowls and serve hot with crusty bread for dipping and a drizzle of good olive oil over the top of each serving.',
+      '— Using Dried Beans (Instead of Canned) —',
+      'Use one pound of dried beans and soak them covered by cold water overnight before draining and rinsing again.',
+    ])
+  })
+
   it('returns null when there is no recipe at all', () => {
     const html = '<!doctype html><html><head><title>Nothing</title></head><body>no recipe here</body></html>'
     expect(parseRecipeFromHtml(html, SRC)).toBeNull()
@@ -246,6 +271,12 @@ describe('humanDuration', () => {
     expect(humanDuration('PT30M')).toBe('30 min')
     expect(humanDuration('PT1H30M')).toBe('1 h 30 min')
     expect(humanDuration('P1DT2H')).toBe('1 d 2 h')
+  })
+
+  it('accepts sloppy durations missing the T (issue #9)', () => {
+    expect(humanDuration('P1H')).toBe('1 h')
+    expect(humanDuration('P30M')).toBe('30 min')
+    expect(humanDuration('P1H30M')).toBe('1 h 30 min')
   })
 
   it('passes through non-ISO strings unchanged', () => {
