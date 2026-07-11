@@ -16,6 +16,7 @@
   import { consumeShareHash } from './lib/share'
   import { reportParseIssue } from './lib/telemetry'
   import { demoRecipe } from './lib/demo'
+  import { parseRoute, routeToHash, type Route } from './lib/route'
   import RecipeView from './lib/components/RecipeView.svelte'
   import JarView from './lib/components/JarView.svelte'
   import ManualEntry from './lib/components/ManualEntry.svelte'
@@ -72,43 +73,91 @@
   }
   refreshCount()
 
-  // --- View navigation wired into browser history, so the Back button/gesture
-  //     moves between in-app screens instead of leaving the app (matters most
-  //     for the installed PWA). A forward move pushes a history entry; Back and
-  //     the OS gesture come back as popstate.
-  function go(next: View) {
+  // --- Hash-based routing. The URL fragment is the single source of truth for
+  //     which screen shows, so saved recipes are bookmarkable, a refresh keeps
+  //     your place, and Back/Forward move between screens. It all stays local:
+  //     the hash is never sent anywhere. Shared (#recipe=) and bookmarklet
+  //     (#import=) links are a separate, consumed hash format, handled below.
+  let routeToken = 0
+
+  async function applyRoute(r: Route) {
     errorMsg = ''
-    if (next !== view && typeof history !== 'undefined') history.pushState({ view: next }, '')
-    view = next
+    if (r.view !== 'recipe') {
+      view = r.view
+      return
+    }
+    if (r.id === null) {
+      // Transient card (a fetched or shared recipe not yet saved): valid only
+      // while it is still in memory. A cold refresh has nothing to restore.
+      if (recipe) {
+        view = 'recipe'
+      } else {
+        view = 'home'
+        replaceRoute({ view: 'home' })
+      }
+      return
+    }
+    if (savedId === r.id && recipe) {
+      view = 'recipe' // already open; don't reload and reset the card
+      return
+    }
+    const token = ++routeToken
+    const entry = await getRecipeById(r.id)
+    if (token !== routeToken) return // a newer navigation superseded this one
+    if (entry) {
+      recipe = entry.recipe
+      savedId = entry.id
+      view = 'recipe'
+    } else {
+      // Deep link to a recipe that isn't in this jar (deleted, or another device).
+      recipe = null
+      savedId = null
+      view = 'jar'
+      errorMsg = 'That recipe is not in this jar.'
+      replaceRoute({ view: 'jar' })
+    }
+  }
+
+  function navigate(r: Route) {
+    if (typeof history !== 'undefined') {
+      history.pushState(null, '', location.pathname + location.search + routeToHash(r))
+    }
+    applyRoute(r)
+  }
+
+  function replaceRoute(r: Route) {
+    if (typeof history !== 'undefined') {
+      history.replaceState(null, '', location.pathname + location.search + routeToHash(r))
+    }
+  }
+
+  function go(next: 'home' | 'jar' | 'add' | 'import' | 'about') {
+    navigate({ view: next })
   }
 
   function goBack() {
     if (typeof history !== 'undefined') history.back()
-    else go('home')
+    else navigate({ view: 'home' })
   }
 
-  if (typeof window !== 'undefined') {
-    window.addEventListener('popstate', (e) => {
-      const state = e.state as { view?: View } | null
-      view = state?.view ?? 'home'
-      errorMsg = ''
-    })
-    // A share/import link opened in an already-running tab (pasted into the
-    // address bar, or clicked while the app is open) arrives as a hash change,
-    // not a page load — consume it the same way.
-    window.addEventListener('hashchange', () => handleImportHash())
-  }
-
-  // Recipe handed over by the bookmarklet (#import=) or a shared link (#recipe=).
-  async function handleImportHash() {
+  // Back/Forward, plus a share or bookmarklet link pasted into the address bar
+  // of an already-open tab, all land here.
+  function onLocationChange() {
     const imported = consumeImportHash() ?? consumeShareHash()
-    if (!imported) return
+    if (imported) {
+      showImportedRecipe(imported)
+      return
+    }
+    applyRoute(parseRoute(location.hash))
+  }
+
+  // A recipe handed over by the bookmarklet (#import=) or a shared link (#recipe=).
+  async function showImportedRecipe(imported: Recipe) {
     recipe = imported
     const existing = imported.sourceUrl ? await findBySource(imported.sourceUrl) : undefined
     savedId = existing?.id ?? null
-    go('recipe')
+    navigate({ view: 'recipe', id: savedId })
   }
-  handleImportHash()
 
   // URL shared into the installed app via the Web Share Target (Android): the
   // OS puts it in ?url=/?text=/?title=. Pull out the first http(s) link.
@@ -122,10 +171,16 @@
   }
   const sharedTargetUrl = consumeShareTargetQuery()
 
-  // Baseline entry so the very first Back returns here rather than exiting. The
-  // app always starts at 'home' (an import navigates forward asynchronously).
-  if (typeof history !== 'undefined') history.replaceState({ view: 'home' }, '')
+  if (typeof window !== 'undefined') {
+    window.addEventListener('popstate', onLocationChange)
+    window.addEventListener('hashchange', onLocationChange)
+  }
+
+  // Initial dispatch: a share-target query wins, otherwise consume any share or
+  // bookmarklet hash, otherwise route from the current hash (a bookmarked
+  // #/r/<id>, #/jar, or plain home).
   if (sharedTargetUrl) fetchRecipe(sharedTargetUrl)
+  else onLocationChange()
 
   async function getRecipe(e: Event) {
     e.preventDefault()
@@ -158,7 +213,7 @@
       recipe = parsed
       const existing = await findBySource(target)
       savedId = existing?.id ?? null
-      go('recipe')
+      navigate({ view: 'recipe', id: savedId })
       url = ''
     } catch (err) {
       errorMsg = err instanceof Error ? err.message : 'Something went wrong'
@@ -174,6 +229,7 @@
     try {
       savedId = await saveRecipe(recipe)
       await refreshCount()
+      replaceRoute({ view: 'recipe', id: savedId }) // the card is now bookmarkable
     } catch (err) {
       errorMsg = `Could not save: ${err instanceof Error ? err.message : 'unknown error'}`
     }
@@ -184,29 +240,30 @@
     await removeRecipe(savedId)
     savedId = null
     await refreshCount()
+    replaceRoute({ view: 'recipe', id: null }) // back to a transient card
   }
 
   function openSaved(entry: SavedRecipe) {
     recipe = entry.recipe
     savedId = entry.id
-    go('recipe')
+    navigate({ view: 'recipe', id: entry.id })
   }
 
   async function handleCreate(r: Recipe) {
     recipe = r
     savedId = await saveRecipe(r)
     await refreshCount()
-    go('recipe')
+    navigate({ view: 'recipe', id: savedId })
   }
 
   function goHome() {
-    go('home')
+    navigate({ view: 'home' })
   }
 
   function tryDemo() {
     recipe = demoRecipe
     savedId = null // demo has no sourceUrl, so it's always shown as savable
-    go('recipe')
+    navigate({ view: 'recipe', id: null })
   }
 </script>
 

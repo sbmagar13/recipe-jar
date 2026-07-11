@@ -16,6 +16,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.3.0': [
     'Kitchen timers got friendlier. A finished timer now keeps a gentle alarm going until you come back or tap it, instead of one short beep that is easy to miss. And every timer has a reset button for when you start it too early.',
   ],
+  '1.4.0': [
+    'Recipes are bookmarkable now. Each saved recipe has its own link, so you can bookmark it and reload without losing your place, and the browser Back and Forward buttons move between screens. It still all lives in the link, nothing leaves your device.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

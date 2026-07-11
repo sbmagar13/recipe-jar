@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Bookmarkable recipes and real Back/Forward.** Each saved recipe now has its
+  own link (like `#/r/12`), so you can bookmark it, reload without losing your
+  place, and use the browser's Back and Forward buttons to move between screens.
+  My Jar and About are directly linkable too. It all lives in the URL fragment,
+  so nothing is sent to a server.
+
 ## [1.3.1] - 2026-07-10
 
 ### Fixed
