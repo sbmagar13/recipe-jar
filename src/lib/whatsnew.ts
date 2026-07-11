@@ -25,8 +25,12 @@ export const WHATS_NEW: Record<string, string[]> = {
 // version, the last version the reader acknowledged, and whether they are a
 // returning user (have saved recipes), return the highlights to show, or null to
 // show nothing. The rules:
-//   - nothing if this version has no highlights,
-//   - nothing if they have already seen this version,
+//   - use this version's highlights, or fall back to the x.y.0 note of the same
+//     minor when this exact version has none. So someone who updates straight
+//     past 1.4.0 to a later 1.4.x patch (which happens when a few patches ship
+//     close together) still learns what 1.4 introduced,
+//   - nothing if there is no such note,
+//   - nothing if they have already seen that note, or a newer version,
 //   - nothing on a first-ever visit (an empty jar with no prior marker): a
 //     changelog popup on your very first open is noise,
 //   - otherwise show the highlights.
@@ -36,9 +40,39 @@ export function pickHighlights(
   hasData: boolean,
   map: Record<string, string[]> = WHATS_NEW,
 ): string[] | null {
-  const items = map[version]
-  if (!items || items.length === 0) return null
-  if (seen === version) return null
+  // Which note applies, and which version it belongs to.
+  let noteVersion = version
+  let items = map[version]
+  if (!items || items.length === 0) {
+    const parsed = parseVersion(version)
+    if (!parsed) return null
+    const minorKey = `${parsed[0]}.${parsed[1]}.0`
+    if (minorKey === version) return null // no exact note and nothing to fall back to
+    const fallback = map[minorKey]
+    if (!fallback || fallback.length === 0) return null
+    noteVersion = minorKey
+    items = fallback
+  }
+  // Already seen this note, or a newer version? Stay quiet.
+  if (seen !== null && seenAtOrAfter(seen, noteVersion)) return null
+  // Brand-new visitor with no marker and an empty jar: do not greet on first open.
   if (seen === null && !hasData) return null
   return items
+}
+
+function parseVersion(v: string): [number, number, number] | null {
+  const m = /^(\d+)\.(\d+)\.(\d+)$/.exec(v.trim())
+  return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null
+}
+
+/** True when `seen` is the same as or newer than `target`. Falls back to an
+ *  exact string match if either side is not a plain x.y.z version. */
+function seenAtOrAfter(seen: string, target: string): boolean {
+  const a = parseVersion(seen)
+  const b = parseVersion(target)
+  if (!a || !b) return seen === target
+  for (let i = 0; i < 3; i++) {
+    if (a[i] !== b[i]) return a[i] > b[i]
+  }
+  return true
 }

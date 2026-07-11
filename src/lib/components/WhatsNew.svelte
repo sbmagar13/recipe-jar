@@ -1,6 +1,6 @@
 <script lang="ts">
   import { APP_VERSION } from '../site'
-  import { WHATS_NEW, pickHighlights } from '../whatsnew'
+  import { pickHighlights } from '../whatsnew'
   import { jarCount } from '../db'
 
   // Remembers the last version whose notes the reader has seen, so the card shows
@@ -26,14 +26,15 @@
   }
 
   // Decide once, at startup. Cheap outs first so we only read the jar (async)
-  // when the decision can actually depend on it.
+  // when the decision can actually depend on it: hasData only changes the
+  // outcome for a marker-less first-time visitor (seen === null).
   async function decide() {
     const seen = readSeen()
-    if (!WHATS_NEW[APP_VERSION] || seen === APP_VERSION) return
-    const count = await jarCount().catch(() => 0)
-    const picked = pickHighlights(APP_VERSION, seen, count > 0)
+    if (seen === APP_VERSION) return
+    const hasData = seen === null ? (await jarCount().catch(() => 0)) > 0 : true
+    const picked = pickHighlights(APP_VERSION, seen, hasData)
     if (picked) highlights = picked
-    else markSeen() // first-ever visit: remember it so we never greet them for this version
+    else markSeen() // nothing to show for this version: remember it so we do not re-check
   }
   decide()
 

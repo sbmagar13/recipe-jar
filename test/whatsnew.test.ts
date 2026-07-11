@@ -28,6 +28,39 @@ describe('pickHighlights', () => {
     expect(pickHighlights('1.0.0', '0.9.0', true, { '1.0.0': [] })).toBeNull()
   })
 
+  // Fallback: a patch release with no note of its own should carry its minor's
+  // x.y.0 note to someone who jumped straight past it.
+  const MINOR = { '1.4.0': ['Bookmarkable recipes.'] }
+
+  it('falls back to the minor x.y.0 note when a patch has no note of its own', () => {
+    expect(pickHighlights('1.4.3', '1.3.0', true, MINOR)).toEqual(['Bookmarkable recipes.'])
+  })
+
+  it('shows the fallback even on a single patch bump the reader has not seen', () => {
+    expect(pickHighlights('1.4.1', '1.4.0-not', true, MINOR)).toEqual(['Bookmarkable recipes.'])
+  })
+
+  it('does not repeat the fallback once the reader has seen that minor', () => {
+    expect(pickHighlights('1.4.3', '1.4.0', true, MINOR)).toBeNull()
+  })
+
+  it('does not repeat the fallback once the reader has seen a later patch of it', () => {
+    expect(pickHighlights('1.4.3', '1.4.1', true, MINOR)).toBeNull()
+  })
+
+  it('prefers a patch\'s own note over the minor fallback when it has one', () => {
+    const map = { '1.4.0': ['Zero.'], '1.4.2': ['Two.'] }
+    expect(pickHighlights('1.4.2', '1.3.0', true, map)).toEqual(['Two.'])
+  })
+
+  it('does not greet a first-time visitor who lands first on a patch', () => {
+    expect(pickHighlights('1.4.3', null, false, MINOR)).toBeNull()
+  })
+
+  it('has no fallback to offer when the minor itself has no note', () => {
+    expect(pickHighlights('2.0.3', '1.0.0', true, MINOR)).toBeNull()
+  })
+
   it('every entry in the real WHATS_NEW map is a non-empty list of strings', () => {
     for (const [version, items] of Object.entries(WHATS_NEW)) {
       expect(/^\d+\.\d+\.\d+$/.test(version), `version key ${version} is semver`).toBe(true)

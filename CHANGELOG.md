@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The "What's new" note now reaches people who update several versions at once.
+  Before, it only appeared if you landed exactly on the version that introduced
+  a feature. So someone jumping straight from an older version to a later patch
+  would skip the note entirely. It now falls back to the note for that release
+  line, shown once and never repeated.
+
 ## [1.4.3] - 2026-07-11
 
 ### Changed
