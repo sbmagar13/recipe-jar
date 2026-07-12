@@ -15,6 +15,10 @@ No account. No ads. Works offline. Open source.
 
 👉 **[recipejar.app](https://recipejar.app)**
 
+<p align="center">
+  <a href="https://recipejar.app"><img src="docs/screenshots/hero.png" width="100%" alt="Recipe Jar: just the recipe, yours to keep. Paste a recipe link, get a clean card with no account and no ads." /></a>
+</p>
+
 ![Recipe Jar demo](launch/recipe-jar-demo.gif)
 
 <p align="center">
