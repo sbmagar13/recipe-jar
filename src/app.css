@@ -716,6 +716,23 @@ footer {
   font-size: 0.8rem;
 }
 
+.fazier-badge {
+  margin-top: 8px;
+  display: inline-flex;
+  line-height: 0;
+  opacity: 0.9;
+  transition: opacity 0.15s ease;
+}
+
+.fazier-badge:hover {
+  opacity: 1;
+}
+
+.fazier-badge img {
+  display: block;
+  height: auto;
+}
+
 /* About & Privacy */
 .legal {
   max-width: 640px;

@@ -370,6 +370,9 @@
       ·
       <span class="mono">free &amp; open source, for people who cook</span>
     </span>
+    <a class="fazier-badge" href="https://fazier.com/launches/recipejar.app" target="_blank" rel="noopener noreferrer">
+      <img src="/fazier-badge.svg" width="200" height="47" alt="Featured on Fazier" loading="lazy" decoding="async" />
+    </a>
   </footer>
 
   <InstallTip active={count > 0} />
