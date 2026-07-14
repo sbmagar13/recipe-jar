@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-07-14
+
 ### Added
 
 - **Add a recipe from a photo.** The "Add or paste" screen has a new "From a
@@ -187,7 +189,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.4.4...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.5.0
 [1.4.4]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.4.4
 [1.4.3]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.4.3
 [1.4.2]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.4.2
