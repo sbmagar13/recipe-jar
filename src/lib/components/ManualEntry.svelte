@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import type { Recipe } from '../types'
   import { parseIngredientLine } from '../quantity'
   import { parseRecipeText } from '../textparse'
@@ -7,9 +8,12 @@
   interface Props {
     oncreate: (recipe: Recipe) => void
     onback: () => void
+    // Text handed over from the home-screen photo picker: OCR runs there, and we
+    // land here with the fields already filled and ready to review.
+    initialText?: string
   }
 
-  let { oncreate, onback }: Props = $props()
+  let { oncreate, onback, initialText = '' }: Props = $props()
 
   let title = $state('')
   let servingsText = $state('4')
@@ -31,6 +35,13 @@
     if (parsed.steps) stepsText = parsed.steps
     pasteFilled = true
   }
+
+  onMount(() => {
+    if (initialText.trim()) {
+      pasteText = initialText
+      autofillFromPaste()
+    }
+  })
 
   async function handlePhoto(e: Event) {
     const input = e.currentTarget as HTMLInputElement
@@ -97,7 +108,7 @@
       {/if}
       <input type="file" accept="image/*" onchange={handlePhoto} disabled={ocrBusy} hidden />
     </label>
-    <small>Best with a printed or typed recipe. The first photo sets up a text engine once (about 6 MB), then it works offline. The image never leaves your device.</small>
+    <small>Best for printed recipes and cookbook pages. For a website, paste the link on the home screen instead: it imports far cleaner. The first photo sets up a text engine once (about 6 MB), then works offline. The image never leaves your device.</small>
     {#if ocrError}<span class="ocr-error" role="alert">{ocrError}</span>{/if}
   </div>
 

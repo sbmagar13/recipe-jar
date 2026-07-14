@@ -6,6 +6,19 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **A photo shortcut on the home screen.** "Add from a photo" now sits next to
+  "Type in one of your own" on the home screen, so you can go straight from a
+  photo to a filled-in form without opening the add page first.
+
+### Changed
+
+- Cleaner results when reading a recipe from a photo. Ratings, badges, and
+  "save" or "share" buttons are stripped out instead of turning into
+  ingredients. The photo tip also points you to pasting the link when the recipe
+  is a website, which imports far cleaner.
+
 ## [1.5.0] - 2026-07-14
 
 ### Added

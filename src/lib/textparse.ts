@@ -13,6 +13,28 @@ const INGREDIENTS_HEADER = /^(ingredients|ingredienser|zutaten|ingr[eé]dients|y
 const STEPS_HEADER = /^(method|methods|instructions?|directions?|steps|preparation|g[öo]r s[åa] h[äa]r|instruktioner|tillagning|s[åa] h[äa]r g[öo]r du)\b[:\s]*$/i
 const NOISE = /^(ingredients|method|instructions|directions|steps|preparation)\b/i
 
+// Lines that are website or app chrome, not recipe content. Dropped before
+// parsing so an OCR'd or pasted page does not turn nav, ratings and badges into
+// ingredients. Kept narrow on purpose so real recipe lines are never removed.
+const CHROME_LINE = [
+  /rating/i, // "3.3 | 3 ratings"
+  /^\s*rate this\b/i, // "Rate this recipe"
+  /^\s*\+?\s*(?:save|add) to\b/i, // "+ Save to My Food"
+  /share\s*&\s*print/i, // "Share & Print"
+  /^\s*shopping list\b/i,
+  /^\s*(?:(?:dairy|gluten|egg|nut|soy|wheat|lactose|sugar)[ -]free\b[\s|]*)+$/i, // an allergen-badge-only line
+  /^\s*ingredients\s+method\s*$/i, // merged two-column headers
+  /^\s*by\b.{0,60}\bserves?\b/i, // "By Neneh Cherry and Andi Oliver Serve"
+  /^\s*from\b.{0,60}\bserves?\s*\d/i, // "From ... Dish It Up Serves 4-6"
+  /^\s*over\s+\d+\s*(?:hours?|mins?|minutes?)\s*$/i, // "Over 2 hours" badge
+  /^\s*(?:prepare|overnight|save|cook)\s*$/i, // bare UI badges
+  /^\s*[=<>«»]/, // OCR garbage rows ("= Lo . Dietar")
+]
+
+function isChrome(line: string): boolean {
+  return CHROME_LINE.some((re) => re.test(line))
+}
+
 // Leading list bullets and checkbox glyphs.
 const BULLET = /^\s*(?:[-*•·▢□☐●▪]|\d+[.)])\s+/
 
@@ -43,7 +65,7 @@ function looksLikeIngredient(line: string): boolean {
 /** Parse pasted recipe text into editable form fields. */
 export function parseRecipeText(text: string): ParsedText {
   const rawLines = text.split(/\r?\n/).map((l) => l.trim())
-  const lines = rawLines.filter((l) => l.length > 0)
+  const lines = rawLines.filter((l) => l.length > 0 && !isChrome(l))
   const servings = detectServings(text)
 
   // Locate section headers.

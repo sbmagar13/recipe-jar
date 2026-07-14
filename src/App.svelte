@@ -14,6 +14,7 @@
   } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
   import { consumeShareHash } from './lib/share'
+  import { imageToText } from './lib/ocr'
   import { reportParseIssue } from './lib/telemetry'
   import { demoRecipe } from './lib/demo'
   import { parseRoute, routeToHash, type Route } from './lib/route'
@@ -37,6 +38,15 @@
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
+
+  // Home-screen "add from a photo": OCR runs here, then we hand the text to the
+  // manual-entry form via initialText. Kept separate from ManualEntry's own
+  // photo button so the home flow lands on a pre-filled form.
+  let homePhotoInput = $state<HTMLInputElement | null>(null)
+  let pendingPhotoText = $state('')
+  let photoBusy = $state(false)
+  let photoPct = $state(0)
+  let photoError = $state('')
 
   // Keep the saved entry (notes / cook stats) in sync with whatever is saved.
   $effect(() => {
@@ -133,6 +143,40 @@
 
   function go(next: 'home' | 'jar' | 'add' | 'import' | 'about') {
     navigate({ view: next })
+  }
+
+  // Open the manual-entry form, optionally pre-filled with photo text. Passing no
+  // text (a plain "type your own") clears any leftover OCR so the form is blank.
+  function goAdd(text = '') {
+    pendingPhotoText = text
+    go('add')
+  }
+
+  function triggerHomePhoto() {
+    photoError = ''
+    homePhotoInput?.click()
+  }
+
+  async function handleHomePhoto(e: Event) {
+    const input = e.currentTarget as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // let the same file be picked again after an error
+    if (!file) return
+    photoError = ''
+    photoPct = 0
+    photoBusy = true
+    try {
+      const text = await imageToText(file, (p) => (photoPct = p))
+      if (!text.trim()) {
+        photoError = 'No text found. Try a clearer, well-lit photo of a printed recipe.'
+        return
+      }
+      goAdd(text)
+    } catch {
+      photoError = 'Could not read that photo. The first use needs a connection to set up, then it works offline.'
+    } finally {
+      photoBusy = false
+    }
   }
 
   function goBack() {
@@ -329,10 +373,16 @@
       {/if}
       <p class="hint">
         Works with most recipe sites, in any language. Your saved recipes stay on your device.<br />
-        <button class="linklike" onclick={() => go('add')}>Type in one of your own</button>
+        <button class="linklike" onclick={() => goAdd()}>Type in one of your own</button>
+        &nbsp;·&nbsp;
+        <button class="linklike" onclick={triggerHomePhoto} disabled={photoBusy}>
+          {photoBusy ? `Reading photo… ${photoPct}%` : 'Add from a photo'}
+        </button>
         &nbsp;·&nbsp;
         <button class="linklike" onclick={() => go('import')}>Recipe from a blocked site?</button>
       </p>
+      <input bind:this={homePhotoInput} type="file" accept="image/*" onchange={handleHomePhoto} hidden />
+      {#if photoError}<p class="error" role="alert">{photoError}</p>{/if}
     </section>
   {:else if view === 'recipe' && recipe}
     <RecipeView
@@ -352,12 +402,12 @@
   {:else if view === 'jar'}
     <JarView onopen={openSaved} onchanged={refreshCount} />
     <p class="jar-footer">
-      <button class="linklike" onclick={() => go('add')}>+ Add your own recipe</button>
+      <button class="linklike" onclick={() => goAdd()}>+ Add your own recipe</button>
     </p>
   {:else if view === 'add'}
-    <ManualEntry oncreate={handleCreate} onback={goBack} />
+    <ManualEntry oncreate={handleCreate} onback={goBack} initialText={pendingPhotoText} />
   {:else if view === 'import'}
-    <ImportHelp onback={goBack} ontypein={() => go('add')} />
+    <ImportHelp onback={goBack} ontypein={() => goAdd()} />
   {:else if view === 'about'}
     <AboutView onback={goBack} />
   {/if}
