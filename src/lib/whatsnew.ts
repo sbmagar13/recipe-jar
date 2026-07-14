@@ -19,6 +19,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.4.0': [
     'Recipes are bookmarkable now. Each saved recipe has its own link, so you can bookmark it and reload without losing your place, and the browser Back and Forward buttons move between screens. It still all lives in the link, nothing leaves your device.',
   ],
+  '1.5.0': [
+    'You can add a recipe from a photo now. On the "Add or paste" screen, tap "From a photo", point it at a printed recipe, and it reads the text and fills in the fields for you to check. It all happens on your device, nothing gets uploaded.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

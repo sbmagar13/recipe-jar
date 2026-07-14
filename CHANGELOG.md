@@ -6,6 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Add a recipe from a photo.** The "Add or paste" screen has a new "From a
+  photo" button. Snap or upload a printed recipe and it reads the text on your
+  device and fills in the fields for you to check. The text engine runs entirely
+  in your browser, so nothing is uploaded and there is no account. It downloads
+  once on first use (about 6 MB), then works offline. Best on printed or typed
+  pages; handwriting, especially cursive, is unreliable. ([#10])
+
 ## [1.4.4] - 2026-07-11
 
 ### Fixed
@@ -48,6 +57,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   to get the smarter version. ([#9])
 
 [#9]: https://github.com/sbmagar13/recipe-jar/issues/9
+[#10]: https://github.com/sbmagar13/recipe-jar/issues/10
 
 ## [1.4.0] - 2026-07-11
 

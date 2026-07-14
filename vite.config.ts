@@ -76,7 +76,23 @@ export default defineConfig({
       // live on other origins and go through the proxy on demand).
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // The OCR engine (tesseract worker + wasm + language model) is opt-in
+        // and ~6 MB. Keep it out of the precache so installing the app stays
+        // light, then cache it at runtime the first time someone uses photo
+        // import, so it keeps working offline after that.
+        globIgnores: ['ocr/**'],
         navigateFallbackDenylist: [/^\/api\//],
+        runtimeCaching: [
+          {
+            urlPattern: /\/ocr\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ocr-engine',
+              expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 * 24 * 90 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
       includeAssets: ['favicon.svg'],
       manifest: {

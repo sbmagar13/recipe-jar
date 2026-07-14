@@ -27,6 +27,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "dexie": "^4.4.4"
+    "dexie": "^4.4.4",
+    "tesseract.js": "^7.0.0"
   }
 }
