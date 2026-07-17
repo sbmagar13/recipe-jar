@@ -22,6 +22,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.5.0': [
     'You can add a recipe from a photo now. On the "Add or paste" screen, tap "From a photo", point it at a printed recipe, and it reads the text and fills in the fields for you to check. It all happens on your device, nothing gets uploaded.',
   ],
+  '1.6.0': [
+    'One shopping list for the whole week. In My Jar, tap "Plan a shopping list", pick the recipes you are cooking, and the same ingredient adds up across them: "2 cups flour" here plus "1 cup flour" there becomes "3 cups flour". Tick things off in the store and share the rest.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

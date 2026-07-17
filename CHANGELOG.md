@@ -6,6 +6,18 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **One shopping list for the whole week.** In My Jar, tap "Plan a shopping
+  list", pick the recipes you are cooking, and get a single merged list. The
+  same ingredient adds up across recipes ("2 cups flour" plus "1 cup flour"
+  becomes "3 cups flour"), each recipe scales to the servings you choose, and
+  prep notes drop away so the list reads like something you would take to the
+  store. Different units are never converted, they stay as separate lines, so
+  the list never guesses. Tick off what you already have and copy or share the
+  rest, like the single-recipe list. Your picks are remembered, so adding one
+  more recipe mid-week does not mean starting over. ([#13])
+
 ## [1.5.1] - 2026-07-14
 
 ### Added
@@ -75,6 +87,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 [#9]: https://github.com/sbmagar13/recipe-jar/issues/9
 [#10]: https://github.com/sbmagar13/recipe-jar/issues/10
+[#13]: https://github.com/sbmagar13/recipe-jar/issues/13
 
 ## [1.4.0] - 2026-07-11
 

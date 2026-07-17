@@ -1266,6 +1266,12 @@ footer {
   color: var(--muted);
 }
 
+/* Shopping-plan entry in the jar */
+.shop-cta {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+}
+
 /* Backup bar */
 .backup-bar {
   display: flex;

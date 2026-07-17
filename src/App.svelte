@@ -20,6 +20,7 @@
   import { parseRoute, routeToHash, type Route } from './lib/route'
   import RecipeView from './lib/components/RecipeView.svelte'
   import JarView from './lib/components/JarView.svelte'
+  import ShopPlan from './lib/components/ShopPlan.svelte'
   import ManualEntry from './lib/components/ManualEntry.svelte'
   import ImportHelp from './lib/components/ImportHelp.svelte'
   import InstallTip from './lib/components/InstallTip.svelte'
@@ -27,7 +28,7 @@
   import UpdatePrompt from './lib/components/UpdatePrompt.svelte'
   import WhatsNew from './lib/components/WhatsNew.svelte'
 
-  type View = 'home' | 'recipe' | 'jar' | 'add' | 'import' | 'about'
+  type View = 'home' | 'recipe' | 'jar' | 'shop' | 'add' | 'import' | 'about'
 
   let view = $state<View>('home')
   let url = $state('')
@@ -141,7 +142,7 @@
     }
   }
 
-  function go(next: 'home' | 'jar' | 'add' | 'import' | 'about') {
+  function go(next: 'home' | 'jar' | 'shop' | 'add' | 'import' | 'about') {
     navigate({ view: next })
   }
 
@@ -400,10 +401,12 @@
       onsavetags={handleSaveTags}
     />
   {:else if view === 'jar'}
-    <JarView onopen={openSaved} onchanged={refreshCount} />
+    <JarView onopen={openSaved} onchanged={refreshCount} onshop={() => go('shop')} />
     <p class="jar-footer">
       <button class="linklike" onclick={() => goAdd()}>+ Add your own recipe</button>
     </p>
+  {:else if view === 'shop'}
+    <ShopPlan onback={goBack} />
   {:else if view === 'add'}
     <ManualEntry oncreate={handleCreate} onback={goBack} initialText={pendingPhotoText} />
   {:else if view === 'import'}

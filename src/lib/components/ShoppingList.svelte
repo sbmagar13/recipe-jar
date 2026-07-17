@@ -1,19 +1,38 @@
 <script lang="ts">
-  import { buildShoppingText } from '../shoplist'
+  import { buildListText, buildShoppingText } from '../shoplist'
 
   interface Props {
-    /** Recipe title, for the list header. */
+    /** Recipe title (or "3 recipes" for a merged list), for the list header. */
     title: string
-    /** Servings the lines below are scaled to. */
-    servings: number
+    /** Servings the lines below are scaled to. Unused when `subtitle` is given. */
+    servings?: number
     /** Already-scaled ingredient lines, one per item. */
     items: string[]
     /** localStorage key to remember ticks across visits, or null to keep them in memory. */
     storageKey: string | null
+    /** Replaces the "{title} · for N servings" line (merged lists set this). */
+    subtitle?: string | null
+    /** Replaces the copied/shared text's first line (merged lists set this). */
+    shareHeader?: string | null
+    /** Label of the bottom back button. */
+    backLabel?: string
     onclose: () => void
   }
 
-  let { title, servings, items, storageKey, onclose }: Props = $props()
+  let {
+    title,
+    servings = 0,
+    items,
+    storageKey,
+    subtitle = null,
+    shareHeader = null,
+    backLabel = '← Back to recipe',
+    onclose,
+  }: Props = $props()
+
+  function listText(remaining: string[]): string {
+    return shareHeader ? buildListText(shareHeader, remaining) : buildShoppingText(title, servings, remaining)
+  }
 
   function loadHave(): Set<number> {
     if (!storageKey) return new Set()
@@ -66,7 +85,7 @@
       flash('Nothing left to buy. Everything is ticked off.')
       return
     }
-    const text = buildShoppingText(title, servings, remaining)
+    const text = listText(remaining)
     try {
       await navigator.clipboard.writeText(text)
       flash(`Copied ${remaining.length} ${remaining.length === 1 ? 'item' : 'items'}.`)
@@ -80,7 +99,7 @@
       flash('Nothing left to buy. Everything is ticked off.')
       return
     }
-    const text = buildShoppingText(title, servings, remaining)
+    const text = listText(remaining)
     if (navigator.share) {
       try {
         await navigator.share({ title: `Shopping list for ${title}`, text })
@@ -99,7 +118,7 @@
     <button class="cook-exit" onclick={onclose} aria-label="Close shopping list">✕</button>
   </div>
   <p class="shop-sub">
-    {title} · for {servings} {servings === 1 ? 'serving' : 'servings'}
+    {#if subtitle}{subtitle}{:else}{title} · for {servings} {servings === 1 ? 'serving' : 'servings'}{/if}
   </p>
 
   {#if items.length > 0}
@@ -130,5 +149,5 @@
     <p class="section-empty">No ingredients to shop for.</p>
   {/if}
 
-  <button class="again" onclick={onclose}>← Back to recipe</button>
+  <button class="again" onclick={onclose}>{backLabel}</button>
 </section>

@@ -5,9 +5,10 @@
   interface Props {
     onopen: (entry: SavedRecipe) => void
     onchanged: () => void
+    onshop: () => void
   }
 
-  let { onopen, onchanged }: Props = $props()
+  let { onopen, onchanged, onshop }: Props = $props()
 
   let backupMsg = $state('')
   let lastBackup = $state<number | null>(null)
@@ -198,6 +199,12 @@
         </button>
       {/each}
     </div>
+  {/if}
+
+  {#if entries.length > 0}
+    <p class="shop-cta">
+      <button class="linklike" onclick={onshop}>🛒 Plan a shopping list from your recipes</button>
+    </p>
   {/if}
 
   {#if showNudge}

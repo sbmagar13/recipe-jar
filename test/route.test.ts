@@ -10,6 +10,7 @@ describe('parseRoute', () => {
 
   it('maps the plain view routes', () => {
     expect(parseRoute('#/jar')).toEqual({ view: 'jar' })
+    expect(parseRoute('#/shop')).toEqual({ view: 'shop' })
     expect(parseRoute('#/add')).toEqual({ view: 'add' })
     expect(parseRoute('#/import')).toEqual({ view: 'import' })
     expect(parseRoute('#/about')).toEqual({ view: 'about' })
@@ -39,6 +40,7 @@ describe('routeToHash', () => {
   it('maps routes back to hashes', () => {
     expect(routeToHash({ view: 'home' })).toBe('')
     expect(routeToHash({ view: 'jar' })).toBe('#/jar')
+    expect(routeToHash({ view: 'shop' })).toBe('#/shop')
     expect(routeToHash({ view: 'about' })).toBe('#/about')
     expect(routeToHash({ view: 'recipe', id: 7 })).toBe('#/r/7')
     expect(routeToHash({ view: 'recipe', id: null })).toBe('#/recipe')
