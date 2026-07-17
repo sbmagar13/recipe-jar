@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-17
+
 ### Added
 
 - **One shopping list for the whole week.** In My Jar, tap "Plan a shopping
@@ -217,7 +219,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.0
 [1.5.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.5.1
 [1.5.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.5.0
 [1.4.4]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.4.4
