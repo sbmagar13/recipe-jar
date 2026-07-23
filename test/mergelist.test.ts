@@ -48,6 +48,19 @@ describe('mergeShoppingItems', () => {
     expect(items).toEqual(['3 eggs'])
   })
 
+  it('fixes the unit word when scaling changes a lone line', () => {
+    const items = mergeShoppingItems([rec('Pulao', ['1 cup mixed vegetables'], 8, 4)])
+    expect(items).toEqual(['2 cups mixed vegetables'])
+  })
+
+  it('leaves unit-less scaled lines verbatim, like the in-recipe scaler', () => {
+    // There is no safe way to find the noun in free text ("ripe bananas" ends
+    // with it, "onion, finely chopped" starts with it), so only unit words are
+    // corrected. This matches how RecipeView scales lines today.
+    const items = mergeShoppingItems([rec('Dal', ['1 onion, finely chopped'], 8, 4)])
+    expect(items).toEqual(['2 onion, finely chopped'])
+  })
+
   it('scales each recipe to its chosen servings before merging', () => {
     const items = mergeShoppingItems([
       rec('Dal', ['1 cup lentils'], 8, 4), // doubled

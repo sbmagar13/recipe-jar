@@ -151,11 +151,21 @@ export function mergeShoppingItems(recipes: PlanRecipe[]): string[] {
       const key = `q|${unit ?? ''}|${singularKey(clean)}`
       const qtyText = hasRange ? `${formatQty(low)}–${formatQty(high)}` : formatQty(low)
 
+      // A lone unscaled line keeps its author's exact wording. But once scaling
+      // changed the number, the unit word must follow it ("1 cup" doubled is
+      // "2 cups", not "2 cup"), so the unit is rewritten in canonical form
+      // while the item text, prep notes included, stays verbatim.
+      const n = hasRange ? high : low
+      const first =
+        factor !== 1 && unit
+          ? `${qtyText} ${UNIT_DISPLAY[unit][n === 1 ? 0 : 1]} ${item}`.trim()
+          : `${qtyText} ${ing.rest}`.trim()
+
       const g = groups.get(key)
       if (!g) {
         const fresh: Group = {
           unit, qtyless: false, low, high, hasRange,
-          count: 1, first: `${qtyText} ${ing.rest}`.trim(),
+          count: 1, first,
           item: clean, itemSingular: null, itemPlural: null,
         }
         noteForms(fresh, clean)

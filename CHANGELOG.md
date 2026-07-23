@@ -6,6 +6,12 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- In the merged shopping list, a recipe scaled to different servings no longer
+  shows a mismatched unit word on lines that merged with nothing: "1 cup mixed
+  vegetables" doubled now reads "2 cups mixed vegetables", not "2 cup".
+
 ## [1.6.0] - 2026-07-17
 
 ### Added
