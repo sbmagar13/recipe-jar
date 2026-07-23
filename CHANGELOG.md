@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-07-23
+
 ### Fixed
 
 - In the merged shopping list, a recipe scaled to different servings no longer
@@ -225,7 +227,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.1
 [1.6.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.0
 [1.5.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.5.1
 [1.5.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.5.0
