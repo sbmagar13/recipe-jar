@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.6.2] - 2026-07-28
+
 ### Changed
 
 - The anonymous saves counter now also records the browser family (like
@@ -236,7 +238,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.2...HEAD
+[1.6.2]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.2
 [1.6.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.1
 [1.6.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.0
 [1.5.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.5.1
