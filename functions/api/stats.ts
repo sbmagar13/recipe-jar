@@ -3,10 +3,43 @@
 // 404 unless STATS_TOKEN is set and matches, so it isn't discoverable and never
 // leaks numbers publicly. There is nothing personal to leak here anyway: just
 // an all-time total and a per-day tally of anonymous event counts.
+//
+// Two generations of storage (see issue #14): the legacy incremented counters
+// (`:total` and `:day:*`, frozen since the switch) and one unique `:hit:` key
+// per save, which cannot lose counts. This endpoint folds both together.
 
 interface Env {
   STATS?: KVNamespace
   STATS_TOKEN?: string
+}
+
+/** Merge the frozen legacy counters with the per-hit keys. Pure, for tests. */
+export function aggregate(
+  legacyTotal: number,
+  legacyDays: Record<string, number>,
+  hitDates: string[],
+): { total: number; days: Record<string, number> } {
+  const merged: Record<string, number> = { ...legacyDays }
+  for (const date of hitDates) {
+    merged[date] = (merged[date] ?? 0) + 1
+  }
+  const days: Record<string, number> = {}
+  for (const date of Object.keys(merged).sort()) {
+    days[date] = merged[date]
+  }
+  return { total: legacyTotal + hitDates.length, days }
+}
+
+/** Every key under a prefix, following list cursors. */
+async function listKeys(kv: KVNamespace, prefix: string): Promise<string[]> {
+  const names: string[] = []
+  let cursor: string | undefined
+  for (;;) {
+    const page = await kv.list({ prefix, cursor })
+    for (const k of page.keys) names.push(k.name)
+    if (page.list_complete) return names
+    cursor = page.cursor
+  }
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -22,15 +55,21 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const event = url.searchParams.get('event') || 'save'
-  const total = parseInt((await env.STATS.get(`count:${event}:total`)) ?? '0', 10) || 0
 
-  const prefix = `count:${event}:day:`
-  const days: Record<string, number> = {}
-  const list = await env.STATS.list({ prefix })
-  for (const k of list.keys) {
-    const date = k.name.slice(prefix.length)
-    days[date] = parseInt((await env.STATS.get(k.name)) ?? '0', 10) || 0
+  const legacyTotal = parseInt((await env.STATS.get(`count:${event}:total`)) ?? '0', 10) || 0
+
+  const dayPrefix = `count:${event}:day:`
+  const legacyDays: Record<string, number> = {}
+  for (const name of await listKeys(env.STATS, dayPrefix)) {
+    const date = name.slice(dayPrefix.length)
+    legacyDays[date] = parseInt((await env.STATS.get(name)) ?? '0', 10) || 0
   }
 
+  const hitPrefix = `count:${event}:hit:`
+  const hitDates = (await listKeys(env.STATS, hitPrefix)).map((name) =>
+    name.slice(hitPrefix.length, hitPrefix.length + 10),
+  )
+
+  const { total, days } = aggregate(legacyTotal, legacyDays, hitDates)
   return Response.json({ event, total, days })
 }

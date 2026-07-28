@@ -16,15 +16,20 @@ interface Env {
 
 const EVENTS = new Set(['save'])
 const MAX_BODY = 200 // bytes; the body is a tiny {"event":"save"}
-const DAY_TTL = 63_072_000 // keep per-day tallies ~2 years, then let them expire
 
 function today(): string {
   return new Date().toISOString().slice(0, 10) // YYYY-MM-DD (UTC)
 }
 
-async function bump(kv: KVNamespace, key: string, ttl?: number): Promise<void> {
-  const current = parseInt((await kv.get(key)) ?? '0', 10) || 0
-  await kv.put(key, String(current + 1), ttl ? { expirationTtl: ttl } : undefined)
+// One unique key per event instead of incrementing counters. KV reads can be
+// a minute stale per edge location, so read-modify-write counters lose
+// increments under bursts, and a cached "not found" on a fresh day key could
+// overwrite a whole day's tally with 1 (issue #14 cost the launch-week buckets
+// ~40 saves that way). A unique key per hit cannot collide with anything, so
+// counts stay exact. Keys are ~60 bytes and saves are dozens a day: decades of
+// headroom before storage or list cost matters. /api/stats counts them.
+export function hitKey(event: string, date: string, id: string): string {
+  return `count:${event}:hit:${date}:${id}`
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -48,8 +53,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // No storage bound yet (or intentionally off): accept and do nothing.
   if (!env.STATS) return new Response(null, { status: 204 })
 
-  await bump(env.STATS, `count:${event}:total`)
-  await bump(env.STATS, `count:${event}:day:${today()}`, DAY_TTL)
+  // The legacy `count:save:total` and `count:save:day:*` counters are frozen
+  // as history; /api/stats folds them in.
+  await env.STATS.put(hitKey(event, today(), crypto.randomUUID()), '1')
 
   return new Response(null, { status: 204 })
 }
