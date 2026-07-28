@@ -762,6 +762,21 @@ footer {
   font-size: 1.02rem;
 }
 
+.legal .featured-on {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.legal .featured-on a {
+  color: var(--basil);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.legal .featured-on a:hover {
+  text-decoration: underline;
+}
+
 .legal ul {
   padding-left: 20px;
 }

@@ -6,6 +6,12 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The About page notes where Recipe Jar has launched (Product Hunt, Fazier,
+  Peerlist), as plain self-hosted links. No badge images from third-party
+  servers, so visiting the page still makes no external requests.
+
 ## [1.6.2] - 2026-07-28
 
 ### Changed

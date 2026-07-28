@@ -15,6 +15,17 @@
     device. It's free and open source, made for everyone who cooks. No account, no ads, ever.
   </p>
 
+  <!-- Plain self-hosted links on purpose: official badge embeds load images
+       from third-party servers on every visit, which this page promises not to do. -->
+  <p class="featured-on">
+    Featured on
+    <a href="https://www.producthunt.com/products/recipe-jar" target="_blank" rel="noopener noreferrer">Product Hunt</a>
+    ·
+    <a href="https://fazier.com/launches/recipejar.app" target="_blank" rel="noopener noreferrer">Fazier</a>
+    ·
+    <a href="https://peerlist.io/sbmagar13/project/recipe-jar" target="_blank" rel="noopener noreferrer">Peerlist</a>
+  </p>
+
   <h2>Your privacy</h2>
   <ul>
     <li>
