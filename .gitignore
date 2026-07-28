@@ -43,3 +43,4 @@ _scratch-*.ts
 
 # demo videos live in docs/screenshots but are too big to track (keep PNGs, not video)
 docs/screenshots/*.mp4
+.wrangler/
