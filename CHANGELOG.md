@@ -6,6 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The anonymous saves counter now also records the browser family (like
+  "Chrome") and whether the save came from mobile or desktop, as coarse
+  buckets. The raw user agent is never stored, and nothing identifies anyone.
+  The About page's privacy section now spells out everything the counter
+  records, including the counter itself, which had been missing from the list.
+  Do Not Track and Global Privacy Control still switch all of it off.
+
 ## [1.6.1] - 2026-07-23
 
 ### Fixed

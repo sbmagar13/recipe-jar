@@ -29,11 +29,13 @@
       the HTML straight back to you. It doesn't store the page, and it only reads recipe markup.
     </li>
     <li>
-      <strong>What we measure.</strong> To keep the app working we log two things, and only these:
-      the <em>hostname</em> of a page we couldn't read (e.g. <code>example.com</code>, so the
-      parser can be fixed) and uncaught error messages from our own code. Never the recipe, the
-      full address, or anything that identifies you. This is switched off entirely if your browser
-      sends “Do Not Track” or Global Privacy Control.
+      <strong>What we measure.</strong> To keep the app working we log three things, and only
+      these: the <em>hostname</em> of a page we couldn't read (e.g. <code>example.com</code>, so
+      the parser can be fixed), uncaught error messages from our own code, and an anonymous
+      counter that a recipe was saved, with the day, the browser family (like “Chrome”), and
+      whether it was mobile or desktop. Never the recipe, the full address, a user agent, an IP,
+      or anything that identifies you. This is switched off entirely if your browser sends “Do
+      Not Track” or Global Privacy Control.
     </li>
     <li>
       <strong>Hosting.</strong> The site runs on Cloudflare Pages, which processes requests to

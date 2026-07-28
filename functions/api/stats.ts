@@ -13,21 +13,49 @@ interface Env {
   STATS_TOKEN?: string
 }
 
+export interface Hit {
+  date: string
+  browser?: string
+  device?: string
+}
+
+/** Parse a hit key. Two generations: `...hit:date:uuid` (first days after the
+ *  counter fix) and `...hit:date:browser:device:uuid`. Pure, for tests. */
+export function parseHitKey(name: string): Hit | null {
+  const parts = name.split(':')
+  if (parts.length < 5 || parts[2] !== 'hit') return null
+  const hit: Hit = { date: parts[3] }
+  if (parts.length >= 7) {
+    hit.browser = parts[4]
+    hit.device = parts[5]
+  }
+  return hit
+}
+
 /** Merge the frozen legacy counters with the per-hit keys. Pure, for tests. */
 export function aggregate(
   legacyTotal: number,
   legacyDays: Record<string, number>,
-  hitDates: string[],
-): { total: number; days: Record<string, number> } {
+  hits: Hit[],
+): {
+  total: number
+  days: Record<string, number>
+  browsers: Record<string, number>
+  devices: Record<string, number>
+} {
   const merged: Record<string, number> = { ...legacyDays }
-  for (const date of hitDates) {
-    merged[date] = (merged[date] ?? 0) + 1
+  const browsers: Record<string, number> = {}
+  const devices: Record<string, number> = {}
+  for (const hit of hits) {
+    merged[hit.date] = (merged[hit.date] ?? 0) + 1
+    if (hit.browser) browsers[hit.browser] = (browsers[hit.browser] ?? 0) + 1
+    if (hit.device) devices[hit.device] = (devices[hit.device] ?? 0) + 1
   }
   const days: Record<string, number> = {}
   for (const date of Object.keys(merged).sort()) {
     days[date] = merged[date]
   }
-  return { total: legacyTotal + hitDates.length, days }
+  return { total: legacyTotal + hits.length, days, browsers, devices }
 }
 
 /** Every key under a prefix, following list cursors. */
@@ -66,10 +94,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const hitPrefix = `count:${event}:hit:`
-  const hitDates = (await listKeys(env.STATS, hitPrefix)).map((name) =>
-    name.slice(hitPrefix.length, hitPrefix.length + 10),
-  )
+  const hits = (await listKeys(env.STATS, hitPrefix))
+    .map(parseHitKey)
+    .filter((h): h is Hit => h !== null)
 
-  const { total, days } = aggregate(legacyTotal, legacyDays, hitDates)
-  return Response.json({ event, total, days })
+  const { total, days, browsers, devices } = aggregate(legacyTotal, legacyDays, hits)
+  return Response.json({ event, total, days, browsers, devices })
 }
