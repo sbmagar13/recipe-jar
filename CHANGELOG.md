@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.6.6] - 2026-07-29
+
 ### Changed
 
 - The Fazier badge moved from the home screen to the About page, joining the
@@ -272,7 +274,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.5...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.6...HEAD
+[1.6.6]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.6
 [1.6.5]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.5
 [1.6.4]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.4
 [1.6.3]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.3
