@@ -716,6 +716,11 @@ footer {
   font-size: 0.8rem;
 }
 
+.home-badge {
+  text-align: center;
+  margin-top: 20px;
+}
+
 .fazier-badge {
   margin-top: 8px;
   display: inline-flex;

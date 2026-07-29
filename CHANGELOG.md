@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The Fazier badge moved from the footer to the home screen and now shows the
+  live upvote count. It is served through our own domain (the edge fetches
+  Fazier's badge and caches it for a few hours), so the visitor's browser
+  still never talks to a third party, and if Fazier is ever down the static
+  badge shows instead.
+
 ## [1.6.4] - 2026-07-29
 
 ### Added
