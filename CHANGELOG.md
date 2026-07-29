@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The Fazier badge moved from the home screen to the About page, joining the
+  "Featured on" row. The home screen goes back to being only about the product;
+  the badge with its live count now lives where visitors go to decide whether
+  to trust the app. Still served through our own domain, no third-party
+  requests.
+
 ## [1.6.5] - 2026-07-29
 
 ### Changed

@@ -384,11 +384,6 @@
       </p>
       <input bind:this={homePhotoInput} type="file" accept="image/*" onchange={handleHomePhoto} hidden />
       {#if photoError}<p class="error" role="alert">{photoError}</p>{/if}
-      <p class="home-badge">
-        <a class="fazier-badge" href="https://fazier.com/launches/recipe-jar" target="_blank" rel="noopener noreferrer">
-          <img src="/api/fazier-badge" width="250" height="54" alt="Featured on Fazier" loading="lazy" decoding="async" />
-        </a>
-      </p>
     </section>
   {:else if view === 'recipe' && recipe}
     <RecipeView

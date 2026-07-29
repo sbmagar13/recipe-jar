@@ -21,10 +21,13 @@
     Featured on
     <a href="https://www.producthunt.com/products/recipe-jar" target="_blank" rel="noopener noreferrer">Product Hunt</a>
     ·
-    <a href="https://fazier.com/launches/recipejar.app" target="_blank" rel="noopener noreferrer">Fazier</a>
+    <a href="https://fazier.com/launches/recipe-jar" target="_blank" rel="noopener noreferrer">Fazier</a>
     ·
     <a href="https://peerlist.io/sbmagar13/project/recipe-jar" target="_blank" rel="noopener noreferrer">Peerlist</a>
   </p>
+  <a class="fazier-badge" href="https://fazier.com/launches/recipe-jar" target="_blank" rel="noopener noreferrer">
+    <img src="/api/fazier-badge" width="250" height="54" alt="Featured on Fazier" loading="lazy" decoding="async" />
+  </a>
 
   <h2>Your privacy</h2>
   <ul>
