@@ -6,6 +6,12 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The "Featured on Fazier" badge is back in the footer, now that it is earned:
+  Recipe Jar launched there on July 28 and received the Featured award. The
+  badge is served from our own domain, so no third-party requests.
+
 ## [1.6.3] - 2026-07-28
 
 ### Added
