@@ -19,14 +19,14 @@ No account. No ads. Works offline. Open source.
   <a href="https://recipejar.app"><img src="docs/screenshots/hero.png" width="100%" alt="Recipe Jar: just the recipe, yours to keep. Paste a recipe link, get a clean card with no account and no ads." /></a>
 </p>
 
-![Recipe Jar demo](launch/recipe-jar-demo.gif)
-
 <p align="center">
-  <img src="docs/screenshots/card.png" width="30%" alt="A clean recipe card — ingredients and steps, nothing else" />
+  <img src="launch/recipe-jar-demo.gif" width="24%" alt="Recipe jar demo" />
   &nbsp;
-  <img src="docs/screenshots/cook.png" width="30%" alt="Step-by-step cook mode with a built-in timer" />
+  <img src="docs/screenshots/card.png" width="24%" alt="A clean recipe card — ingredients and steps, nothing else" />
   &nbsp;
-  <img src="docs/screenshots/jar.png" width="30%" alt="Your jar of saved recipes, filtered by tag" />
+  <img src="docs/screenshots/cook.png" width="24%" alt="Step-by-step cook mode with a built-in timer" />
+  &nbsp;
+  <img src="docs/screenshots/jar.png" width="24%" alt="Your jar of saved recipes, filtered by tag" />
 </p>
 
 ## Why
