@@ -20,13 +20,13 @@ No account. No ads. Works offline. Open source.
 </p>
 
 <p align="center">
-  <img src="launch/recipe-jar-demo.gif" width="24%" alt="Recipe jar demo" />
+  <img src="launch/recipe-jar-demo.gif" width="22%" alt="Recipe jar demo" />
   &nbsp;
-  <img src="docs/screenshots/card.png" width="24%" alt="A clean recipe card — ingredients and steps, nothing else" />
+  <img src="docs/screenshots/card.png" width="22%" alt="A clean recipe card — ingredients and steps, nothing else" />
   &nbsp;
-  <img src="docs/screenshots/cook.png" width="24%" alt="Step-by-step cook mode with a built-in timer" />
+  <img src="docs/screenshots/cook.png" width="22%" alt="Step-by-step cook mode with a built-in timer" />
   &nbsp;
-  <img src="docs/screenshots/jar.png" width="24%" alt="Your jar of saved recipes, filtered by tag" />
+  <img src="docs/screenshots/jar.png" width="22%" alt="Your jar of saved recipes, filtered by tag" />
 </p>
 
 ## Why
