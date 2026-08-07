@@ -242,7 +242,7 @@
   // them fast.
   const EXAMPLES = [
     { label: 'chocolate brownies', url: 'https://www.bbcgoodfood.com/recipes/best-ever-chocolate-brownies-recipe' },
-    { label: 'butter chicken', url: 'https://www.bbcgoodfood.com/recipes/easy-butter-chicken' },
+    { label: 'chicken curry', url: 'https://www.bbcgoodfood.com/recipes/easy-chicken-curry' },
   ]
 
   function tryExample(ex: (typeof EXAMPLES)[number]) {
@@ -379,7 +379,7 @@
         No recipe link handy? Try
         <button class="linklike" onclick={() => tryExample(EXAMPLES[0])} disabled={loading}>chocolate brownies</button>
         or
-        <button class="linklike" onclick={() => tryExample(EXAMPLES[1])} disabled={loading}>butter chicken</button>,
+        <button class="linklike" onclick={() => tryExample(EXAMPLES[1])} disabled={loading}>chicken curry</button>,
         or <button class="linklike" onclick={tryDemo}>see a sample recipe</button> first
       </p>
       {#if errorMsg}

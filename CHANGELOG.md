@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The second example recipe is now chicken curry instead of butter chicken:
+  the butter chicken page carries several embedded recipes and the card came
+  up as the wrong one ([#17]).
+
+[#17]: https://github.com/sbmagar13/recipe-jar/issues/17
+
 ## [1.6.7] - 2026-08-07
 
 ### Added
