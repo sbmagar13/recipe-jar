@@ -236,6 +236,20 @@
     await fetchRecipe(target)
   }
 
+  // Known-good example recipes, for visitors who arrive without a link in
+  // hand (launch-day traffic mostly). One tap shows the real fetch-and-clean
+  // magic, and since everyone taps the same URLs the proxy's edge cache makes
+  // them fast.
+  const EXAMPLES = [
+    { label: 'chocolate brownies', url: 'https://www.bbcgoodfood.com/recipes/best-ever-chocolate-brownies-recipe' },
+    { label: 'butter chicken', url: 'https://www.bbcgoodfood.com/recipes/easy-butter-chicken' },
+  ]
+
+  function tryExample(ex: (typeof EXAMPLES)[number]) {
+    url = ex.url
+    void fetchRecipe(ex.url)
+  }
+
   async function fetchRecipe(target: string) {
     loading = true
     errorMsg = ''
@@ -362,6 +376,10 @@
         </button>
       </form>
       <p class="try-line">
+        No recipe link handy? Try
+        <button class="linklike" onclick={() => tryExample(EXAMPLES[0])} disabled={loading}>chocolate brownies</button>
+        or
+        <button class="linklike" onclick={() => tryExample(EXAMPLES[1])} disabled={loading}>butter chicken</button>,
         or <button class="linklike" onclick={tryDemo}>see a sample recipe</button> first
       </p>
       {#if errorMsg}

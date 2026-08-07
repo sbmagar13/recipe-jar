@@ -6,6 +6,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Two tappable example recipes on the home screen ("chocolate brownies",
+  "butter chicken") for visitors who arrive without a recipe link in hand.
+  One tap runs the real fetch on a real site and lands on the clean card,
+  which beats explaining the app in words.
+
 ## [1.6.6] - 2026-07-29
 
 ### Changed
