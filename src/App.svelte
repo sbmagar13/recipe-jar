@@ -472,10 +472,10 @@
   <header class="top">
     <button class="brand" onclick={goHome} aria-label="Recipe Jar home">
       <svg width="28" height="32" viewBox="0 0 64 72" aria-hidden="true">
-        <rect x="18" y="6" width="28" height="8" rx="2" fill="var(--basil)" />
-        <path d="M16 18 Q12 24 12 32 V58 Q12 66 20 66 H44 Q52 66 52 58 V32 Q52 24 48 18 Z" fill="none" stroke="var(--basil)" stroke-width="4" />
+        <rect x="18" y="6" width="28" height="8" rx="2" fill="currentColor" />
+        <path d="M16 18 Q12 24 12 32 V58 Q12 66 20 66 H44 Q52 66 52 58 V32 Q52 24 48 18 Z" fill="none" stroke="currentColor" stroke-width="4" />
         <line x1="20" y1="34" x2="44" y2="34" stroke="var(--tomato)" stroke-width="3" stroke-linecap="round" />
-        <line x1="20" y1="46" x2="40" y2="46" stroke="var(--basil)" stroke-width="3" stroke-linecap="round" opacity="0.5" />
+        <line x1="20" y1="46" x2="40" y2="46" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.5" />
       </svg>
       <span>Recipe Jar</span>
     </button>

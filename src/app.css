@@ -21,14 +21,47 @@
 }
 
 :root {
+  color-scheme: light;
   --paper: #f6f3ec;
   --sheet: #fcfaf4;
   --ink: #2a2a25;
   --basil: #33663d;
   --basil-deep: #275231;
+  --accent-ink: #275231; /* green when it is TEXT; flips light in dark mode */
   --tomato: #b8402e;
   --muted: #726c5c; /* AA: 4.7:1 on --paper (was #767061 at 4.44) */
   --rule: #ddd7c7;
+  /* real definitions for tokens some component styles reference */
+  --card: var(--sheet);
+  --card-hover: #faf8f2;
+  --line: var(--rule);
+}
+
+/* Dark: a candlelit kitchen, not a gray flip. Deep olive-charcoal paper,
+   cream ink, the basil going soft sage wherever it is text. Buttons keep
+   their deep green fills, which read even better in the dark. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --paper: #171a14;
+    --sheet: #20241d;
+    --ink: #eae5d8;
+    --accent-ink: #a9cfb0;
+    --tomato: #dd6a52;
+    --muted: #a19b8b;
+    --rule: #3a3f35;
+    --card-hover: #262b23;
+  }
+  .drow.active {
+    background: rgba(169, 207, 176, 0.1);
+  }
+  .sk {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 75%);
+    background-size: 200% 100%;
+  }
+  .dthumb {
+    background: #2a2f27;
+  }
 }
 
 * {
@@ -71,7 +104,7 @@ main {
   font-family: Georgia, serif;
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   padding: 4px;
 }
 
@@ -85,7 +118,7 @@ main {
   font-family: Georgia, serif;
   font-size: clamp(2rem, 6vw, 3rem);
   letter-spacing: -0.012em;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   margin: 0 0 12px;
   line-height: 1.12;
   text-wrap: balance;
@@ -119,7 +152,7 @@ main {
 .fetchbar input:focus-visible {
   outline: 3px solid var(--basil);
   outline-offset: 1px;
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .fetchbar button {
@@ -180,8 +213,8 @@ main {
 }
 
 .action-chip:hover:not(:disabled) {
-  border-color: var(--basil);
-  color: var(--basil-deep);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
 }
 
 .action-chip:disabled {
@@ -319,7 +352,7 @@ button:not(:disabled):not(.linklike):active {
   font-family: Georgia, serif;
   font-size: 1.8rem;
   letter-spacing: -0.012em;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   margin: 0 0 6px;
   text-wrap: balance;
 }
@@ -342,7 +375,7 @@ button:not(:disabled):not(.linklike):active {
 }
 
 .meta a {
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 /* Servings stepper */
@@ -359,7 +392,7 @@ button:not(:disabled):not(.linklike):active {
   border-radius: 50%;
   border: 1.5px solid var(--basil);
   background: var(--sheet);
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -404,7 +437,7 @@ button:not(:disabled):not(.linklike):active {
 
 .columns h2 {
   font-family: Georgia, serif;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   border-bottom: 2px solid var(--basil);
   padding-bottom: 6px;
   margin: 0 0 12px;
@@ -429,7 +462,7 @@ button:not(:disabled):not(.linklike):active {
 }
 
 .ingredients input[type='checkbox'] {
-  accent-color: var(--basil);
+  accent-color: var(--accent-ink);
   flex-shrink: 0;
   transform: translateY(2px);
 }
@@ -454,7 +487,7 @@ button:not(:disabled):not(.linklike):active {
 .step-section {
   margin: 20px 0 10px;
   font-size: 1.02rem;
-  color: var(--basil);
+  color: var(--accent-ink);
 }
 
 .steps + .step-section {
@@ -474,26 +507,26 @@ button:not(:disabled):not(.linklike):active {
   padding: 2px 10px;
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .timer-chip:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .timer-chip.running,
 .timer-chip.paused {
   background: var(--basil);
   color: #fff;
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .timer-chip.paused {
   background: var(--sheet);
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .timer-chip.done {
@@ -545,8 +578,8 @@ button:not(:disabled):not(.linklike):active {
 }
 
 .timer-reset:hover {
-  border-color: var(--basil);
-  color: var(--basil-deep);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
 }
 
 @media (pointer: coarse) {
@@ -562,12 +595,12 @@ button:not(:disabled):not(.linklike):active {
   border: 1.5px solid var(--rule);
   border-radius: 8px;
   padding: 8px 16px;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .again:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 /* Enter cook mode (sits with Save / Share) */
@@ -610,7 +643,7 @@ button:not(:disabled):not(.linklike):active {
   font-family: Georgia, serif;
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -629,7 +662,7 @@ button:not(:disabled):not(.linklike):active {
 }
 
 .cook-exit:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
   color: var(--ink);
 }
 
@@ -663,7 +696,7 @@ button:not(:disabled):not(.linklike):active {
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--basil);
+  color: var(--accent-ink);
 }
 
 .cook-step {
@@ -705,14 +738,14 @@ button:not(:disabled):not(.linklike):active {
   border-radius: 999px;
   padding: 6px 8px 6px 12px;
   font-weight: 700;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
   font-variant-numeric: tabular-nums;
   min-height: 36px;
 }
 
 .tray-timer:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .tray-step {
@@ -760,12 +793,12 @@ button:not(:disabled):not(.linklike):active {
   padding: 8px 16px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .cook-ing-toggle:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .cook-ingredients {
@@ -799,7 +832,7 @@ button:not(:disabled):not(.linklike):active {
 .cook-prev {
   background: none;
   border: 1.5px solid var(--rule);
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .cook-prev:disabled {
@@ -875,7 +908,7 @@ footer {
 .legal h2 {
   margin: 28px 0 8px;
   font-size: 1.1rem;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .legal .lede {
@@ -889,7 +922,7 @@ footer {
 }
 
 .legal .featured-on a {
-  color: var(--basil);
+  color: var(--accent-ink);
   font-weight: 600;
   text-decoration: none;
 }
@@ -915,7 +948,7 @@ footer {
 }
 
 .legal a {
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   text-decoration: underline;
 }
 
@@ -959,21 +992,21 @@ footer {
   padding: 7px 16px;
   font-size: 0.92rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .navlink:hover,
 .navlink.active {
   background: var(--basil);
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
   color: #fff;
 }
 
 .linklike {
   background: none;
   border: none;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   text-decoration: underline;
   cursor: pointer;
   font-size: inherit;
@@ -1010,7 +1043,7 @@ footer {
 }
 
 .saved-badge {
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   font-weight: 700;
 }
 
@@ -1030,18 +1063,18 @@ footer {
   padding: 7px 14px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .card-actions .share:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
   background: var(--sheet);
 }
 
 .share-msg {
   font-size: 0.82rem;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 /* "I cooked this" + cook stats */
@@ -1060,12 +1093,12 @@ footer {
   padding: 7px 16px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .cooked-btn:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
   background: var(--sheet);
 }
 
@@ -1081,7 +1114,7 @@ footer {
 
 .notes h2 {
   font-family: Georgia, serif;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   font-size: 1.15rem;
   margin: 0 0 10px;
 }
@@ -1100,14 +1133,14 @@ footer {
 
 .notes-input:focus-visible {
   outline: 3px solid var(--basil);
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .notes-saved {
   display: inline-block;
   margin-top: 6px;
   font-size: 0.82rem;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -1130,7 +1163,7 @@ footer {
   padding: 4px 6px 4px 12px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .tag-remove {
@@ -1162,7 +1195,7 @@ footer {
 
 .tag-input:focus-visible {
   outline: none;
-  border-bottom-color: var(--basil);
+  border-bottom-color: var(--accent-ink);
 }
 
 /* Tag filter row (in the jar) */
@@ -1180,18 +1213,18 @@ footer {
   padding: 5px 12px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .tag-filter:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .tag-filter.active {
   background: var(--basil);
   color: #fff;
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 @media (pointer: coarse) {
@@ -1204,7 +1237,7 @@ footer {
 /* Jar view */
 .jar-title {
   font-family: Georgia, serif;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   font-size: 1.8rem;
   margin: 8px 0 16px;
 }
@@ -1221,7 +1254,7 @@ footer {
 
 .jar-search:focus-visible {
   outline: 3px solid var(--basil);
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .jar-empty {
@@ -1257,7 +1290,7 @@ footer {
 }
 
 .jar-item:hover strong {
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .jar-item img,
@@ -1314,7 +1347,7 @@ footer {
   flex-direction: column;
   gap: 6px;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .manual-form small {
@@ -1337,7 +1370,7 @@ footer {
 .manual-form input:focus-visible,
 .manual-form textarea:focus-visible {
   outline: 3px solid var(--basil);
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .manual-actions {
@@ -1529,7 +1562,7 @@ footer {
   padding: 11px 14px;
   background: none;
   border: none;
-  border-bottom: 1px solid rgba(221, 215, 199, 0.55);
+  border-bottom: 1px solid var(--rule);
   cursor: pointer;
   text-align: left;
   font: inherit;
@@ -1550,7 +1583,7 @@ footer {
   object-fit: cover;
   flex-shrink: 0;
   background: var(--paper);
-  border: 1px solid rgba(221, 215, 199, 0.6);
+  border: 1px solid var(--rule);
 }
 
 .dthumb-fallback {
@@ -1589,7 +1622,7 @@ footer {
   font-size: 0.9rem;
   color: var(--muted);
   background: var(--paper);
-  border-top: 1px solid rgba(221, 215, 199, 0.55);
+  border-top: 1px solid var(--rule);
 }
 
 .drow.skeleton {
@@ -1648,12 +1681,12 @@ footer {
   padding: 7px 14px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .backup-btn:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
   background: var(--sheet);
 }
 
@@ -1670,7 +1703,7 @@ footer {
 }
 
 .storage-status.protected {
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 /* Shopping list: open button on the recipe card */
@@ -1681,12 +1714,12 @@ footer {
   padding: 7px 14px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   cursor: pointer;
 }
 
 .shop-open:hover {
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
   background: var(--sheet);
 }
 
@@ -1708,7 +1741,7 @@ footer {
 .shop-title {
   margin: 0;
   font-family: Georgia, serif;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .shop-sub {
@@ -1736,7 +1769,7 @@ footer {
 }
 
 .shop-list input[type='checkbox'] {
-  accent-color: var(--basil);
+  accent-color: var(--accent-ink);
   flex-shrink: 0;
   transform: translateY(2px);
 }
@@ -1915,7 +1948,7 @@ footer {
   flex-direction: column;
   gap: 6px;
   font-weight: 600;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
 }
 
 .paste-box small {
@@ -1936,7 +1969,7 @@ footer {
 
 .paste-box textarea:focus-visible {
   outline: 3px solid var(--basil);
-  border-color: var(--basil);
+  border-color: var(--accent-ink);
 }
 
 .paste-box .save {
@@ -2062,7 +2095,7 @@ footer {
 .install-go {
   flex-shrink: 0;
   background: #fff;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
@@ -2126,7 +2159,7 @@ footer {
 .update-go {
   flex-shrink: 0;
   background: #fff;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
@@ -2188,7 +2221,7 @@ footer {
 
 .wn-title {
   flex: 1;
-  color: var(--basil-deep);
+  color: var(--accent-ink);
   font-size: 0.95rem;
 }
 

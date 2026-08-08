@@ -28,6 +28,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.7.0': [
     'Type a dish, pick a recipe. The box on the home screen now searches real recipe sites: type "dal tadka" or "chicken curry" and results appear right underneath with photos. Tap one and it becomes a clean card, ready to save. Pasting links works exactly like before.',
   ],
+  '1.8.0': [
+    'Recipe Jar now follows your device into dark mode: a warm, candlelit look for cooking after sundown. No setting needed, it simply matches your phone or computer.',
+  ],
   '1.7.2': [
     'Watch the little jar next to "My Jar": it fills up as you save recipes. Screens also glide in a bit more gently now, and buttons press down under your finger.',
   ],

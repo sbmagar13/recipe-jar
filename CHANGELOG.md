@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Dark mode.** Recipe Jar follows the device's color scheme with a warm,
+  candlelit dark look: deep olive-charcoal paper, cream ink, the basil going
+  soft sage where it is text. Buttons keep their deep green fills, food
+  photos glow, and the browser chrome tints to match. No toggle to find, it
+  simply matches the system.
+
 ## [1.7.3] - 2026-08-08
 
 ### Changed
