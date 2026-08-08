@@ -23,9 +23,9 @@ describe('BBC Good Food extractor', () => {
     <a href="https://www.bbcgoodfood.com/recipes/fourth-curry">4</a>
     <a href="https://www.bbcgoodfood.com/recipes/fifth-curry">5</a>`
 
-  it('extracts deduped recipe links with slug-derived titles, capped at four', () => {
+  it('extracts deduped recipe links with slug-derived titles', () => {
     const hits = bbc.extract(html, 'chicken curry')
-    expect(hits).toHaveLength(4)
+    expect(hits).toHaveLength(5)
     expect(hits[0]).toEqual({
       title: 'Chicken bhuna',
       url: 'https://www.bbcgoodfood.com/recipes/chicken-bhuna',
@@ -124,5 +124,34 @@ describe('BBC Food extractor', () => {
         image: null,
       },
     ])
+  })
+})
+
+import { rankHits, scoreHit } from '../src/lib/sitesearch'
+
+describe('relevance ranking', () => {
+  const h = (t: string, site = 'X') => ({ title: t, url: `https://x/${t}`, site, image: null })
+
+  it('a title matching every query word beats a one-word match', () => {
+    const ranked = rankHits(
+      [h('Potato curry lime cucumber raita'), h('Massaman Lamb Shoulder'), h('Mutton curry')],
+      'mutton curry',
+    )
+    expect(ranked[0].title).toBe('Mutton curry')
+  })
+
+  it('the exact phrase outranks scattered words', () => {
+    expect(scoreHit('Mutton curry', 'mutton curry')).toBeGreaterThan(
+      scoreHit('Curry roast with mutton pieces', 'mutton curry'),
+    )
+  })
+
+  it('keeps site diversity among equal scores (stable)', () => {
+    const ranked = rankHits([h('Chicken curry', 'A'), h('Chicken curry two', 'B')], 'paneer')
+    expect(ranked.map((x) => x.site)).toEqual(['A', 'B'])
+  })
+
+  it('short words like "of" are ignored', () => {
+    expect(scoreHit('Leg of lamb', 'leg of lamb')).toBeGreaterThan(0)
   })
 })

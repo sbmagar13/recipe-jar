@@ -19,7 +19,7 @@ interface SiteSearch {
   extract: (html: string, query: string) => SearchHit[]
 }
 
-const PER_SITE = 4
+const PER_SITE = 6
 
 /** "30-minute-chicken-curry" → "30 minute chicken curry". */
 export function titleFromSlug(slug: string): string {
@@ -159,6 +159,30 @@ export function interleave(perSite: SearchHit[][]): SearchHit[] {
   return out
 }
 
+/** How well a title answers the query. Sites order results their own way, so
+ *  without this, "potato curry raita" can outrank an actual mutton curry for
+ *  "mutton curry" just by being first on its site. */
+export function scoreHit(title: string, query: string): number {
+  const t = title.toLowerCase()
+  const q = query.toLowerCase().trim()
+  const words = q.split(/\s+/).filter((w) => w.length > 2)
+  if (words.length === 0) return 0
+  const matched = words.filter((w) => t.includes(w)).length
+  let score = matched * 10
+  if (matched === words.length) score += 40 // every word present
+  if (t.includes(q)) score += 30 // the exact phrase
+  if (t.startsWith(q)) score += 10 // the dish IS the title
+  return score
+}
+
+/** Best answers first; ties keep the interleaved site diversity (stable sort). */
+export function rankHits(hits: SearchHit[], query: string): SearchHit[] {
+  return hits
+    .map((hit, i) => ({ hit, score: scoreHit(hit.title, query), i }))
+    .sort((a, b) => b.score - a.score || a.i - b.i)
+    .map((x) => x.hit)
+}
+
 // Session-lifetime cache: backspacing and retyping a query is instant, and no
 // site gets asked the same question twice.
 const cache = new Map<string, SearchHit[]>()
@@ -192,8 +216,8 @@ export async function searchSites(
   await Promise.all(
     SITE_SEARCHES.map(async (_site, i) => {
       perSite[i] = await searchOneSite(i, query)
-      if (perSite[i].length > 0) onUpdate?.(interleave(perSite))
+      if (perSite[i].length > 0) onUpdate?.(rankHits(interleave(perSite), query))
     }),
   )
-  return interleave(perSite)
+  return rankHits(interleave(perSite), query)
 }

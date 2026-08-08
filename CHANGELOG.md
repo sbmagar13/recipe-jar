@@ -6,6 +6,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Dish search results are now ranked by how well they match what you typed:
+  a real mutton curry beats a potato curry that merely mentions curry.
+  Titles matching every word rise first, exact phrases higher still, and
+  each site contributes more candidates so the best answer is in the pool.
+
 ## [1.7.0] - 2026-08-08
 
 ### Added
