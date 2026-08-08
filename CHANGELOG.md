@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.6.8] - 2026-08-08
+
 ### Added
 
 - **Options instead of errors.** When a page carries several recipes, the one
@@ -303,7 +305,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.7...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.8...HEAD
+[1.6.8]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.8
 [1.6.7]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.7
 [1.6.6]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.6
 [1.6.5]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.5
