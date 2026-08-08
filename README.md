@@ -7,26 +7,27 @@
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Local-first](https://img.shields.io/badge/local--first-no%20account-33663d.svg)](#how-its-private-and-free)
 
-Paste a recipe link, get a clean card: ingredients and steps, nothing else. Save
-as many recipes as you want. They live in your browser, on your device, not on a
-server. That is why it is free forever: there is nothing for anyone to pay for.
+Paste a recipe link, or just type a dish, and get a clean card: ingredients and
+steps, nothing else. Save as many recipes as you want. They live in your
+browser, on your device, not on a server. That is why it is free forever: there
+is nothing for anyone to pay for.
 
 No account. No ads. Works offline. Open source.
 
 👉 **[recipejar.app](https://recipejar.app)**
 
 <p align="center">
-  <a href="https://recipejar.app"><img src="docs/screenshots/hero.png" width="100%" alt="Recipe Jar: just the recipe, yours to keep. Paste a recipe link, get a clean card with no account and no ads." /></a>
+  <a href="https://recipejar.app"><img src="docs/screenshots/hero.png" width="100%" alt="Recipe Jar: just the recipe, yours to keep. Paste a recipe link or type a dish, and get a clean card with no account and no ads." /></a>
 </p>
 
 <p align="center">
-  <img src="launch/recipe-jar-demo.gif" width="22%" alt="Recipe jar demo" />
+  <img src="docs/screenshots/search.png" width="22%" alt="Type a dish like paneer tikka and pick from ranked results with photos, from five real recipe sites" />
   &nbsp;
   <img src="docs/screenshots/card.png" width="22%" alt="A clean recipe card — ingredients and steps, nothing else" />
   &nbsp;
-  <img src="docs/screenshots/cook.png" width="22%" alt="Step-by-step cook mode with a built-in timer" />
+  <img src="docs/screenshots/shop.png" width="22%" alt="One merged shopping list from several recipes — 2 cloves here and 3 there become 7 cloves garlic" />
   &nbsp;
-  <img src="docs/screenshots/jar.png" width="22%" alt="Your jar of saved recipes, filtered by tag" />
+  <img src="docs/screenshots/cook.png" width="22%" alt="Step-by-step cook mode with built-in timers" />
 </p>
 
 ## Why
@@ -39,12 +40,27 @@ honest version: paste a link, get the recipe, keep it. Forever. For nothing.
 ## What it does
 
 - **Paste any recipe URL** and get a clean card. Works with most recipe sites in
-  any language (it reads the structured recipe data sites already publish for Google).
+  any language (it reads the structured recipe data sites already publish for
+  Google). If a page carries several recipes, you pick the right one.
+- **Type a dish instead** — "dal tadka", "chicken curry" — and pick from ranked
+  results with photos, searched live across five recipe sites (BBC Good Food,
+  RecipeTin Eats, BBC Food, Budget Bytes, Veg Recipes of India) through the same
+  proxy, with no API keys and nothing stored.
 - **Scale servings** with real quantity math, including fractions and metric decimals.
+- **One shopping list for the whole week**: pick several saved recipes and the
+  same ingredient adds up across them ("2 cups flour" + "1 cup flour" = "3 cups
+  flour"), scaled per recipe. Tick things off in the store, share the rest.
+- **Cook mode**: one step at a time, wake lock, and "simmer 20 minutes" becomes
+  a tappable timer.
 - **Save unlimited recipes** to your own device (IndexedDB). Search them by name
-  or ingredient.
+  or ingredient, tag them, add notes, count your cooks.
+- **Add from a photo**: snap a printed recipe and on-device OCR fills in the
+  fields. The text engine is self-hosted and lazy-loaded; the image never
+  leaves your device.
 - **Type in your own** family recipes, or paste recipe text and let it auto-fill
   the fields.
+- **Share any recipe as a link** — the whole recipe is encoded in the URL, no
+  server copy.
 - **Blocked sites** (NYT Cooking, AllRecipes, Serious Eats) that block fetching:
   use the one-click bookmarklet that runs in your own browser.
 - **Back up the whole jar** to a single file, or copy it as text. Restore either way.
@@ -81,8 +97,11 @@ calories, or socialise. It does one daily chore well.
 
 Vite + Svelte + TypeScript, Dexie (IndexedDB), Workbox (offline). Static site on
 Cloudflare Pages with Pages Functions for the fetch proxy and a storage-less
-telemetry sink. ~70 KB gzipped. Recipes are parsed from JSON-LD
-(`schema.org/Recipe`), with a microdata fallback.
+telemetry sink. ~75 KB gzipped core; the OCR engine (tesseract.js, self-hosted)
+lazy-loads only when someone actually adds a photo. Recipes are parsed from
+JSON-LD (`schema.org/Recipe`) with a microdata fallback, and dish search is
+just more of the same: per-site adapters parse each site's own search page,
+fetched through the proxy, ranked client-side.
 
 ## Self-host
 
