@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Recipe } from './lib/types'
-  import { parseRecipeFromHtml } from './lib/parse'
+  import { parseRecipeFromHtml, parseAllRecipesFromHtml, pickBestRecipe } from './lib/parse'
   import {
     saveRecipe,
     removeRecipe,
@@ -36,6 +36,10 @@
   let errorMsg = $state('')
   let blocked = $state(false)
   let recipe = $state<Recipe | null>(null)
+  // A dish name typed into the link box: offer a web search for it.
+  let dishQuery = $state('')
+  // A page that carries several recipes with no clear winner: let the cook pick.
+  let choices = $state<Recipe[] | null>(null)
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
@@ -236,7 +240,8 @@
     // visitor typed a search into this box expecting results.)
     if (/\s/.test(target) || !target.includes('.')) {
       blocked = false
-      errorMsg = `"${target}" looks like a dish, not a link. Paste the address of a recipe page, or tap one of the examples above.`
+      dishQuery = target
+      errorMsg = `"${target}" looks like a dish, not a link. Paste the address of a recipe page, tap one of the examples above, or`
       return
     }
     // Let people type a bare domain: "bbcgoodfood.com/recipes/..." works.
@@ -258,10 +263,23 @@
     void fetchRecipe(ex.url)
   }
 
+  function chooseRecipe(c: Recipe) {
+    choices = null
+    recipe = c
+    savedId = null
+    void findBySource(c.sourceUrl).then((existing) => {
+      savedId = existing?.id ?? null
+      navigate({ view: 'recipe', id: savedId })
+    })
+    url = ''
+  }
+
   async function fetchRecipe(target: string) {
     loading = true
     errorMsg = ''
     blocked = false
+    dishQuery = ''
+    choices = null
     try {
       const res = await fetch(`/api/proxy?url=${encodeURIComponent(target)}`)
       if (!res.ok) {
@@ -269,6 +287,14 @@
         throw new Error(body.error ?? 'Could not fetch that page')
       }
       const html = await res.text()
+      // A page can carry several recipes (the dish plus a related-recipes
+      // carousel). Auto-pick when one matches the page title; otherwise ask.
+      const all = parseAllRecipesFromHtml(html, target)
+      if (all.length > 1 && !pickBestRecipe(all, html)) {
+        choices = all.slice(0, 6)
+        loading = false
+        return
+      }
       const parsed = parseRecipeFromHtml(html, target)
       if (!parsed) {
         blocked = true
@@ -393,10 +419,27 @@
       {#if errorMsg}
         <p class="error" role="alert">
           {errorMsg}
+          {#if dishQuery}
+            <a class="linklike" href={`https://www.google.com/search?q=${encodeURIComponent(dishQuery + ' recipe')}`} target="_blank" rel="noopener noreferrer">search the web for “{dishQuery}” →</a>
+          {/if}
           {#if blocked}
-            This site may block fetching. <button class="linklike" onclick={() => go('import')}>Use the bookmarklet →</button>
+            This site may block fetching.
+            <button class="linklike" onclick={() => go('import')}>Use the bookmarklet →</button>
+            or
+            <button class="linklike" onclick={() => goAdd()}>paste the recipe text →</button>
           {/if}
         </p>
+      {/if}
+      {#if choices}
+        <div class="choices" role="group" aria-label="Recipes found on that page">
+          <p class="choices-title">That page has {choices.length} recipes. Which one?</p>
+          {#each choices as c (c.title)}
+            <button class="choice" onclick={() => chooseRecipe(c)}>
+              <strong>{c.title}</strong>
+              <small>{c.ingredients.length} {c.ingredients.length === 1 ? 'ingredient' : 'ingredients'}{c.totalTime ? ` · ${c.totalTime}` : ''}</small>
+            </button>
+          {/each}
+        </div>
       {/if}
       <p class="hint">
         Works with most recipe sites, in any language. Your saved recipes stay on your device.<br />

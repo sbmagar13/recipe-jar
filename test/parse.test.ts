@@ -288,3 +288,56 @@ describe('humanDuration', () => {
     expect(humanDuration(undefined)).toBeNull()
   })
 })
+
+// ---- Multi-recipe pages (issue #17) ----
+
+import { parseAllRecipesFromHtml, pickBestRecipe } from '../src/lib/parse'
+
+const carouselPage = (title: string) => `<!doctype html><html><head><title>${title}</title></head><body>
+  <script type="application/ld+json">${JSON.stringify({
+    '@graph': [
+      { '@type': 'Recipe', name: 'Sweet and sour chicken', recipeIngredient: ['1 chicken'], recipeInstructions: 'Cook it.' },
+      { '@type': 'Recipe', name: 'Easy butter chicken', recipeIngredient: ['2 chicken', '1 cup cream'], recipeInstructions: 'Simmer it.' },
+    ],
+  })}</script></body></html>`
+
+describe('multi-recipe pages', () => {
+  it('collects every recipe a page carries', () => {
+    const all = parseAllRecipesFromHtml(carouselPage('Anything'), 'https://x.test/r')
+    expect(all.map((r) => r.title)).toEqual(['Sweet and sour chicken', 'Easy butter chicken'])
+  })
+
+  it('auto-picks the recipe matching the page title, not the first one', () => {
+    const r = parseRecipeFromHtml(carouselPage('Easy Butter Chicken Recipe | Good Food'), 'https://x.test/r')
+    expect(r?.title).toBe('Easy butter chicken')
+  })
+
+  it('returns null from pickBestRecipe when the title matches nothing', () => {
+    const all = parseAllRecipesFromHtml(carouselPage('Our 50 best dinners'), 'https://x.test/r')
+    expect(pickBestRecipe(all, carouselPage('Our 50 best dinners'))).toBe(null)
+  })
+
+  it('falls back to the first recipe when ambiguous (old behavior preserved)', () => {
+    const r = parseRecipeFromHtml(carouselPage('Our 50 best dinners'), 'https://x.test/r')
+    expect(r?.title).toBe('Sweet and sour chicken')
+  })
+
+  it('dedupes the same recipe published in two blocks', () => {
+    const html = `<html><head><title>t</title></head><body>
+      <script type="application/ld+json">${JSON.stringify({ '@type': 'Recipe', name: 'Dal', recipeIngredient: ['1 cup lentils'], recipeInstructions: 'Boil.' })}</script>
+      <script type="application/ld+json">${JSON.stringify({ '@type': 'Recipe', name: 'Dal', recipeIngredient: ['1 cup lentils'], recipeInstructions: 'Boil.' })}</script>
+      </body></html>`
+    expect(parseAllRecipesFromHtml(html, 'https://x.test/r')).toHaveLength(1)
+  })
+
+  it('prefers og:title over the title tag for matching', () => {
+    const html = `<html><head><title>Good Food</title><meta property="og:title" content="Easy butter chicken"></head><body>
+      <script type="application/ld+json">${JSON.stringify({
+        '@graph': [
+          { '@type': 'Recipe', name: 'Sweet and sour chicken', recipeIngredient: ['1 chicken'], recipeInstructions: 'Cook.' },
+          { '@type': 'Recipe', name: 'Easy butter chicken', recipeIngredient: ['2 chicken'], recipeInstructions: 'Cook.' },
+        ],
+      })}</script></body></html>`
+    expect(parseRecipeFromHtml(html, 'https://x.test/r')?.title).toBe('Easy butter chicken')
+  })
+})

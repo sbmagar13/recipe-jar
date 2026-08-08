@@ -6,6 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Options instead of errors.** When a page carries several recipes, the one
+  matching the page's title is chosen automatically, and when none clearly
+  matches, a short list appears so you pick the right dish ([#17]). Typing a
+  dish name instead of a link now also offers a web search for it, and when a
+  site refuses to import, the error offers pasting the recipe text alongside
+  the bookmarklet. Thanks to a Show HN commenter for the nudge.
+
 ### Fixed
 
 - Typing a dish name ("chicken curry") into the link box now gets a friendly
