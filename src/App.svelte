@@ -51,8 +51,19 @@
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
-  // The living jar in the header: contents rise as the collection grows.
+  // The living jar in the header: contents rise as the collection grows,
+  // and the jar gives a happy plop when a save lands.
   const jarLevel = $derived(count === 0 ? 0 : Math.min(24, 5 + count * 2))
+  let jarPlop = $state(false)
+  let prevCount = -1
+  $effect(() => {
+    const c = count
+    if (prevCount >= 0 && c > prevCount) {
+      jarPlop = true
+      setTimeout(() => (jarPlop = false), 500)
+    }
+    prevCount = c
+  })
 
   // Home-screen "add from a photo": OCR runs here, then we hand the text to the
   // manual-entry form via initialText. Kept separate from ManualEntry's own
@@ -470,7 +481,7 @@
     </button>
     <nav>
       <button class="navlink" class:active={view === 'jar'} onclick={() => go('jar')}>
-        <svg class="jarfill" width="15" height="19" viewBox="0 0 32 40" aria-hidden="true">
+        <svg class="jarfill" class:plop={jarPlop} width="15" height="19" viewBox="0 0 32 40" aria-hidden="true">
           <defs>
             <clipPath id="rj-jarclip">
               <path d="M9 8 Q6 12 6 17 V32 Q6 37 11 37 H21 Q26 37 26 32 V17 Q26 12 23 8 Z" />
@@ -504,6 +515,9 @@
   {#if view === 'home'}
     <section class="hero">
       <h1>Just the recipe.<br />Yours to keep.</h1>
+      <svg class="hero-stroke" width="150" height="10" viewBox="0 0 150 10" aria-hidden="true">
+        <path d="M4 6 C 40 2, 75 8, 110 5 S 140 4, 146 5" fill="none" stroke="var(--tomato)" stroke-width="3" stroke-linecap="round" pathLength="100" />
+      </svg>
       <p class="sub">
         Paste a recipe link. Get a clean card: ingredients and steps, nothing else.
         No account, no ads, free forever.

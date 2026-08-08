@@ -206,6 +206,90 @@ main {
   }
 }
 
+/* The jar's label line, drawn once under the hero headline */
+.hero-stroke {
+  display: block;
+  margin: 2px auto 10px;
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-stroke path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: stroke-draw 0.7s ease 0.35s forwards;
+  }
+  @keyframes stroke-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* A save lands: the jar plops */
+  .jarfill.plop {
+    animation: jar-plop 0.45s cubic-bezier(0.3, 1.6, 0.4, 1);
+    transform-origin: 50% 100%;
+  }
+  @keyframes jar-plop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.25) rotate(-4deg);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Ingredients set down on the table, one after another */
+  .ingredients li {
+    animation: ing-in 0.3s ease both;
+  }
+  .ingredients li:nth-child(1) { animation-delay: 0.03s; }
+  .ingredients li:nth-child(2) { animation-delay: 0.06s; }
+  .ingredients li:nth-child(3) { animation-delay: 0.09s; }
+  .ingredients li:nth-child(4) { animation-delay: 0.12s; }
+  .ingredients li:nth-child(5) { animation-delay: 0.15s; }
+  .ingredients li:nth-child(6) { animation-delay: 0.18s; }
+  .ingredients li:nth-child(7) { animation-delay: 0.21s; }
+  .ingredients li:nth-child(8) { animation-delay: 0.24s; }
+  .ingredients li:nth-child(9) { animation-delay: 0.27s; }
+  .ingredients li:nth-child(10) { animation-delay: 0.3s; }
+  .ingredients li:nth-child(n + 11) { animation-delay: 0.33s; }
+  @keyframes ing-in {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Search results ripple in as they stream */
+  .drow {
+    animation: drow-in 0.22s ease both;
+  }
+  .drow:nth-child(1) { animation-delay: 0s; }
+  .drow:nth-child(2) { animation-delay: 0.03s; }
+  .drow:nth-child(3) { animation-delay: 0.06s; }
+  .drow:nth-child(4) { animation-delay: 0.09s; }
+  .drow:nth-child(5) { animation-delay: 0.12s; }
+  .drow:nth-child(n + 6) { animation-delay: 0.15s; }
+  @keyframes drow-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 /* Every real button presses down under the finger */
 button:not(:disabled):not(.linklike):active {
   transform: translateY(1px) scale(0.99);

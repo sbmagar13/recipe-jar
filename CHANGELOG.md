@@ -6,6 +6,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Four small moments of life, all pure CSS and off under reduced motion: the
+  hero headline gets the jar's red label line drawn under it once on load,
+  the little header jar plops when a save lands, ingredients cascade onto a
+  fresh recipe card, and search results ripple in as sites answer.
+
 ## [1.7.2] - 2026-08-08
 
 ### Added
