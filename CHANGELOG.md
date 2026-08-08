@@ -8,6 +8,9 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Typing a dish name ("chicken curry") into the link box now gets a friendly
+  pointer to paste a page address or tap an example, instead of a baffling
+  fetch error. A Show HN visitor taught us people try to search there.
 - The second example recipe is now chicken curry instead of butter chicken:
   the butter chicken page carries several embedded recipes and the card came
   up as the wrong one ([#17]).

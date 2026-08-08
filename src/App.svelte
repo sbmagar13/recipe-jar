@@ -231,6 +231,14 @@
     e.preventDefault()
     let target = url.trim()
     if (!target) return
+    // A dish name is not a link: catch "chicken curry" before it becomes
+    // https://chicken%20curry and a baffling fetch error. (A real Show HN
+    // visitor typed a search into this box expecting results.)
+    if (/\s/.test(target) || !target.includes('.')) {
+      blocked = false
+      errorMsg = `"${target}" looks like a dish, not a link. Paste the address of a recipe page, or tap one of the examples above.`
+      return
+    }
     // Let people type a bare domain: "bbcgoodfood.com/recipes/..." works.
     if (!/^https?:\/\//i.test(target)) target = 'https://' + target
     await fetchRecipe(target)
