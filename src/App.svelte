@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Recipe } from './lib/types'
   import { parseRecipeFromHtml, parseAllRecipesFromHtml, pickBestRecipe } from './lib/parse'
+  import { searchSites, type SearchHit } from './lib/sitesearch'
   import {
     saveRecipe,
     removeRecipe,
@@ -40,6 +41,13 @@
   let dishQuery = $state('')
   // A page that carries several recipes with no clear winner: let the cook pick.
   let choices = $state<Recipe[] | null>(null)
+  // Dish-name search results from supported recipe sites, shown in a
+  // dropdown anchored to the input, combobox style.
+  let searchHits = $state<SearchHit[] | null>(null)
+  let searching = $state(false)
+  let hiIndex = $state(-1)
+  let searchboxEl = $state<HTMLElement | null>(null)
+  const dropdownOpen = $derived(searching || searchHits !== null)
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
@@ -235,13 +243,11 @@
     e.preventDefault()
     let target = url.trim()
     if (!target) return
-    // A dish name is not a link: catch "chicken curry" before it becomes
-    // https://chicken%20curry and a baffling fetch error. (A real Show HN
-    // visitor typed a search into this box expecting results.)
+    // A dish name is not a link: search supported recipe sites for it and
+    // offer the results to pick from. (A real Show HN visitor typed a search
+    // into this box expecting exactly that.)
     if (/\s/.test(target) || !target.includes('.')) {
-      blocked = false
-      dishQuery = target
-      errorMsg = `"${target}" looks like a dish, not a link. Paste the address of a recipe page, tap one of the examples above, or`
+      await searchDish(target)
       return
     }
     // Let people type a bare domain: "bbcgoodfood.com/recipes/..." works.
@@ -261,6 +267,85 @@
   function tryExample(ex: (typeof EXAMPLES)[number]) {
     url = ex.url
     void fetchRecipe(ex.url)
+  }
+
+  // Guards a slow old search against overwriting a newer one.
+  let searchToken = 0
+  let searchTimer: ReturnType<typeof setTimeout> | undefined
+
+  async function searchDish(query: string) {
+    clearTimeout(searchTimer)
+    const token = ++searchToken
+    blocked = false
+    errorMsg = ''
+    choices = null
+    searchHits = null
+    hiIndex = -1
+    dishQuery = query
+    searching = true
+    try {
+      // Results paint as each site answers; the slowest site never gates the first.
+      const hits = await searchSites(query, (partial) => {
+        if (token === searchToken) searchHits = partial.slice(0, 10)
+      })
+      if (token !== searchToken) return
+      // An empty array renders the dropdown's no-results state.
+      searchHits = hits.slice(0, 10)
+    } catch {
+      if (token !== searchToken) return
+      searchHits = []
+    } finally {
+      if (token === searchToken) searching = false
+    }
+  }
+
+  function closeSearch() {
+    clearTimeout(searchTimer)
+    searchToken++
+    searching = false
+    searchHits = null
+    hiIndex = -1
+  }
+
+  function onSearchKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      closeSearch()
+      return
+    }
+    if (!searchHits || searchHits.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      hiIndex = (hiIndex + 1) % searchHits.length
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      hiIndex = (hiIndex - 1 + searchHits.length) % searchHits.length
+    } else if (e.key === 'Enter' && hiIndex >= 0) {
+      e.preventDefault()
+      chooseHit(searchHits[hiIndex])
+    }
+  }
+
+  // Search on the fly: when the input reads like a dish and typing pauses,
+  // run the search without waiting for the button. One polite fetch per
+  // pause, never per keystroke.
+  function onUrlInput() {
+    clearTimeout(searchTimer)
+    const t = url.trim()
+    const dishLike = t.length >= 4 && (/\s/.test(t) || !t.includes('.'))
+    if (!dishLike) {
+      if (dropdownOpen) closeSearch()
+      return
+    }
+    searchTimer = setTimeout(() => {
+      if (url.trim() === t) void searchDish(t)
+    }, 550)
+  }
+
+  function chooseHit(hit: SearchHit) {
+    searchHits = null
+    hiIndex = -1
+    url = hit.url
+    void fetchRecipe(hit.url)
   }
 
   function chooseRecipe(c: Recipe) {
@@ -289,6 +374,7 @@
       const html = await res.text()
       // A page can carry several recipes (the dish plus a related-recipes
       // carousel). Auto-pick when one matches the page title; otherwise ask.
+      searchHits = null
       const all = parseAllRecipesFromHtml(html, target)
       if (all.length > 1 && !pickBestRecipe(all, html)) {
         choices = all.slice(0, 6)
@@ -360,6 +446,12 @@
   }
 </script>
 
+<svelte:window
+  onpointerdown={(e) => {
+    if (dropdownOpen && searchboxEl && !searchboxEl.contains(e.target as Node)) closeSearch()
+  }}
+/>
+
 <a class="skip-link" href="#content">Skip to content</a>
 <main>
   <UpdatePrompt />
@@ -393,22 +485,70 @@
         Paste a recipe link. Get a clean card: ingredients and steps, nothing else.
         No account, no ads, free forever.
       </p>
-      <form class="fetchbar" onsubmit={getRecipe}>
-        <input
-          type="text"
-          inputmode="url"
-          autocapitalize="none"
-          autocorrect="off"
-          spellcheck="false"
-          bind:value={url}
-          placeholder="paste or type a recipe link…"
-          aria-label="Recipe URL"
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Fetching…' : 'Get the recipe'}
-        </button>
-      </form>
+      <div class="searchbox" bind:this={searchboxEl}>
+        <form class="fetchbar" onsubmit={getRecipe}>
+          <div class="inputwrap">
+            <input
+              type="text"
+              inputmode="url"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+              bind:value={url}
+              oninput={onUrlInput}
+              onkeydown={onSearchKeydown}
+              placeholder="paste a recipe link, or type a dish…"
+              aria-label="Recipe URL"
+              required
+            />
+            {#if searching}<span class="input-spin" aria-hidden="true"></span>{/if}
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Fetching…' : 'Get the recipe'}
+          </button>
+        </form>
+        {#if dropdownOpen}
+          <div class="dropdown" role="listbox" aria-label="Recipe results">
+            {#if searching && !searchHits}
+              {#each [0, 1, 2] as i (i)}
+                <div class="drow skeleton" aria-hidden="true">
+                  <span class="dthumb sk"></span>
+                  <span class="dlines"><span class="sk sk-t"></span><span class="sk sk-s"></span></span>
+                </div>
+              {/each}
+            {:else if searchHits && searchHits.length > 0}
+              {#each searchHits as hit, i (hit.url)}
+                <button
+                  class="drow"
+                  class:active={i === hiIndex}
+                  role="option"
+                  aria-selected={i === hiIndex}
+                  onmouseenter={() => (hiIndex = i)}
+                  onclick={() => chooseHit(hit)}
+                >
+                  {#if hit.image}
+                    <img class="dthumb" src={hit.image} alt="" decoding="async" />
+                  {:else}
+                    <span class="dthumb dthumb-fallback" aria-hidden="true">🥘</span>
+                  {/if}
+                  <span class="dlines">
+                    <strong>{hit.title}</strong>
+                    <small>{hit.site}</small>
+                  </span>
+                </button>
+              {/each}
+              <div class="dfoot">
+                <a class="linklike" href={`https://www.google.com/search?q=${encodeURIComponent(dishQuery + ' recipe')}`} target="_blank" rel="noopener noreferrer">search the web instead →</a>
+              </div>
+            {:else}
+              <div class="dfoot">
+                No results for “{dishQuery}” on the sites we can search.
+                <a class="linklike" href={`https://www.google.com/search?q=${encodeURIComponent(dishQuery + ' recipe')}`} target="_blank" rel="noopener noreferrer">search the web →</a>
+              </div>
+            {/if}
+          </div>
+        {/if}
+      </div>
       <p class="try-line">
         No recipe link handy? Try
         <button class="linklike" onclick={() => tryExample(EXAMPLES[0])} disabled={loading}>chocolate brownies</button>

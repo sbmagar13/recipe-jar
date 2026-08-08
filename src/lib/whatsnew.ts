@@ -25,6 +25,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.6.0': [
     'One shopping list for the whole week. In My Jar, tap "Plan a shopping list", pick the recipes you are cooking, and the same ingredient adds up across them: "2 cups flour" here plus "1 cup flour" there becomes "3 cups flour". Tick things off in the store and share the rest.',
   ],
+  '1.7.0': [
+    'Type a dish, pick a recipe. The box on the home screen now searches real recipe sites: type "dal tadka" or "chicken curry" and results appear right underneath with photos. Tap one and it becomes a clean card, ready to save. Pasting links works exactly like before.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

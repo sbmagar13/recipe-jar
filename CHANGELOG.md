@@ -6,6 +6,19 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Type a dish, get options.** The home-screen box now doubles as a recipe
+  search: type "chicken curry" or "dal tadka" and results from five sites
+  (BBC Good Food, RecipeTin Eats, BBC Food, Budget Bytes, Veg Recipes of
+  India) drop down right under the box, with photos, arrow-key navigation,
+  and results streaming in as each site answers. Tap one and it imports as
+  usual. Searches run through the same proxy as any page fetch, so there are
+  still no accounts, no API keys, and nothing stored, and repeat searches are
+  served from a session cache. Sites that block importing (NYT Cooking and
+  friends) are deliberately not searched: a result that fails on tap is worse
+  than none. Grew out of the same Show HN feedback as the recipe chooser.
+
 ## [1.6.8] - 2026-08-08
 
 ### Added

@@ -1302,13 +1302,200 @@ footer {
   padding: 12px 16px;
   border: 1.5px solid var(--rule);
   border-radius: 10px;
-  background: var(--card, #fff);
+  background: var(--sheet);
   cursor: pointer;
   text-align: left;
 }
 
 .choice:hover {
   border-color: var(--basil, #33663d);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .choice {
+    animation: choice-in 0.25s ease both;
+  }
+  @keyframes choice-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Dish search: combobox dropdown anchored under the input */
+.searchbox {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.inputwrap {
+  position: relative;
+  flex: 1 1 300px;
+  display: flex;
+}
+
+.inputwrap input {
+  width: 100%;
+}
+
+.input-spin {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid var(--muted);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: input-spin 0.7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes input-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--sheet);
+  border: 1.5px solid var(--rule);
+  border-radius: 14px;
+  box-shadow:
+    0 3px 8px rgba(42, 42, 37, 0.06),
+    0 18px 40px rgba(42, 42, 37, 0.14);
+  overflow: hidden auto;
+  max-height: 420px;
+  text-align: left;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dropdown {
+    animation: dropdown-in 0.18s ease both;
+  }
+  @keyframes dropdown-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.drow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(221, 215, 199, 0.55);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  box-shadow: inset 3px 0 0 transparent;
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.drow.active {
+  background: rgba(51, 102, 61, 0.08);
+  box-shadow: inset 3px 0 0 var(--basil);
+}
+
+.dthumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--paper);
+  border: 1px solid rgba(221, 215, 199, 0.6);
+}
+
+.dthumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.dlines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.dlines strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dlines small {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.dfoot {
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: var(--paper);
+  border-top: 1px solid rgba(221, 215, 199, 0.55);
+}
+
+.drow.skeleton {
+  pointer-events: none;
+}
+
+.sk {
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(221, 215, 199, 0.4) 25%, rgba(221, 215, 199, 0.85) 50%, rgba(221, 215, 199, 0.4) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.sk.sk-t {
+  height: 14px;
+  width: 180px;
+}
+
+.sk.sk-s {
+  height: 11px;
+  width: 90px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
 }
 
 .choice small {
