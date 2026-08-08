@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-08-08
+
 ### Added
 
 - **Type a dish, get options.** The home-screen box now doubles as a recipe
@@ -318,7 +320,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.6.8...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.7.0
 [1.6.8]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.8
 [1.6.7]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.7
 [1.6.6]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.6
