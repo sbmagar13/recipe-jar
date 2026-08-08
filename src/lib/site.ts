@@ -3,7 +3,7 @@
 // somewhere other than the maintainer's personal inbox.
 export const CONTACT_EMAIL = 'sagar@sagarbudhathoki.com'
 export const REPO_URL = 'https://github.com/sbmagar13/recipe-jar'
-export const LEGAL_UPDATED = 'July 2026'
+export const LEGAL_UPDATED = 'August 2026'
 
 // The running app version, injected from package.json at build time.
 export const APP_VERSION = __APP_VERSION__

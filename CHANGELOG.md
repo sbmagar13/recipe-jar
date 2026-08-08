@@ -6,6 +6,21 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **The jar is alive.** The "My Jar" button now shows a little jar that fills
+  up as your collection grows. Real state, not decoration: empty when you
+  start, fuller with every save.
+
+### Changed
+
+- Screens now ease in gently when you move around the app (pure CSS, zero
+  bytes of motion JavaScript, and the bundle budget holds). Buttons press
+  down under your finger. The home screen's row of underlined links became
+  three quiet chips. Display headings sit a touch tighter.
+- The Fazier badge is gone from the About page; the plain "Featured on" text
+  links remain. The badge's proxy function and parked asset left with it.
+
 ## [1.7.1] - 2026-08-08
 
 ### Fixed

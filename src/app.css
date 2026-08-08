@@ -84,6 +84,7 @@ main {
 .hero h1 {
   font-family: Georgia, serif;
   font-size: clamp(2rem, 6vw, 3rem);
+  letter-spacing: -0.012em;
   color: var(--basil-deep);
   margin: 0 0 12px;
   line-height: 1.12;
@@ -158,6 +159,58 @@ main {
   margin-top: 24px;
 }
 
+/* Quiet secondary actions under the hero, chips instead of a row of links */
+.action-chips {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.action-chip {
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 7px 15px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.action-chip:hover:not(:disabled) {
+  border-color: var(--basil);
+  color: var(--basil-deep);
+}
+
+.action-chip:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Screens breathe in on change ({#key view} remounts .viewwrap) */
+@media (prefers-reduced-motion: no-preference) {
+  .viewwrap {
+    animation: view-in 0.16s ease both;
+  }
+  @keyframes view-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Every real button presses down under the finger */
+button:not(:disabled):not(.linklike):active {
+  transform: translateY(1px) scale(0.99);
+}
+
 /* Recipe card */
 .card {
   background: var(--sheet);
@@ -181,6 +234,7 @@ main {
 .card h1 {
   font-family: Georgia, serif;
   font-size: 1.8rem;
+  letter-spacing: -0.012em;
   color: var(--basil-deep);
   margin: 0 0 6px;
   text-wrap: balance;
@@ -716,23 +770,6 @@ footer {
   font-size: 0.8rem;
 }
 
-.fazier-badge {
-  margin-top: 8px;
-  display: inline-flex;
-  line-height: 0;
-  opacity: 0.9;
-  transition: opacity 0.15s ease;
-}
-
-.fazier-badge:hover {
-  opacity: 1;
-}
-
-.fazier-badge img {
-  display: block;
-  height: auto;
-}
-
 /* About & Privacy */
 .legal {
   max-width: 640px;
@@ -829,6 +866,9 @@ footer {
 }
 
 .navlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   background: none;
   border: 1.5px solid var(--rule);
   border-radius: 999px;

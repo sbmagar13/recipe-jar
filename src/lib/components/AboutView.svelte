@@ -25,9 +25,6 @@
     ·
     <a href="https://peerlist.io/sbmagar13/project/recipe-jar" target="_blank" rel="noopener noreferrer">Peerlist</a>
   </p>
-  <a class="fazier-badge" href="https://fazier.com/launches/recipe-jar" target="_blank" rel="noopener noreferrer">
-    <img src="/api/fazier-badge" width="250" height="54" alt="Featured on Fazier" loading="lazy" decoding="async" />
-  </a>
 
   <h2>Your privacy</h2>
   <ul>
@@ -80,9 +77,10 @@
 
   <h2>Who made this</h2>
   <p>
-    One person: Sagar Budhathoki, a DevOps engineer in Kathmandu, Nepal, who got tired of
-    scrolling past life stories to reach the ingredients. No company, no investors, no growth
-    team. That's also why nothing here needs to make money. Say hi:
+    Hi, I'm Sagar Budhathoki, a DevOps engineer in Kathmandu, Nepal. I built Recipe Jar for
+    myself because I kept losing good recipes, then decided to keep it free for everyone. There
+    is no company behind it, and it doesn't need to make money to stay up. If something's
+    broken, or a site won't import, or you just want to say hi:
     <a href="https://github.com/sbmagar13" target="_blank" rel="noopener">github.com/sbmagar13</a>
     or <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
   </p>

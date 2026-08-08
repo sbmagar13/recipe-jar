@@ -51,6 +51,8 @@
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
+  // The living jar in the header: contents rise as the collection grows.
+  const jarLevel = $derived(count === 0 ? 0 : Math.min(24, 5 + count * 2))
 
   // Home-screen "add from a photo": OCR runs here, then we hand the text to the
   // manual-entry form via initialText. Kept separate from ManualEntry's own
@@ -468,6 +470,25 @@
     </button>
     <nav>
       <button class="navlink" class:active={view === 'jar'} onclick={() => go('jar')}>
+        <svg class="jarfill" width="15" height="19" viewBox="0 0 32 40" aria-hidden="true">
+          <defs>
+            <clipPath id="rj-jarclip">
+              <path d="M9 8 Q6 12 6 17 V32 Q6 37 11 37 H21 Q26 37 26 32 V17 Q26 12 23 8 Z" />
+            </clipPath>
+          </defs>
+          <rect x="9" y="1" width="14" height="4.5" rx="1.5" fill="currentColor" opacity="0.9" />
+          <rect
+            x="5"
+            y={37 - jarLevel}
+            width="22"
+            height={jarLevel}
+            fill="currentColor"
+            opacity="0.3"
+            clip-path="url(#rj-jarclip)"
+            style="transition: y 0.45s ease, height 0.45s ease"
+          />
+          <path d="M9 8 Q6 12 6 17 V32 Q6 37 11 37 H21 Q26 37 26 32 V17 Q26 12 23 8 Z" fill="none" stroke="currentColor" stroke-width="2.6" />
+        </svg>
         My Jar{count > 0 ? ` (${count})` : ''}
       </button>
     </nav>
@@ -478,6 +499,8 @@
   {/if}
 
   <div id="content" tabindex="-1">
+  {#key view}
+  <div class="viewwrap">
   {#if view === 'home'}
     <section class="hero">
       <h1>Just the recipe.<br />Yours to keep.</h1>
@@ -582,15 +605,15 @@
         </div>
       {/if}
       <p class="hint">
-        Works with most recipe sites, in any language. Your saved recipes stay on your device.<br />
-        <button class="linklike" onclick={() => goAdd()}>Type in one of your own</button>
-        &nbsp;·&nbsp;
-        <button class="linklike" onclick={triggerHomePhoto} disabled={photoBusy}>
+        Works with most recipe sites, in any language. Your saved recipes stay on your device.
+      </p>
+      <div class="action-chips">
+        <button class="action-chip" onclick={() => goAdd()}>Type in one of your own</button>
+        <button class="action-chip" onclick={triggerHomePhoto} disabled={photoBusy}>
           {photoBusy ? `Reading photo… ${photoPct}%` : 'Add from a photo'}
         </button>
-        &nbsp;·&nbsp;
-        <button class="linklike" onclick={() => go('import')}>Recipe from a blocked site?</button>
-      </p>
+        <button class="action-chip" onclick={() => go('import')}>Recipe from a blocked site?</button>
+      </div>
       <input bind:this={homePhotoInput} type="file" accept="image/*" onchange={handleHomePhoto} hidden />
       {#if photoError}<p class="error" role="alert">{photoError}</p>{/if}
     </section>
@@ -623,6 +646,8 @@
   {:else if view === 'about'}
     <AboutView onback={goBack} />
   {/if}
+  </div>
+  {/key}
   </div>
 
   <footer>
