@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-08-08
+
 ### Fixed
 
 - Dish search results are now ranked by how well they match what you typed:
@@ -327,7 +329,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.7.1
 [1.7.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.7.0
 [1.6.8]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.8
 [1.6.7]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.6.7
