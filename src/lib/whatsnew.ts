@@ -6,22 +6,10 @@
 // Release checklist (see RELEASING.md): when you cut a version users should
 // notice, add an entry here keyed by the exact version string in package.json.
 // Not every release needs one.
+// Notes older than a few minors get pruned: a reader returning across that
+// big a gap is better served by the changelog than a wall of popups, and
+// every entry here ships in the entry bundle forever.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.1.0': [
-    'Cook mode now keeps a strip of every timer running on other steps, so nothing gets lost when you have a few going at once for different parts of the dish. Tap one to jump straight to that step.',
-  ],
-  '1.2.0': [
-    'Turn any recipe into a shopping list. Tick off what you already have, then copy or share what is left, scaled to the servings you picked.',
-  ],
-  '1.3.0': [
-    'Kitchen timers got friendlier. A finished timer now keeps a gentle alarm going until you come back or tap it, instead of one short beep that is easy to miss. And every timer has a reset button for when you start it too early.',
-  ],
-  '1.4.0': [
-    'Recipes are bookmarkable now. Each saved recipe has its own link, so you can bookmark it and reload without losing your place, and the browser Back and Forward buttons move between screens. It still all lives in the link, nothing leaves your device.',
-  ],
-  '1.5.0': [
-    'You can add a recipe from a photo now. On the "Add or paste" screen, tap "From a photo", point it at a printed recipe, and it reads the text and fills in the fields for you to check. It all happens on your device, nothing gets uploaded.',
-  ],
   '1.6.0': [
     'One shopping list for the whole week. In My Jar, tap "Plan a shopping list", pick the recipes you are cooking, and the same ingredient adds up across them: "2 cups flour" here plus "1 cup flour" there becomes "3 cups flour". Tick things off in the store and share the rest.',
   ],
