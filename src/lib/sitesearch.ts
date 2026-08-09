@@ -221,3 +221,34 @@ export async function searchSites(
   )
   return rankHits(interleave(perSite), query)
 }
+
+export interface SearchOutcome {
+  hits: SearchHit[]
+  /** The query that produced the hits; differs from the input when a typo was forgiven. */
+  usedQuery: string
+}
+
+/**
+ * Search, and when nothing comes back, forgive likely typos ("browny" ->
+ * "brownie") and try once more. The spelling module loads on demand so the
+ * happy path never pays for it. `onUpdate` receives the query in play so the
+ * UI can say "showing results for" as corrected hits stream in.
+ */
+export async function searchSitesForgiving(
+  query: string,
+  onUpdate?: (hits: SearchHit[], usedQuery: string) => void,
+): Promise<SearchOutcome> {
+  const hits = await searchSites(query, (h) => onUpdate?.(h, query))
+  if (hits.length > 0) return { hits, usedQuery: query }
+  try {
+    const { correctQuery } = await import('./spellfix')
+    const alt = correctQuery(query)
+    if (alt.toLowerCase() !== query.trim().toLowerCase()) {
+      const altHits = await searchSites(alt, (h) => onUpdate?.(h, alt))
+      if (altHits.length > 0) return { hits: altHits, usedQuery: alt }
+    }
+  } catch {
+    // The spelling chunk failing to load (offline, say) just means no second try.
+  }
+  return { hits, usedQuery: query }
+}

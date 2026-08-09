@@ -6,6 +6,20 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Forgiving dish search.** A search that finds nothing now corrects likely
+  typos and tries once more: "browny" lands on brownies, "chiken curry" on
+  chicken curry, "panner tikka" on paneer tikka. The dropdown says
+  "Showing results for ..." whenever a correction was applied. The word list
+  (about 190 common dish and ingredient words, Nepali dishes included) ships
+  as a lazy chunk that only loads after an empty result, so the entry bundle
+  stays inside its budget.
+- **Theme switch.** A footer control cycles auto, light, and dark. Auto keeps
+  following the device like before; light or dark pins the look regardless of
+  the system setting. The choice is stored on-device, applies before first
+  paint on reload, and the browser chrome color follows along.
+
 ## [1.8.0] - 2026-08-08
 
 ### Added

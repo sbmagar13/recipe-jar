@@ -39,9 +39,14 @@
 
 /* Dark: a candlelit kitchen, not a gray flip. Deep olive-charcoal paper,
    cream ink, the basil going soft sage wherever it is text. Buttons keep
-   their deep green fills, which read even better in the dark. */
+   their deep green fills, which read even better in the dark.
+
+   Two ways in: the device says dark (and the cook has not pinned light), or
+   the cook pinned dark from the footer (html[data-theme]). The blocks repeat
+   because CSS cannot share a rule between a media query and a selector;
+   change one, change both. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     color-scheme: dark;
     --paper: #171a14;
     --sheet: #20241d;
@@ -52,16 +57,37 @@
     --rule: #3a3f35;
     --card-hover: #262b23;
   }
-  .drow.active {
+  :root:not([data-theme='light']) .drow.active {
     background: rgba(169, 207, 176, 0.1);
   }
-  .sk {
+  :root:not([data-theme='light']) .sk {
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 75%);
     background-size: 200% 100%;
   }
-  .dthumb {
+  :root:not([data-theme='light']) .dthumb {
     background: #2a2f27;
   }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #171a14;
+  --sheet: #20241d;
+  --ink: #eae5d8;
+  --accent-ink: #a9cfb0;
+  --tomato: #dd6a52;
+  --muted: #a19b8b;
+  --rule: #3a3f35;
+  --card-hover: #262b23;
+}
+:root[data-theme='dark'] .drow.active {
+  background: rgba(169, 207, 176, 0.1);
+}
+:root[data-theme='dark'] .sk {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+}
+:root[data-theme='dark'] .dthumb {
+  background: #2a2f27;
 }
 
 * {

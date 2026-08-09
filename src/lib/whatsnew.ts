@@ -34,6 +34,9 @@ export const WHATS_NEW: Record<string, string[]> = {
   '1.7.2': [
     'Watch the little jar next to "My Jar": it fills up as you save recipes. Screens also glide in a bit more gently now, and buttons press down under your finger.',
   ],
+  '1.9.0': [
+    'Two small comforts. Search now forgives spelling: type "browny" and you still get brownies. And you can pick the look you like: the new Theme switch in the footer goes auto, light, or dark, so the app no longer has to follow your device.',
+  ],
 }
 
 // Pure decision used by WhatsNew.svelte and its unit test: given the running

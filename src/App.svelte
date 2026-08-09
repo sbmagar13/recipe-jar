@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Recipe } from './lib/types'
   import { parseRecipeFromHtml, parseAllRecipesFromHtml, pickBestRecipe } from './lib/parse'
-  import { searchSites, type SearchHit } from './lib/sitesearch'
+  import { searchSitesForgiving, type SearchHit } from './lib/sitesearch'
   import {
     saveRecipe,
     removeRecipe,
@@ -44,10 +44,45 @@
   // Dish-name search results from supported recipe sites, shown in a
   // dropdown anchored to the input, combobox style.
   let searchHits = $state<SearchHit[] | null>(null)
+  // When a typo was forgiven ("browny" -> "brownie"), the query the results
+  // actually answer, so the dropdown can say so.
+  let searchedAs = $state<string | null>(null)
   let searching = $state(false)
   let hiIndex = $state(-1)
   let searchboxEl = $state<HTMLElement | null>(null)
   const dropdownOpen = $derived(searching || searchHits !== null)
+  // Theme choice: follow the device (default) or pin light/dark. The boot
+  // script in index.html applies a saved choice before first paint; this
+  // keeps the attribute, storage, and browser-chrome color in step after.
+  type ThemePref = 'system' | 'light' | 'dark'
+  const THEME_KEY = 'recipe-jar:theme'
+  const THEME_BAR: Record<'light' | 'dark', string> = { light: '#33663d', dark: '#171a14' }
+  let themePref = $state<ThemePref>(
+    (() => {
+      try {
+        const t = localStorage.getItem(THEME_KEY)
+        if (t === 'light' || t === 'dark') return t
+      } catch {}
+      return 'system'
+    })(),
+  )
+  $effect(() => {
+    const root = document.documentElement
+    if (themePref === 'system') delete root.dataset.theme
+    else root.dataset.theme = themePref
+    try {
+      if (themePref === 'system') localStorage.removeItem(THEME_KEY)
+      else localStorage.setItem(THEME_KEY, themePref)
+    } catch {}
+    for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+      const systemScheme = meta.getAttribute('media')?.includes('dark') ? 'dark' : 'light'
+      meta.setAttribute('content', THEME_BAR[themePref === 'system' ? systemScheme : themePref])
+    }
+  })
+  function cycleTheme() {
+    themePref = themePref === 'system' ? 'light' : themePref === 'light' ? 'dark' : 'system'
+  }
+
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)
@@ -293,17 +328,21 @@
     errorMsg = ''
     choices = null
     searchHits = null
+    searchedAs = null
     hiIndex = -1
     dishQuery = query
     searching = true
     try {
       // Results paint as each site answers; the slowest site never gates the first.
-      const hits = await searchSites(query, (partial) => {
-        if (token === searchToken) searchHits = partial.slice(0, 10)
+      const outcome = await searchSitesForgiving(query, (partial, usedQuery) => {
+        if (token !== searchToken) return
+        searchHits = partial.slice(0, 10)
+        searchedAs = usedQuery !== query ? usedQuery : null
       })
       if (token !== searchToken) return
       // An empty array renders the dropdown's no-results state.
-      searchHits = hits.slice(0, 10)
+      searchHits = outcome.hits.slice(0, 10)
+      searchedAs = outcome.usedQuery !== query ? outcome.usedQuery : null
     } catch {
       if (token !== searchToken) return
       searchHits = []
@@ -317,6 +356,7 @@
     searchToken++
     searching = false
     searchHits = null
+    searchedAs = null
     hiIndex = -1
   }
 
@@ -356,6 +396,7 @@
 
   function chooseHit(hit: SearchHit) {
     searchHits = null
+    searchedAs = null
     hiIndex = -1
     url = hit.url
     void fetchRecipe(hit.url)
@@ -575,6 +616,9 @@
                 </button>
               {/each}
               <div class="dfoot">
+                {#if searchedAs}
+                  <span>Showing results for “{searchedAs}”. </span>
+                {/if}
                 <a class="linklike" href={`https://www.google.com/search?q=${encodeURIComponent(dishQuery + ' recipe')}`} target="_blank" rel="noopener noreferrer">search the web instead →</a>
               </div>
             {:else}
@@ -668,6 +712,10 @@
     <span>Free forever · No account · Your recipes stay on your device</span>
     <span class="footer-links">
       <button class="linklike" onclick={() => go('about')}>About &amp; Privacy</button>
+      ·
+      <button class="linklike" onclick={cycleTheme} title="Switch between auto, light, and dark">
+        Theme: {themePref === 'system' ? 'auto' : themePref}
+      </button>
       ·
       <span class="mono">free &amp; open source, for people who cook</span>
     </span>
