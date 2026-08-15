@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-08-15
+
 ### Added
 
 - **Parse failures now have a memory.** When a page cannot be read, the
@@ -434,7 +436,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.12.0
 [1.11.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.11.0
 [1.10.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.10.0
 [1.9.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.9.0
