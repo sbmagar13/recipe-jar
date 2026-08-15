@@ -6,6 +6,17 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Cook mode, made for messy hands.** A clean tap almost anywhere on the
+  cooking screen moves to the next step (the left edge goes back), because
+  floury fingers miss small buttons; taps on timers, the top bar, and other
+  real controls are left alone, and swiping still works. Cook mode also remembers your place now: if
+  a phone call or a stray Escape pulls you out mid-recipe, starting again
+  picks up at the same step (fresh for 12 hours, one recipe at a time) with a
+  "start over" link, and finishing on ✓ Done forgets it. Steps glide in the
+  direction of travel, off under reduced motion.
+
 ## [1.10.0] - 2026-08-15
 
 ### Added

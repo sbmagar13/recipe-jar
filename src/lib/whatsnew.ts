@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.10.0': [
-    'Auto-backup. In My Jar, pick a backup file once (in a folder your own cloud already syncs) and Recipe Jar keeps it up to date as your jar changes. Your cloud carries it to your other devices; nothing touches a server of ours. Chrome and Edge; the manual buttons stay for everyone.',
+  '1.11.0': [
+    'Cook mode, made for messy hands. Tap anywhere on the step to move on (left side goes back), no hunting for buttons with floury fingers. And if a phone call pulls you away, cook mode now remembers your step and picks up where you left off, with a "start over" link when you want the top.',
   ],
 }
 

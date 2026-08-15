@@ -25,7 +25,8 @@
   import ManualEntry from './lib/components/ManualEntry.svelte'
   import ImportHelp from './lib/components/ImportHelp.svelte'
   import InstallTip from './lib/components/InstallTip.svelte'
-  import AboutView from './lib/components/AboutView.svelte'
+  // AboutView loads on demand: it is a page of legal prose most sessions
+  // never open, and the entry budget wants those bytes back.
   import UpdatePrompt from './lib/components/UpdatePrompt.svelte'
   import WhatsNew from './lib/components/WhatsNew.svelte'
 
@@ -707,7 +708,10 @@
   {:else if view === 'import'}
     <ImportHelp onback={goBack} ontypein={() => goAdd()} />
   {:else if view === 'about'}
-    <AboutView onback={goBack} />
+    {#await import('./lib/components/AboutView.svelte') then M}
+      {@const AboutView = M.default}
+      <AboutView onback={goBack} />
+    {/await}
   {/if}
   </div>
   {/key}

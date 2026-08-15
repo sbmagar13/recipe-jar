@@ -733,6 +733,19 @@ button:not(:disabled):not(.linklike):active {
   flex: 1;
 }
 
+/* Steps glide in the direction of travel (--stepdx flips sign going back). */
+@media (prefers-reduced-motion: no-preference) {
+  .cook-step {
+    animation: step-in 0.22s ease-out;
+  }
+  @keyframes step-in {
+    from {
+      opacity: 0;
+      transform: translateX(var(--stepdx, 14px));
+    }
+  }
+}
+
 .cook-timers {
   display: flex;
   flex-wrap: wrap;

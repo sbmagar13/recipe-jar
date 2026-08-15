@@ -264,10 +264,50 @@
   let showCookIngredients = $state(false)
   let lockFromCook = false
 
+  // A phone call or a stray Escape mid-recipe should not lose your place:
+  // the current step is remembered (one cook at a time, freshest wins) and
+  // starting again picks up there, with a "start over" escape hatch.
+  // Finishing on ✓ Done forgets it.
+  const COOKPOS_KEY = 'recipe-jar:cookpos'
+  const COOKPOS_FRESH_MS = 12 * 3_600_000
+  let resumed = $state(false)
+  // Which way the step is moving, for the slide direction.
+  let stepDir = $state(1)
+
+  function savedCookPos(): number | null {
+    if (savedId === null) return null
+    try {
+      const raw = localStorage.getItem(COOKPOS_KEY)
+      if (!raw) return null
+      const v = JSON.parse(raw) as { id: number; pos: number; at: number }
+      if (v.id !== savedId || Date.now() - v.at > COOKPOS_FRESH_MS) return null
+      return v.pos >= 1 && v.pos < cookList.length ? v.pos : null
+    } catch {
+      return null
+    }
+  }
+
+  $effect(() => {
+    if (!cooking || savedId === null) return
+    const pos = stepIndex
+    try {
+      localStorage.setItem(COOKPOS_KEY, JSON.stringify({ id: savedId, pos, at: Date.now() }))
+    } catch {}
+  })
+
+  function startOver() {
+    stepDir = -1
+    stepIndex = 0
+    resumed = false
+  }
+
   function startCooking() {
     if (cookList.length === 0) return // nothing but section markers
     ensureAudio() // unlock audio on this gesture so step timers can beep
-    stepIndex = 0
+    const back = savedCookPos()
+    stepIndex = back ?? 0
+    resumed = back !== null
+    stepDir = 1
     showCookIngredients = false
     cooking = true
     if (wakeLockSupported && !awake) {
@@ -285,21 +325,35 @@
     }
   }
 
+  /** The happy ending: the cook reached ✓ Done, so forget the place-keeper. */
+  function finishCooking() {
+    resumed = false
+    try {
+      localStorage.removeItem(COOKPOS_KEY)
+    } catch {}
+    stopCooking()
+  }
+
   function nextStep() {
     silenceAllAlarms() // moving on counts as "I've got it"
+    stepDir = 1
     if (stepIndex < cookList.length - 1) stepIndex++
-    else stopCooking()
+    else finishCooking()
   }
 
   function prevStep() {
     silenceAllAlarms()
+    stepDir = -1
     if (stepIndex > 0) stepIndex--
   }
 
   // Jump straight to a step (cook position) — e.g. tapping a tray timer.
   function goToStep(pos: number) {
     silenceAllAlarms()
-    if (pos >= 0 && pos < cookList.length) stepIndex = pos
+    if (pos >= 0 && pos < cookList.length) {
+      stepDir = pos > stepIndex ? 1 : -1
+      stepIndex = pos
+    }
   }
 
   // Every timer still going on a step you're not currently looking at. Drives the
@@ -338,15 +392,31 @@
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Swipe left/right to move between steps (touch).
+  // Swipe left/right to move between steps, and knuckle-friendly tap zones:
+  // a clean tap on the step text moves forward (right side) or back (left
+  // side), because floury hands miss small buttons. Taps on real controls
+  // (timers, ingredients, links) are left alone.
   let touchX = 0
+  let touchY = 0
   function onTouchStart(e: TouchEvent) {
     touchX = e.changedTouches[0].clientX
+    touchY = e.changedTouches[0].clientY
   }
   function onTouchEnd(e: TouchEvent) {
-    const dx = e.changedTouches[0].clientX - touchX
-    if (Math.abs(dx) > 60) {
+    const t = e.changedTouches[0]
+    const dx = t.clientX - touchX
+    const dy = t.clientY - touchY
+    if (Math.abs(dx) > 60 && Math.abs(dy) < 80) {
       if (dx < 0) nextStep()
+      else prevStep()
+      return
+    }
+    if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+      const el = e.target as HTMLElement
+      if (el.closest('button, a, input, textarea')) return
+      if (el.closest('.cook-top, .cook-ingredients')) return
+      if (!el.closest('.cook')) return
+      if (t.clientX > window.innerWidth * 0.38) nextStep()
       else prevStep()
     }
   }
@@ -480,7 +550,7 @@
   {/if}
   <div class="card-body">
     {#if cooking}
-      <div class="cook" role="group" aria-label="Cooking steps, swipe left or right to move" ontouchstart={onTouchStart} ontouchend={onTouchEnd}>
+      <div class="cook" role="group" aria-label="Cooking steps, tap or swipe to move" ontouchstart={onTouchStart} ontouchend={onTouchEnd}>
         <div class="cook-top">
           <h1 class="cook-title">{recipe.title}</h1>
           <button class="cook-exit" onclick={stopCooking} aria-label="Exit cook mode">✕</button>
@@ -488,7 +558,11 @@
         <div class="cook-progress" aria-hidden="true">
           <div class="cook-progress-fill" style="width:{((stepIndex + 1) / cookList.length) * 100}%"></div>
         </div>
-        <p class="cook-counter">Step {stepIndex + 1} of {cookList.length}</p>
+        <p class="cook-counter">
+          Step {stepIndex + 1} of {cookList.length}{#if resumed}
+            · picked up where you left off
+            <button class="linklike" onclick={startOver}>start over</button>{/if}
+        </p>
         {#if bgTimers.length > 0}
           <div class="cook-tray" role="group" aria-label="Timers running on other steps">
             {#each bgTimers as at (at.key)}
@@ -513,7 +587,9 @@
         {#if cookList[stepIndex].section}
           <p class="cook-section">{cookList[stepIndex].section}</p>
         {/if}
-        <p class="cook-step">{cookList[stepIndex].text}</p>
+        {#key stepIndex}
+          <p class="cook-step" style="--stepdx:{stepDir * 14}px">{cookList[stepIndex].text}</p>
+        {/key}
         {#if stepTimers[cookList[stepIndex].index].length > 0}
           <div class="cook-timers">
             {#each stepTimers[cookList[stepIndex].index] as t, j (j)}
@@ -542,7 +618,7 @@
           {#if stepIndex < cookList.length - 1}
             <button class="cook-next" onclick={nextStep}>Next ▶</button>
           {:else}
-            <button class="cook-next cook-finish" onclick={stopCooking}>✓ Done</button>
+            <button class="cook-next cook-finish" onclick={finishCooking}>✓ Done</button>
           {/if}
         </div>
       </div>
