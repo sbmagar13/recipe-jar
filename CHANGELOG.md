@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-08-15
+
 ### Added
 
 - **My Jar search knows your jar.** Multi-word searches now require every
@@ -447,7 +449,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.13.0
 [1.12.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.12.0
 [1.11.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.11.0
 [1.10.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.10.0
