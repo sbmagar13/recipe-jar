@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.github
+.wrangler
+docs
+e2e
+test
+playwright-report
+test-results
+*.md
+!README.md

@@ -6,6 +6,18 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Self-hosting with Docker** ([#16]). One container serves the static build
+  and runs a portable port of the link-fetch proxy with the same open-proxy
+  and SSRF guards, hardened further for homelabs: DNS answers are screened and
+  every redirect hop is re-checked, since there is no edge network in front of
+  a home server. No telemetry inside the container. Multi-arch image
+  (amd64 + arm64, ~60 MB) published to GHCR by CI on every release:
+  `docker run -d -p 8080:8080 ghcr.io/sbmagar13/recipe-jar:latest`.
+
+[#16]: https://github.com/sbmagar13/recipe-jar/issues/16
+
 ## [1.9.0] - 2026-08-09
 
 ### Added

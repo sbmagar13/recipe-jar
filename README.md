@@ -105,6 +105,32 @@ fetched through the proxy, ranked client-side.
 
 ## Self-host
 
+### With Docker
+
+One container serves the app and runs the link-fetch proxy (same open-proxy and
+SSRF guards as production, plus DNS screening because a homelab has no edge
+network in front of it). No telemetry: the container has nothing to send to and
+nowhere to store it. Multi-arch (amd64 + arm64), about 60 MB.
+
+```bash
+docker run -d -p 8080:8080 ghcr.io/sbmagar13/recipe-jar:latest
+# then open http://localhost:8080
+```
+
+Or with compose, using the [docker-compose.yml](docker-compose.yml) in this
+repo:
+
+```bash
+docker compose up -d
+```
+
+Everything runs in the visitor's browser (recipes, storage, OCR, cook mode);
+the container only serves files and fetches recipe pages on request. Put it
+behind any reverse proxy you like; it honors `X-Forwarded-Proto` and
+`X-Forwarded-Host`.
+
+### On Cloudflare
+
 Recipe Jar is a static site plus one tiny Cloudflare Pages Function (the fetch
 proxy). You can run your own copy on Cloudflare's free tier in a couple of
 minutes — there's no database to provision and no secrets required to serve it,

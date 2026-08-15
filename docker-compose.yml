@@ -1,0 +1,9 @@
+# Self-host Recipe Jar: `docker compose up -d`, then open http://localhost:8080
+services:
+  recipe-jar:
+    image: ghcr.io/sbmagar13/recipe-jar:latest
+    # Building from source instead: comment `image:` and uncomment:
+    # build: .
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
