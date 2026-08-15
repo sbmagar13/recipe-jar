@@ -1728,6 +1728,24 @@ footer {
   color: var(--muted);
 }
 
+/* Auto-backup line (My Jar): quiet like the storage status, with its state
+   readable at a glance. */
+.autosync {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+}
+.autosync[data-state='reconnect'] span {
+  color: var(--tomato);
+}
+.autosync-hint {
+  flex-basis: 100%;
+}
+
 .storage-status.protected {
   color: var(--accent-ink);
 }

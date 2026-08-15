@@ -11,6 +11,43 @@
   let { onopen, onchanged, onshop }: Props = $props()
 
   let backupMsg = $state('')
+  // Auto-backup (Chromium only): status mirrors the lazy autosync module.
+  const autosyncSupported = typeof window !== 'undefined' && 'showSaveFilePicker' in window
+  let autosync = $state<{ state: string; name?: string; lastWrite?: number }>({
+    state: localStorage.getItem('recipe-jar:autosync') === '1' ? 'on' : 'off',
+  })
+  if (autosyncSupported && localStorage.getItem('recipe-jar:autosync') === '1') {
+    void import('../autosync').then((m) => m.onStatus((s) => (autosync = s)))
+  }
+  async function handleAutosyncSetup() {
+    try {
+      const m = await import('../autosync')
+      m.onStatus((s) => (autosync = s))
+      await m.setupAutoBackup()
+      loadLastBackup()
+    } catch {
+      // Picker dismissed: nothing changes.
+    }
+  }
+  async function handleAutosyncReconnect() {
+    const m = await import('../autosync')
+    const s = await m.reconnect()
+    // A missing handle means the file is gone: offer the picker again.
+    if (s.state === 'reconnect' && !s.name) await handleAutosyncSetup()
+  }
+  async function handleAutosyncOff() {
+    const m = await import('../autosync')
+    await m.disableAutoBackup()
+  }
+  function writeAge(ts: number | undefined): string {
+    if (!ts) return ''
+    const mins = Math.floor((Date.now() - ts) / 60_000)
+    if (mins < 1) return 'updated just now'
+    if (mins < 60) return `updated ${mins} min ago`
+    const days = Math.floor(mins / 1440)
+    if (days < 1) return `updated ${Math.floor(mins / 60)} h ago`
+    return `updated ${days} ${days === 1 ? 'day' : 'days'} ago`
+  }
   let lastBackup = $state<number | null>(null)
   let lastBackupCount = $state(0)
   let nudgeSnoozedUntil = $state(0)
@@ -247,6 +284,23 @@
       </span>
     {/if}
   </div>
+
+  {#if autosyncSupported && entries.length > 0}
+    <p class="autosync" data-state={autosync.state}>
+      {#if autosync.state === 'on'}
+        <span>⚡ Auto-backup: {autosync.name ?? 'your file'} · {writeAge(autosync.lastWrite) || 'ready'}</span>
+        <button class="linklike" onclick={handleAutosyncOff}>Turn off</button>
+      {:else if autosync.state === 'reconnect'}
+        <span>⚡ Auto-backup is paused until you reconnect its file.</span>
+        <button class="linklike" onclick={handleAutosyncReconnect}>Reconnect</button>
+      {:else}
+        <button class="linklike" onclick={handleAutosyncSetup}>
+          ⚡ Auto-backup: pick a file once, it stays up to date
+        </button>
+        <span class="autosync-hint">Put it in a folder your cloud already syncs (iCloud, Dropbox, Syncthing).</span>
+      {/if}
+    </p>
+  {/if}
 
   {#if entries.length > 0 && persist !== 'unsupported'}
     {#if persist === 'persisted'}

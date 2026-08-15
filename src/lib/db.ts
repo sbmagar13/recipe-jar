@@ -18,13 +18,27 @@ export interface SavedRecipe {
   cookedCount?: number
 }
 
+/** Small key-value rows that are not recipes (e.g. the auto-backup file
+ *  handle, which must live in IndexedDB because localStorage cannot hold
+ *  structured-cloneable objects). */
+export interface MetaEntry {
+  key: string
+  value: unknown
+}
+
 export const db = new Dexie('recipe-jar') as Dexie & {
   recipes: EntityTable<SavedRecipe, 'id'>
+  meta: EntityTable<MetaEntry, 'key'>
 }
 
 db.version(1).stores({
   // id auto-increments; title/sourceUrl/savedAt indexed for lookup and sorting
   recipes: '++id, title, sourceUrl, savedAt',
+})
+
+db.version(2).stores({
+  recipes: '++id, title, sourceUrl, savedAt',
+  meta: '&key',
 })
 
 /**

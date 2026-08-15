@@ -83,6 +83,11 @@
     themePref = themePref === 'system' ? 'light' : themePref === 'light' ? 'dark' : 'system'
   }
 
+  // Auto-backup resumes lazily: the module only loads for cooks who turned it on.
+  if (localStorage.getItem('recipe-jar:autosync') === '1') {
+    void import('./lib/autosync').then((m) => m.startAutosync())
+  }
+
   let savedId = $state<number | null>(null)
   let savedEntry = $state<SavedRecipe | null>(null)
   let count = $state(0)

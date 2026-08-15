@@ -6,24 +6,14 @@
 // Release checklist (see RELEASING.md): when you cut a version users should
 // notice, add an entry here keyed by the exact version string in package.json.
 // Not every release needs one.
-// Notes older than a few minors get pruned: a reader returning across that
-// big a gap is better served by the changelog than a wall of popups, and
-// every entry here ships in the entry bundle forever.
+//
+// Keep ONLY the current release's note (plus its minor, for patch fallback):
+// pickHighlights can never show an older entry once a newer version runs, so
+// anything below the current minor is unreachable bytes in the entry bundle.
+// Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.6.0': [
-    'One shopping list for the whole week. In My Jar, tap "Plan a shopping list", pick the recipes you are cooking, and the same ingredient adds up across them: "2 cups flour" here plus "1 cup flour" there becomes "3 cups flour". Tick things off in the store and share the rest.',
-  ],
-  '1.7.0': [
-    'Type a dish, pick a recipe. The box on the home screen now searches real recipe sites: type "dal tadka" or "chicken curry" and results appear right underneath with photos. Tap one and it becomes a clean card, ready to save. Pasting links works exactly like before.',
-  ],
-  '1.8.0': [
-    'Recipe Jar now follows your device into dark mode: a warm, candlelit look for cooking after sundown. No setting needed, it simply matches your phone or computer.',
-  ],
-  '1.7.2': [
-    'Watch the little jar next to "My Jar": it fills up as you save recipes. Screens also glide in a bit more gently now, and buttons press down under your finger.',
-  ],
-  '1.9.0': [
-    'Two small comforts. Search now forgives spelling: type "browny" and you still get brownies. And you can pick the look you like: the new Theme switch in the footer goes auto, light, or dark, so the app no longer has to follow your device.',
+  '1.10.0': [
+    'Auto-backup. In My Jar, pick a backup file once (in a folder your own cloud already syncs) and Recipe Jar keeps it up to date as your jar changes. Your cloud carries it to your other devices; nothing touches a server of ours. Chrome and Edge; the manual buttons stay for everyone.',
   ],
 }
 

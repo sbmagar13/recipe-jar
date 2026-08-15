@@ -8,6 +8,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Auto-backup to your own cloud.** In My Jar, pick a backup file once
+  (ideally inside a folder that iCloud Drive, Dropbox, or Syncthing already
+  syncs) and Recipe Jar rewrites it automatically after every change: saves,
+  deletes, notes, tags, cooked marks. Your own cloud carries the file between
+  devices; on another machine, "Restore from file" reads the same file. Built
+  on the File System Access API, so the option appears in Chromium browsers
+  and everyone else keeps the manual buttons. Automatic writes also count for
+  the backup nudge, so it stops nagging people who are already covered.
 - **Self-hosting with Docker** ([#16]). One container serves the static build
   and runs a portable port of the link-fetch proxy with the same open-proxy
   and SSRF guards, hardened further for homelabs: DNS answers are screened and
