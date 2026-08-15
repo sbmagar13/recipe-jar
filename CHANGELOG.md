@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-08-15
+
 ### Added
 
 - **Auto-backup to your own cloud.** In My Jar, pick a backup file once
@@ -401,7 +403,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.10.0
 [1.9.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.9.0
 [1.8.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.8.0
 [1.7.3]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.7.3
