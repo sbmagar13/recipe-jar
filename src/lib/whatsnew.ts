@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.12.0': [
-    'Link imports got sharper. Some sites hide their recipe behind minified code, and some publish the whole method as one long paragraph. Recipe Jar now reads through both, so more pages become clean cards with real steps instead of one wall of text.',
+  '1.13.0': [
+    'My Jar search got smarter. "paneer spinach" now finds the dish that uses both, even across different ingredient lines, and a typo like "panner" snaps to whatever your own jar actually contains. Your recipes are the dictionary.',
   ],
 }
 

@@ -190,8 +190,35 @@
     if (activeTag !== null && !allTags.includes(activeTag)) activeTag = null
   })
 
+  // When the typed query matches nothing, the lazy spelling module tries to
+  // snap it to the jar's own vocabulary ("panner" finds their paneer). The
+  // jar itself is the dictionary, so it only ever suggests dishes they have.
+  let fuzzyAs = $state<string | null>(null)
+  let fuzzyToken = 0
+  $effect(() => {
+    const q = query.trim()
+    const token = ++fuzzyToken
+    fuzzyAs = null
+    if (q.length < 4 || entries.some((e) => matchesQuery(e, q))) return
+    void import('../spellfix').then((m) => {
+      if (token !== fuzzyToken) return
+      const vocab: string[] = []
+      for (const e of entries) {
+        vocab.push(e.title, ...(e.tags ?? []))
+        for (const i of e.recipe.ingredients) vocab.push(i.raw)
+      }
+      const alt = m.correctToVocab(q, vocab)
+      if (alt.toLowerCase() !== q.toLowerCase() && entries.some((e) => matchesQuery(e, alt))) {
+        fuzzyAs = alt
+      }
+    })
+  })
+  const effectiveQuery = $derived(fuzzyAs ?? query)
+
   const visible = $derived(
-    entries.filter((e) => matchesQuery(e, query) && (activeTag === null || (e.tags ?? []).includes(activeTag)))
+    entries.filter(
+      (e) => matchesQuery(e, effectiveQuery) && (activeTag === null || (e.tags ?? []).includes(activeTag))
+    )
   )
 
   // Recipes saved since the last backup (all of them if never backed up).
@@ -221,6 +248,9 @@
       placeholder="Search by name, ingredient, or tag…"
       aria-label="Search saved recipes"
     />
+    {#if fuzzyAs}
+      <p class="jar-fuzzy">Showing matches for “{fuzzyAs}”</p>
+    {/if}
   {/if}
 
   {#if allTags.length > 0}

@@ -1301,6 +1301,13 @@ footer {
   max-width: 48ch;
 }
 
+/* "Showing matches for …" under the jar search when a typo was forgiven. */
+.jar-fuzzy {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .jar-list {
   list-style: none;
   padding: 0;

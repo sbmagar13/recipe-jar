@@ -194,11 +194,17 @@ export async function importJar(json: string): Promise<{ added: number; skipped:
   return { added, skipped }
 }
 
-/** Case-insensitive search across title and ingredient text. */
+/** Case-insensitive search across title, tags, and ingredient text. Every
+ *  word must match somewhere, so "paneer spinach" finds the dish that uses
+ *  both even when they sit on different ingredient lines. */
 export function matchesQuery(entry: SavedRecipe, q: string): boolean {
-  const needle = q.trim().toLowerCase()
-  if (!needle) return true
-  if (entry.title.toLowerCase().includes(needle)) return true
-  if ((entry.tags ?? []).some((t) => t.toLowerCase().includes(needle))) return true
-  return entry.recipe.ingredients.some((i) => i.raw.toLowerCase().includes(needle))
+  const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (words.length === 0) return true
+  const title = entry.title.toLowerCase()
+  return words.every(
+    (w) =>
+      title.includes(w) ||
+      (entry.tags ?? []).some((t) => t.toLowerCase().includes(w)) ||
+      entry.recipe.ingredients.some((i) => i.raw.toLowerCase().includes(w)),
+  )
 }

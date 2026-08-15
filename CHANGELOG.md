@@ -6,6 +6,17 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **My Jar search knows your jar.** Multi-word searches now require every
+  word to match somewhere across the title, tags, and ingredient lines, so
+  "paneer spinach" answers "what can I cook with these two" instead of
+  matching nothing. And when a query matches nothing at all, it is corrected
+  against the jar's own vocabulary (titles, tags, ingredients) and retried
+  with a "Showing matches for" note: "panner" finds their paneer because
+  their paneer is the dictionary. Correction lives in the same lazy spelling
+  chunk as dish search, so the entry bundle does not grow.
+
 ## [1.12.0] - 2026-08-15
 
 ### Added

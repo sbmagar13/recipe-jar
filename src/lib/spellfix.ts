@@ -74,16 +74,12 @@ function knownForm(w: string): string | null {
   return null
 }
 
-export function correctWord(word: string): string {
-  const w = word.toLowerCase()
-  if (w.length < 4) return word
-  const known = knownForm(w)
-  if (known) return known === w ? word : known
-  // Typos rarely touch the first letter, so requiring it keeps snaps sane.
-  const cap = w.length >= 6 ? 2 : 1
+/** Nearest candidate within the cap, first letter matching: typos rarely
+ *  touch the first letter, and requiring it keeps snaps sane. */
+function nearestIn(w: string, candidates: Iterable<string>, cap: number): string | null {
   let best: string | null = null
   let bestDistance = cap + 1
-  for (const candidate of FOOD_WORDS) {
+  for (const candidate of candidates) {
     if (candidate[0] !== w[0]) continue
     const d = editDistance(w, candidate, cap)
     if (d < bestDistance) {
@@ -92,7 +88,42 @@ export function correctWord(word: string): string {
       if (d === 1) break
     }
   }
-  return best ?? word
+  return best
+}
+
+export function correctWord(word: string): string {
+  const w = word.toLowerCase()
+  if (w.length < 4) return word
+  const known = knownForm(w)
+  if (known) return known === w ? word : known
+  const cap = w.length >= 6 ? 2 : 1
+  return nearestIn(w, FOOD_WORDS, cap) ?? word
+}
+
+/**
+ * Correct a query against the cook's own jar: the vocabulary is whatever
+ * words their titles, tags, and ingredient lines actually contain, which
+ * beats any fixed dictionary at knowing that "panner" means their paneer.
+ */
+export function correctToVocab(query: string, vocabLines: Iterable<string>): string {
+  const vocab = new Set<string>()
+  for (const line of vocabLines) {
+    for (const w of line.toLowerCase().split(/[^\p{L}\p{N}]+/u)) {
+      if (w.length >= 4) vocab.add(w)
+    }
+  }
+  return query
+    .trim()
+    .split(/\s+/)
+    .map((word) => {
+      const w = word.toLowerCase()
+      if (w.length < 4 || vocab.has(w)) return word
+      const sSingular = w.replace(/s$/, '')
+      if (sSingular !== w && vocab.has(sSingular)) return sSingular
+      const cap = w.length >= 6 ? 2 : 1
+      return nearestIn(w, vocab, cap) ?? word
+    })
+    .join(' ')
 }
 
 /** "browny" -> "brownie"; words that are already food words pass through. */
