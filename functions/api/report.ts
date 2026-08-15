@@ -6,14 +6,25 @@
 
 import { isAllowedCaller } from './_caller'
 
+interface Env {
+  STATS?: KVNamespace
+}
+
 const MAX_BODY = 2_000 // bytes; beacons are tiny, reject anything larger
 const MAX_FIELD = 300
+const FAIL_TTL_S = 90 * 86_400
+
+/** Keep only hostname-shaped values so junk never lands in storage keys. */
+export function cleanHost(v: unknown): string {
+  const h = typeof v === 'string' ? v.toLowerCase().trim() : ''
+  return /^[a-z0-9.-]{4,100}$/.test(h) && h.includes('.') ? h : ''
+}
 
 function clip(v: unknown): string {
   return typeof v === 'string' ? v.slice(0, MAX_FIELD) : ''
 }
 
-export const onRequestPost: PagesFunction = async (context) => {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
   const request = context.request
   const selfOrigin = new URL(request.url).origin
   if (!isAllowedCaller(request.headers, selfOrigin)) {
@@ -43,6 +54,19 @@ export const onRequestPost: PagesFunction = async (context) => {
     ua: clip(request.headers.get('user-agent')),
   }
   console.log(JSON.stringify(line))
+
+  // Parse failures also land in KV as one unique key per event, so "which
+  // sites break the parser" survives past the live log tail. Hostname only,
+  // exactly as the About page discloses; expires after 90 days.
+  const host = cleanHost(body.host)
+  if (kind === 'parse-fail' && host && context.env.STATS) {
+    const date = new Date().toISOString().slice(0, 10)
+    context.waitUntil(
+      context.env.STATS.put(`fail:${date}:${host}:${crypto.randomUUID()}`, '1', {
+        expirationTtl: FAIL_TTL_S,
+      }),
+    )
+  }
 
   // 204: fire-and-forget, nothing to return.
   return new Response(null, { status: 204 })

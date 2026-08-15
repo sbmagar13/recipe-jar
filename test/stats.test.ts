@@ -112,3 +112,32 @@ describe('aggregate', () => {
     expect(Object.keys(out.days)).toEqual(['2026-07-10', '2026-07-12', '2026-07-14'])
   })
 })
+
+describe('aggregateFails', () => {
+  it('folds fail keys into per-host counts, worst first, skipping junk', async () => {
+    const { aggregateFails } = await import('../functions/api/stats')
+    const out = aggregateFails([
+      'fail:2026-08-15:example.com:aaa',
+      'fail:2026-08-15:example.com:bbb',
+      'fail:2026-08-16:example.com:ccc',
+      'fail:2026-08-16:other.se:ddd',
+      'count:save:hit:2026-08-16:chrome:desktop:eee',
+      'fail:broken',
+    ])
+    expect(Object.keys(out)).toEqual(['example.com', 'other.se'])
+    expect(out['example.com']).toBe(3)
+    expect(out['other.se']).toBe(1)
+  })
+})
+
+describe('cleanHost (report endpoint)', () => {
+  it('accepts hostnames and rejects junk that could pollute keys', async () => {
+    const { cleanHost } = await import('../functions/api/report')
+    expect(cleanHost('www.Example.COM')).toBe('www.example.com')
+    expect(cleanHost('kwestiasmaku.com')).toBe('kwestiasmaku.com')
+    expect(cleanHost('no-dots')).toBe('')
+    expect(cleanHost('bad:colon.com')).toBe('')
+    expect(cleanHost(42)).toBe('')
+    expect(cleanHost('a'.repeat(200) + '.com')).toBe('')
+  })
+})

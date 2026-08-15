@@ -6,6 +6,24 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Parse failures now have a memory.** When a page cannot be read, the
+  hostname (and only the hostname, as the About page has always disclosed)
+  is stored as an anonymous counter for 90 days, so "which sites break the
+  importer" can be answered from real use instead of guesswork. The private
+  stats endpoint reports the tally.
+
+### Fixed
+
+- **Imports from more sites.** Two real-world gaps found by probing ~45
+  popular recipe sites through the parser: JSON-LD hidden behind minified
+  HTML (`type=application/ld+json` without quotes, as loveandlemons.com
+  serves it) now parses, and a method published as one long paragraph now
+  splits into real steps, with the page's visible microdata steps winning
+  over a one-blob JSON-LD method (valdemarsro.dk style). 22 of the sites
+  probed already parsed clean, in six languages.
+
 ## [1.11.0] - 2026-08-15
 
 ### Added

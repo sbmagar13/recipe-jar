@@ -58,6 +58,18 @@ export function aggregate(
   return { total: legacyTotal + hits.length, days, browsers, devices }
 }
 
+/** Fold `fail:date:host:uuid` keys into per-host counts, worst first. Pure,
+ *  for tests. Malformed keys are skipped rather than miscounted. */
+export function aggregateFails(names: string[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const name of names) {
+    const parts = name.split(':')
+    if (parts.length < 4 || parts[0] !== 'fail') continue
+    counts[parts[2]] = (counts[parts[2]] ?? 0) + 1
+  }
+  return Object.fromEntries(Object.entries(counts).sort((a, b) => b[1] - a[1]))
+}
+
 /** Every key under a prefix, following list cursors. */
 async function listKeys(kv: KVNamespace, prefix: string): Promise<string[]> {
   const names: string[] = []
@@ -99,5 +111,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .filter((h): h is Hit => h !== null)
 
   const { total, days, browsers, devices } = aggregate(legacyTotal, legacyDays, hits)
-  return Response.json({ event, total, days, browsers, devices })
+  const parseFails = aggregateFails(await listKeys(env.STATS, 'fail:'))
+  return Response.json({ event, total, days, browsers, devices, parseFails })
 }

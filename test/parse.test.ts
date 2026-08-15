@@ -341,3 +341,46 @@ describe('multi-recipe pages', () => {
     expect(parseRecipeFromHtml(html, 'https://x.test/r')?.title).toBe('Easy butter chicken')
   })
 })
+
+describe('capture release: real-world markup the parser used to miss', () => {
+  it('reads JSON-LD whose script type attribute is unquoted (minified HTML)', () => {
+    const html = `<html><head>
+      <script type=application/ld+json class=yoast-schema-graph>{"@context":"https://schema.org","@graph":[{"@type":"Recipe","name":"Banana Bread","recipeIngredient":["3 bananas","2 cups flour"],"recipeInstructions":[{"@type":"HowToStep","text":"Mash."},{"@type":"HowToStep","text":"Bake."}]}]}</script>
+      </head><body></body></html>`
+    const r = parseRecipeFromHtml(html, 'https://example.com/banana')
+    expect(r?.title).toBe('Banana Bread')
+    expect(r?.ingredients).toHaveLength(2)
+    expect(r?.steps).toEqual(['Mash.', 'Bake.'])
+  })
+
+  it('splits a short instruction blob on newlines', () => {
+    const html = `<script type="application/ld+json">{"@type":"Recipe","name":"Pancakes","recipeIngredient":["1 egg"],"recipeInstructions":"Whisk the batter.\\nRest 30 minutes.\\nFry until golden."}</script>`
+    const r = parseRecipeFromHtml(html, 'https://example.com/p')
+    expect(r?.steps).toEqual(['Whisk the batter.', 'Rest 30 minutes.', 'Fry until golden.'])
+  })
+
+  it('upgrades a one-blob JSON-LD method with the page microdata steps', () => {
+    const html = `<script type="application/ld+json">{"@type":"Recipe","name":"Pandekager","recipeIngredient":["2 eggs","1 cup milk","flour"],"recipeInstructions":"Whisk everything and fry the pancakes until golden brown on both sides."}</script>
+      <div itemscope itemtype="https://schema.org/Recipe">
+        <div itemprop="recipeInstructions" class="content">
+          <p>Whisk eggs, milk and flour into a smooth batter.</p>
+          <p>Rest the batter for 30 minutes.</p>
+          <p>Fry until golden on both sides.</p>
+        </div>
+      </div>`
+    const r = parseRecipeFromHtml(html, 'https://example.com/pandekager')
+    expect(r?.title).toBe('Pandekager')
+    expect(r?.ingredients).toHaveLength(3)
+    expect(r?.steps).toEqual([
+      'Whisk eggs, milk and flour into a smooth batter.',
+      'Rest the batter for 30 minutes.',
+      'Fry until golden on both sides.',
+    ])
+  })
+
+  it('keeps a real single-step recipe as one step', () => {
+    const html = `<script type="application/ld+json">{"@type":"Recipe","name":"Toast","recipeIngredient":["1 slice bread"],"recipeInstructions":"Toast the bread."}</script>`
+    const r = parseRecipeFromHtml(html, 'https://example.com/t')
+    expect(r?.steps).toEqual(['Toast the bread.'])
+  })
+})

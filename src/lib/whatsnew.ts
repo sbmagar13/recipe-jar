@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.11.0': [
-    'Cook mode, made for messy hands. Tap anywhere on the step to move on (left side goes back), no hunting for buttons with floury fingers. And if a phone call pulls you away, cook mode now remembers your step and picks up where you left off, with a "start over" link when you want the top.',
+  '1.12.0': [
+    'Link imports got sharper. Some sites hide their recipe behind minified code, and some publish the whole method as one long paragraph. Recipe Jar now reads through both, so more pages become clean cards with real steps instead of one wall of text.',
   ],
 }
 
