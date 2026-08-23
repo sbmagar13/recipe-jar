@@ -11,6 +11,7 @@ export type Route =
   | { view: 'home' }
   | { view: 'jar' }
   | { view: 'shop' }
+  | { view: 'pantry' }
   | { view: 'add' }
   | { view: 'import' }
   | { view: 'about' }
@@ -27,6 +28,8 @@ export function routeToHash(r: Route): string {
       return '#/jar'
     case 'shop':
       return '#/shop'
+    case 'pantry':
+      return '#/pantry'
     case 'add':
       return '#/add'
     case 'import':
@@ -44,6 +47,7 @@ export function parseRoute(hash: string): Route {
   if (h === '') return { view: 'home' }
   if (h === 'jar') return { view: 'jar' }
   if (h === 'shop') return { view: 'shop' }
+  if (h === 'pantry') return { view: 'pantry' }
   if (h === 'add') return { view: 'add' }
   if (h === 'import') return { view: 'import' }
   if (h === 'about') return { view: 'about' }

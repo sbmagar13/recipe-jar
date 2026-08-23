@@ -7,9 +7,10 @@
     onopen: (entry: SavedRecipe) => void
     onchanged: () => void
     onshop: () => void
+    onpantry: () => void
   }
 
-  let { onopen, onchanged, onshop }: Props = $props()
+  let { onopen, onchanged, onshop, onpantry }: Props = $props()
 
   let backupMsg = $state('')
   // Auto-backup (Chromium only): status mirrors the lazy autosync module.
@@ -287,6 +288,8 @@
   {#if entries.length > 0}
     <p class="shop-cta">
       <button class="linklike" onclick={onshop}>🛒 Plan a shopping list from your recipes</button>
+      ·
+      <button class="linklike" onclick={onpantry}>🧺 What can I cook right now?</button>
     </p>
   {/if}
 

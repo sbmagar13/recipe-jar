@@ -6,6 +6,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Pantry mode.** "What can I cook right now?" in My Jar: name what is at
+  home and the jar ranks its own recipes by coverage ("you have 5 of 7"),
+  best-covered dish first, with the matching items shown per recipe. The
+  pantry persists on-device, chips remove with a tap, typos snap to the
+  jar's own ingredient vocabulary, and the whole view is a lazy chunk.
+
 ## [1.17.0] - 2026-08-23
 
 ### Changed

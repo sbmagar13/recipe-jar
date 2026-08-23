@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.16.0': [
-    'Plan the week, not just the list. In "Plan a shopping list" each picked recipe can now take a day, the week shows at a glance, and My Jar greets you with "Tonight:" and what you planned. The merged shopping list works exactly as before.',
+  '1.18.0': [
+    'Ask your jar what to cook. In My Jar there is a new question: "What can I cook right now?" Name what is at home (paneer, rice, eggs) and your saved recipes line up by how much you already have: "you have 5 of 7". Your pantry is remembered, typos snap to ingredients you actually own, and everything stays on your device.',
   ],
 }
 

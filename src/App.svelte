@@ -31,7 +31,7 @@
   import UpdatePrompt from './lib/components/UpdatePrompt.svelte'
   import WhatsNew from './lib/components/WhatsNew.svelte'
 
-  type View = 'home' | 'recipe' | 'jar' | 'shop' | 'add' | 'import' | 'about'
+  type View = 'home' | 'recipe' | 'jar' | 'shop' | 'pantry' | 'add' | 'import' | 'about'
 
   let view = $state<View>('home')
   let url = $state('')
@@ -210,7 +210,7 @@
     }
   }
 
-  function go(next: 'home' | 'jar' | 'shop' | 'add' | 'import' | 'about') {
+  function go(next: 'home' | 'jar' | 'shop' | 'pantry' | 'add' | 'import' | 'about') {
     navigate({ view: next })
   }
 
@@ -737,7 +737,7 @@
       onsavetags={handleSaveTags}
     />
   {:else if view === 'jar'}
-    <JarView onopen={openSaved} onchanged={refreshCount} onshop={() => go('shop')} />
+    <JarView onopen={openSaved} onchanged={refreshCount} onshop={() => go('shop')} onpantry={() => go('pantry')} />
     <p class="jar-footer">
       <button class="linklike" onclick={() => goAdd()}>+ Add your own recipe</button>
     </p>
@@ -745,6 +745,11 @@
     {#await import('./lib/components/ShopPlan.svelte') then M}
       {@const ShopPlan = M.default}
       <ShopPlan onback={goBack} />
+    {/await}
+  {:else if view === 'pantry'}
+    {#await import('./lib/components/PantryView.svelte') then M}
+      {@const PantryView = M.default}
+      <PantryView onopen={openSaved} onback={goBack} />
     {/await}
   {:else if view === 'add'}
     <ManualEntry oncreate={handleCreate} onback={goBack} initialText={pendingPhotoText} />
