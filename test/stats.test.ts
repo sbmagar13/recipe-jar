@@ -114,19 +114,19 @@ describe('aggregate', () => {
 })
 
 describe('aggregateFails', () => {
-  it('folds fail keys into per-host counts, worst first, skipping junk', async () => {
+  it('folds both key generations into per-host, per-reason counts', async () => {
     const { aggregateFails } = await import('../functions/api/stats')
     const out = aggregateFails([
-      'fail:2026-08-15:example.com:aaa',
-      'fail:2026-08-15:example.com:bbb',
-      'fail:2026-08-16:example.com:ccc',
-      'fail:2026-08-16:other.se:ddd',
+      'fail:2026-08-15:example.com:aaa', // legacy, no reason
+      'fail:2026-08-15:example.com:no-recipe:bbb',
+      'fail:2026-08-16:example.com:markup-unread:ccc',
+      'fail:2026-08-16:other.se:no-recipe:ddd',
       'count:save:hit:2026-08-16:chrome:desktop:eee',
       'fail:broken',
     ])
     expect(Object.keys(out)).toEqual(['example.com', 'other.se'])
-    expect(out['example.com']).toBe(3)
-    expect(out['other.se']).toBe(1)
+    expect(out['example.com']).toEqual({ unknown: 1, 'no-recipe': 1, 'markup-unread': 1 })
+    expect(out['other.se']).toEqual({ 'no-recipe': 1 })
   })
 })
 

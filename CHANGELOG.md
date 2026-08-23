@@ -6,6 +6,16 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **The failure tally triages itself.** Parse-failure telemetry now records a
+  coarse reason with the hostname: "markup-unread" means the page carries
+  recipe markup the parser failed to read (a real gap worth chasing), while
+  "no-recipe" means the page had no recipe markup at all (someone pasted a
+  link that was never a recipe). The first real read of the tally turned out
+  to be all noise and no signal, and telling them apart required guessing;
+  now the stats endpoint reports counts per host per reason.
+
 ## [1.16.1] - 2026-08-23
 
 ### Changed

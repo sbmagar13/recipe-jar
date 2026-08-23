@@ -476,9 +476,13 @@
       const parsed = parseRecipeFromHtml(html, target)
       if (!parsed) {
         blocked = true
-        // Fetched fine but no recipe found: a parser gap worth knowing about.
-        // Sends only the hostname, never the recipe or full URL.
-        reportParseIssue(target, 'no-recipe')
+        // Fetched fine but no recipe found. Two very different stories, told
+        // apart so the failure tally triages itself: a page with recipe
+        // markup we failed to read is a parser gap (signal); a page with no
+        // recipe markup at all was probably never a recipe (noise). Sends
+        // only the hostname and this coarse reason, never the page or URL.
+        const hasMarkup = /recipeIngredient|itemtype="[^"]*schema\.org\/Recipe|"@type"\s*:\s*"[Rr]ecipe"/.test(html)
+        reportParseIssue(target, hasMarkup ? 'markup-unread' : 'no-recipe')
         throw new Error('No recipe found on that page.')
       }
       recipe = parsed

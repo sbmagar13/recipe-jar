@@ -61,8 +61,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const host = cleanHost(body.host)
   if (kind === 'parse-fail' && host && context.env.STATS) {
     const date = new Date().toISOString().slice(0, 10)
+    // The reason rides in the key so the tally separates parser gaps
+    // (markup-unread) from pages that were never recipes (no-recipe).
+    const reason = typeof body.reason === 'string' && /^[a-z-]{2,24}$/.test(body.reason) ? body.reason : 'other'
     context.waitUntil(
-      context.env.STATS.put(`fail:${date}:${host}:${crypto.randomUUID()}`, '1', {
+      context.env.STATS.put(`fail:${date}:${host}:${reason}:${crypto.randomUUID()}`, '1', {
         expirationTtl: FAIL_TTL_S,
       }),
     )

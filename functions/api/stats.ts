@@ -58,16 +58,23 @@ export function aggregate(
   return { total: legacyTotal + hits.length, days, browsers, devices }
 }
 
-/** Fold `fail:date:host:uuid` keys into per-host counts, worst first. Pure,
- *  for tests. Malformed keys are skipped rather than miscounted. */
-export function aggregateFails(names: string[]): Record<string, number> {
-  const counts: Record<string, number> = {}
+/** Fold fail keys into per-host, per-reason counts, worst host first. Two key
+ *  generations: `fail:date:host:uuid` (reasonless, counted as "unknown") and
+ *  `fail:date:host:reason:uuid`. Pure, for tests; malformed keys are skipped.
+ *  "markup-unread" rows are parser gaps worth chasing; "no-recipe" rows are
+ *  pages that were never recipes. */
+export function aggregateFails(names: string[]): Record<string, Record<string, number>> {
+  const counts: Record<string, Record<string, number>> = {}
   for (const name of names) {
     const parts = name.split(':')
-    if (parts.length < 4 || parts[0] !== 'fail') continue
-    counts[parts[2]] = (counts[parts[2]] ?? 0) + 1
+    if (parts[0] !== 'fail' || parts.length < 4) continue
+    const host = parts[2]
+    const reason = parts.length >= 5 ? parts[3] : 'unknown'
+    counts[host] = counts[host] ?? {}
+    counts[host][reason] = (counts[host][reason] ?? 0) + 1
   }
-  return Object.fromEntries(Object.entries(counts).sort((a, b) => b[1] - a[1]))
+  const total = (r: Record<string, number>) => Object.values(r).reduce((a, b) => a + b, 0)
+  return Object.fromEntries(Object.entries(counts).sort((a, b) => total(b[1]) - total(a[1])))
 }
 
 /** Every key under a prefix, following list cursors. */
