@@ -6,6 +6,17 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Metric on the card.** A "⇄ metric" toggle by the servings control turns
+  cups and ounces into grams and millilitres, composing with scaling. Exact
+  conversions (oz, lb) carry no marker; cup-to-grams goes through a curated
+  density table of ~40 staples and is marked ≈; unknown cup contents fall
+  back to exact millilitres; spoons and already-metric units are left alone.
+  Applies to the card and cook mode's ingredient sheet. The shopping list
+  never converts, keeping mergelist's no-guessing stance. The density table
+  lives in a lazy chunk loaded on first use; the preference persists.
+
 ## [1.18.0] - 2026-08-23
 
 ### Added

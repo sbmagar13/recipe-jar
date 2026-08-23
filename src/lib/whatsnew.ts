@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.18.0': [
-    'Ask your jar what to cook. In My Jar there is a new question: "What can I cook right now?" Name what is at home (paneer, rice, eggs) and your saved recipes line up by how much you already have: "you have 5 of 7". Your pantry is remembered, typos snap to ingredients you actually own, and everything stays on your device.',
+  '1.19.0': [
+    'Cups to grams, on your side of the kitchen. A new toggle on every recipe card turns cups and ounces into grams and millilitres: "1 cup flour" reads "≈ 120 g flour" (the ≈ is honest, cups of flour vary), "8 oz" reads "225 g" exactly. Spoons stay spoons. Works in cook mode too; the shopping list keeps the original words.',
   ],
 }
 

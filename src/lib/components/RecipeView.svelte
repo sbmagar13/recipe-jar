@@ -139,6 +139,42 @@
     return `${q}${end} ${ing.rest}`
   }
 
+  // Metric display: cups and ounces become grams and millilitres on the card
+  // (never in the shopping list). The density table loads lazily on first use.
+  const UNITS_KEY = 'recipe-jar:units'
+  let units = $state<'original' | 'metric'>(
+    (() => {
+      try {
+        return localStorage.getItem(UNITS_KEY) === 'metric' ? 'metric' : 'original'
+      } catch {
+        return 'original'
+      }
+    })(),
+  )
+  let convertMod = $state<{ metricLine: (q: number | null, e: number | null, rest: string) => string | null } | null>(
+    null,
+  )
+  $effect(() => {
+    if (units === 'metric' && convertMod === null) {
+      void import('../convert').then((m) => (convertMod = m))
+    }
+  })
+  function toggleUnits() {
+    units = units === 'metric' ? 'original' : 'metric'
+    try {
+      localStorage.setItem(UNITS_KEY, units)
+    } catch {}
+  }
+  /** What the card and cook sheet render: metric when asked and known. */
+  function displayLine(ing: Recipe['ingredients'][number]): string {
+    if (units === 'metric' && convertMod && ing.qty !== null) {
+      const scaledEnd = ing.qtyEnd !== null ? ing.qtyEnd * factor : null
+      const metric = convertMod.metricLine(ing.qty * factor, scaledEnd, ing.rest)
+      if (metric) return metric
+    }
+    return scaledLine(ing)
+  }
+
   // Ingredient lines, scaled to the chosen servings, for the shopping list.
   const shoppingItems = $derived(recipe.ingredients.map(scaledLine))
 
@@ -679,7 +715,7 @@
           {#if showCookIngredients}
             <ul class="cook-ingredients">
               {#each recipe.ingredients as ing}
-                <li>{scaledLine(ing)}</li>
+                <li>{displayLine(ing)}</li>
               {/each}
             </ul>
           {/if}
@@ -788,6 +824,9 @@
         {#if servings !== baseServings}
           <button class="reset-servings" onclick={() => (servings = baseServings)}>reset</button>
         {/if}
+        <button class="linklike units-toggle" onclick={toggleUnits}>
+          {units === 'metric' ? '⇄ original units' : '⇄ metric'}
+        </button>
         {#if wakeLockSupported}
           <button class="cook-toggle" class:on={awake} onclick={toggleAwake} aria-pressed={awake}>
             {awake ? '☀ Screen stays on' : '☾ Keep screen on'}
@@ -804,7 +843,7 @@
                 <li class:done={checked.has(i)}>
                   <label>
                     <input type="checkbox" checked={checked.has(i)} onchange={() => toggleIngredient(i)} />
-                    <span>{scaledLine(ing)}</span>
+                    <span>{displayLine(ing)}</span>
                   </label>
                 </li>
               {/each}
