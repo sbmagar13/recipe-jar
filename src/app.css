@@ -1316,6 +1316,13 @@ footer {
   text-align: center;
 }
 
+/* "Tonight:" line at the top of My Jar, fed by the week plan. */
+.tonight {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
 /* Kitchen memory: the warm moment right after ✓ Done. */
 .cook-memory {
   background: var(--sheet);

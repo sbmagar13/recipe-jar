@@ -6,6 +6,16 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **The week plan.** Picking recipes for the shopping list can now also
+  answer "which night": each picked recipe takes an optional day (ordered
+  Today, Tomorrow, then weekdays, so nobody argues about where a week
+  starts), a week-at-a-glance strip shows the plan, and My Jar opens with
+  a "🍳 Tonight:" line linking straight to the evening's dish. Unpicking a
+  dish takes it off its night; the merged list is unchanged and still
+  covers every pick. Plan lives in localStorage like the picks always have.
+
 ## [1.15.0] - 2026-08-23
 
 ### Added

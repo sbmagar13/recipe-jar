@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.15.0': [
-    'Share a recipe as a picture. The new Image button draws the whole card, ingredients and steps in Recipe Jar style, as one image for WhatsApp or the family group, where a long link is clumsy. Drawn on your device; nothing touches a server.',
+  '1.16.0': [
+    'Plan the week, not just the list. In "Plan a shopping list" each picked recipe can now take a day, the week shows at a glance, and My Jar greets you with "Tonight:" and what you planned. The merged shopping list works exactly as before.',
   ],
 }
 

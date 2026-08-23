@@ -1,6 +1,7 @@
 <script lang="ts">
   import { allRecipes, matchesQuery, removeRecipe, exportJar, importJar, type SavedRecipe } from '../db'
   import { persistState, requestPersist, type PersistState } from '../storage'
+  import { PLAN_KEY, WEEKDAYS_KEY, readPairs, tonightIds } from '../weekplan'
 
   interface Props {
     onopen: (entry: SavedRecipe) => void
@@ -221,6 +222,12 @@
     )
   )
 
+  // What the week plan says is for today: one warm line at the top of the jar.
+  const tonight = $derived.by(() => {
+    const ids = new Set(tonightIds(readPairs(PLAN_KEY), readPairs(WEEKDAYS_KEY), new Date().getDay()))
+    return entries.filter((e) => ids.has(e.id))
+  })
+
   // Recipes saved since the last backup (all of them if never backed up).
   const unbacked = $derived(Math.max(0, entries.length - lastBackupCount))
 
@@ -266,6 +273,15 @@
         </button>
       {/each}
     </div>
+  {/if}
+
+  {#if tonight.length > 0}
+    <p class="tonight">
+      🍳 Tonight:
+      {#each tonight as e, i (e.id)}{#if i > 0}
+        ·
+      {/if}<button class="linklike" onclick={() => onopen(e)}>{e.title}</button>{/each}
+    </p>
   {/if}
 
   {#if entries.length > 0}
