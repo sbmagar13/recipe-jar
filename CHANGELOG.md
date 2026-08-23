@@ -6,6 +6,17 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **Share links, sharpened.** New share links are deflate-compressed (native
+  CompressionStream, zero library bytes), roughly halving their length in a
+  chat message; first-generation uncompressed links keep decoding forever.
+  The share sheet now sends the dish name as message text ahead of the link.
+  A received card shows one quiet line saying it was shared, with the keep
+  button as before. And only a sane https image may travel in a payload, in
+  either direction: photo-import data: URIs would balloon the link, and a
+  crafted link must not make the receiver's browser ping an arbitrary host.
+
 ## [1.13.0] - 2026-08-15
 
 ### Added

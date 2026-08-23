@@ -14,7 +14,7 @@
     type SavedRecipe,
   } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
-  import { consumeShareHash } from './lib/share'
+  import { consumeShareHash, decodeShare } from './lib/share'
   import { imageToText } from './lib/ocr'
   import { reportParseIssue } from './lib/telemetry'
   import { demoRecipe } from './lib/demo'
@@ -160,6 +160,7 @@
   async function applyRoute(r: Route) {
     errorMsg = ''
     if (r.view !== 'recipe') {
+      sharedIn = false
       view = r.view
       return
     }
@@ -251,22 +252,40 @@
     else navigate({ view: 'home' })
   }
 
+  // True while the showing card arrived via someone's share link: the card
+  // gets a quiet one-line note saying so. Cleared on any navigation.
+  let sharedIn = $state(false)
+
   // Back/Forward, plus a share or bookmarklet link pasted into the address bar
   // of an already-open tab, all land here.
   function onLocationChange() {
-    const imported = consumeImportHash() ?? consumeShareHash()
+    const imported = consumeImportHash()
     if (imported) {
       showImportedRecipe(imported)
+      return
+    }
+    const sharedPayload = consumeShareHash()
+    if (sharedPayload) {
+      // Decoding is async (the compressed format inflates via the browser);
+      // a mangled payload quietly lands on home, hash already cleared.
+      void decodeShare(sharedPayload).then((shared) => {
+        if (shared) {
+          void showImportedRecipe(shared, true)
+        } else {
+          applyRoute(parseRoute(location.hash))
+        }
+      })
       return
     }
     applyRoute(parseRoute(location.hash))
   }
 
   // A recipe handed over by the bookmarklet (#import=) or a shared link (#recipe=).
-  async function showImportedRecipe(imported: Recipe) {
+  async function showImportedRecipe(imported: Recipe, viaShare = false) {
     recipe = imported
     const existing = imported.sourceUrl ? await findBySource(imported.sourceUrl) : undefined
     savedId = existing?.id ?? null
+    sharedIn = viaShare
     navigate({ view: 'recipe', id: savedId })
   }
 
@@ -682,6 +701,9 @@
       {#if photoError}<p class="error" role="alert">{photoError}</p>{/if}
     </section>
   {:else if view === 'recipe' && recipe}
+    {#if sharedIn && savedId === null}
+      <p class="shared-note">Someone shared this recipe with you · keep it below · Recipe Jar is free, no account</p>
+    {/if}
     <RecipeView
       {recipe}
       {savedId}

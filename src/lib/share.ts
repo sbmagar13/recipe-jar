@@ -26,24 +26,46 @@ interface SharePayload {
   p: string[] // steps
 }
 
-// base64url keeps the link far shorter than percent-encoded JSON and free of
-// characters that messengers like to mangle.
-function b64encode(s: string): string {
-  const bytes = new TextEncoder().encode(s)
+// base64url keeps the link free of characters messengers like to mangle, and
+// deflate (native CompressionStream, so zero library bytes) cuts the payload
+// roughly in half, which matters when the whole recipe rides in a chat message.
+function b64encode(bytes: Uint8Array): string {
   let bin = ''
   for (const b of bytes) bin += String.fromCharCode(b)
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
-function b64decode(s: string): string {
+function b64decode(s: string): Uint8Array {
   const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'))
-  return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)))
+  return Uint8Array.from(bin, (c) => c.charCodeAt(0))
+}
+
+async function deflate(s: string): Promise<Uint8Array> {
+  const stream = new Blob([new TextEncoder().encode(s)])
+    .stream()
+    .pipeThrough(new CompressionStream('deflate-raw'))
+  return new Uint8Array(await new Response(stream).arrayBuffer())
+}
+
+async function inflate(bytes: Uint8Array): Promise<string> {
+  const stream = new Blob([bytes as BlobPart])
+    .stream()
+    .pipeThrough(new DecompressionStream('deflate-raw'))
+  return new TextDecoder().decode(await new Response(stream).arrayBuffer())
+}
+
+/** Only an https image of sane length travels: a crafted link must not make
+ *  the receiver's browser ping an arbitrary host on open beyond the recipe's
+ *  own site, and a photo-import data: URI would balloon the link tenfold. */
+function safeImage(u: unknown): string | null {
+  return typeof u === 'string' && /^https:\/\//.test(u) && u.length <= 500 ? u : null
 }
 
 function toPayload(r: Recipe): SharePayload {
   const p: SharePayload = { v: 1, t: r.title, n: r.ingredients.map((i) => i.raw), p: r.steps }
   if (r.description) p.d = r.description
-  if (r.image) p.i = r.image
+  const img = safeImage(r.image)
+  if (img) p.i = img
   if (r.author) p.a = r.author
   if (r.sourceUrl) p.u = r.sourceUrl
   if (r.servings !== null) p.s = r.servings
@@ -58,7 +80,7 @@ function fromPayload(p: SharePayload): Recipe {
   return {
     title: p.t || 'Untitled recipe',
     description: p.d ?? '',
-    image: p.i ?? null,
+    image: safeImage(p.i),
     author: p.a ?? null,
     sourceUrl: p.u ?? '',
     servings: typeof p.s === 'number' ? p.s : null,
@@ -71,15 +93,29 @@ function fromPayload(p: SharePayload): Recipe {
   }
 }
 
-/** Encode a recipe into its shareable payload string (the part after #recipe=). */
-export function encodeShare(recipe: Recipe): string {
-  return b64encode(JSON.stringify(toPayload(recipe)))
+/** Encode a recipe into its shareable payload string (the part after #recipe=).
+ *  Compressed ("z." prefix) where the browser can; plain base64url otherwise. */
+export async function encodeShare(recipe: Recipe): Promise<string> {
+  const json = JSON.stringify(toPayload(recipe))
+  if (typeof CompressionStream !== 'undefined') {
+    return `z.${b64encode(await deflate(json))}`
+  }
+  return b64encode(new TextEncoder().encode(json))
 }
 
-/** Decode a payload string back into a Recipe. Null if malformed/tampered. */
-export function decodeShare(encoded: string): Recipe | null {
+/** Decode a payload string back into a Recipe. Null if malformed/tampered.
+ *  Understands both generations: compressed "z." links and the original plain
+ *  base64url ones, so every link ever sent keeps working. */
+export async function decodeShare(encoded: string): Promise<Recipe | null> {
   try {
-    const p = JSON.parse(b64decode(encoded)) as SharePayload
+    let json: string
+    if (encoded.startsWith('z.')) {
+      if (typeof DecompressionStream === 'undefined') return null
+      json = await inflate(b64decode(encoded.slice(2)))
+    } else {
+      json = new TextDecoder().decode(b64decode(encoded))
+    }
+    const p = JSON.parse(json) as SharePayload
     if (!p || p.v !== 1 || typeof p.t !== 'string' || !Array.isArray(p.n) || !Array.isArray(p.p)) return null
     if (p.n.length === 0 && p.p.length === 0) return null
     return fromPayload({ ...p, n: p.n.map(String), p: p.p.map(String) })
@@ -89,15 +125,16 @@ export function decodeShare(encoded: string): Recipe | null {
 }
 
 /** Full shareable URL for a recipe (always on the canonical origin). */
-export function recipeShareUrl(recipe: Recipe): string {
-  return `${appOrigin()}/${PREFIX}${encodeShare(recipe)}`
+export async function recipeShareUrl(recipe: Recipe): Promise<string> {
+  return `${appOrigin()}/${PREFIX}${await encodeShare(recipe)}`
 }
 
-/** If the current URL hash carries a shared recipe, decode it. */
-export function consumeShareHash(): Recipe | null {
+/** If the current URL hash carries a shared recipe, peel off its payload.
+ *  Synchronous on purpose: the caller decodes asynchronously. */
+export function consumeShareHash(): string | null {
   const hash = location.hash
   if (!hash.startsWith(PREFIX)) return null
   // Clear the hash so a reload doesn't re-open the shared card over the jar.
   history.replaceState(null, '', location.pathname + location.search)
-  return decodeShare(hash.slice(PREFIX.length))
+  return hash.slice(PREFIX.length)
 }

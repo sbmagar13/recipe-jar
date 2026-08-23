@@ -1308,6 +1308,14 @@ footer {
   color: var(--muted);
 }
 
+/* One quiet line above a card that arrived via a share link. */
+.shared-note {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
 .jar-list {
   list-style: none;
   padding: 0;

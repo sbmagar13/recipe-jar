@@ -26,9 +26,9 @@ function recipe(overrides: Partial<Recipe> = {}): Recipe {
 }
 
 describe('share link codec', () => {
-  it('round-trips a full recipe, including Swedish chars and emoji', () => {
+  it('round-trips a full recipe, including Swedish chars and emoji', async () => {
     const r = recipe()
-    const decoded = decodeShare(encodeShare(r))!
+    const decoded = (await decodeShare(await encodeShare(r)))!
     expect(decoded).not.toBeNull()
     expect(decoded.title).toBe('Test Cake')
     expect(decoded.author).toBe('Åsa Öberg')
@@ -41,7 +41,7 @@ describe('share link codec', () => {
     expect(decoded.sourceUrl).toBe('https://example.com/cake')
   })
 
-  it('round-trips a minimal own-recipe (no source, no image, no times)', () => {
+  it('round-trips a minimal own-recipe (no source, no image, no times)', async () => {
     const r = recipe({
       description: '',
       image: null,
@@ -53,30 +53,62 @@ describe('share link codec', () => {
       prepTime: null,
       cookTime: null,
     })
-    const decoded = decodeShare(encodeShare(r))!
+    const decoded = (await decodeShare(await encodeShare(r)))!
     expect(decoded.sourceUrl).toBe('')
     expect(decoded.image).toBeNull()
     expect(decoded.servings).toBeNull()
     expect(decoded.steps.length).toBe(2)
   })
 
-  it('produces URL-safe output (no + / = characters)', () => {
-    const encoded = encodeShare(recipe())
-    expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/)
+  it('compresses: the payload carries the z. prefix and is URL-safe', async () => {
+    const encoded = await encodeShare(recipe())
+    expect(encoded.startsWith('z.')).toBe(true)
+    expect(encoded.slice(2)).toMatch(/^[A-Za-z0-9_-]+$/)
   })
 
-  it('rejects garbage, tampered payloads, and empty recipes', () => {
-    expect(decodeShare('not-base64!!!')).toBeNull()
-    expect(decodeShare('aGVsbG8')).toBeNull() // "hello" — valid b64, not a recipe
-    // Valid JSON but empty content
+  it('still decodes first-generation uncompressed links', async () => {
+    const legacy = Buffer.from(
+      JSON.stringify({ v: 1, t: 'Old Link Cake', n: ['1 egg'], p: ['Bake.'] }),
+    ).toString('base64url')
+    const decoded = (await decodeShare(legacy))!
+    expect(decoded.title).toBe('Old Link Cake')
+    expect(decoded.steps).toEqual(['Bake.'])
+  })
+
+  it('rejects garbage, tampered payloads, and empty recipes', async () => {
+    expect(await decodeShare('not-base64!!!')).toBeNull()
+    expect(await decodeShare('aGVsbG8')).toBeNull() // "hello" — valid b64, not a recipe
+    expect(await decodeShare('z.aGVsbG8')).toBeNull() // z-prefixed garbage
     const empty = Buffer.from(JSON.stringify({ v: 1, t: 'X', n: [], p: [] })).toString('base64url')
-    expect(decodeShare(empty)).toBeNull()
-    // Wrong version
+    expect(await decodeShare(empty)).toBeNull()
     const v2 = Buffer.from(JSON.stringify({ v: 2, t: 'X', n: ['a'], p: ['b'] })).toString('base64url')
-    expect(decodeShare(v2)).toBeNull()
+    expect(await decodeShare(v2)).toBeNull()
   })
 
-  it('keeps links reasonably small (typical recipe under 2.5 KB)', () => {
-    expect(encodeShare(recipe()).length).toBeLessThan(2500)
+  it('only lets a sane https image travel, in either direction', async () => {
+    // data: URIs (photo imports) would balloon the link; http and novel
+    // schemes never ride along, and neither do absurdly long URLs.
+    const dataUri = await decodeShare(await encodeShare(recipe({ image: 'data:image/png;base64,AAAA' })))
+    expect(dataUri!.image).toBeNull()
+    const longUrl = await decodeShare(await encodeShare(recipe({ image: 'https://x.example/' + 'a'.repeat(600) })))
+    expect(longUrl!.image).toBeNull()
+    // A crafted legacy payload with an http image gets it stripped on decode.
+    const crafted = Buffer.from(
+      JSON.stringify({ v: 1, t: 'X', i: 'http://tracker.example/p.gif', n: ['a'], p: ['b'] }),
+    ).toString('base64url')
+    expect((await decodeShare(crafted))!.image).toBeNull()
+    // A normal https image still travels.
+    const ok = await decodeShare(await encodeShare(recipe()))
+    expect(ok!.image).toBe('https://example.com/cake.jpg')
+  })
+
+  it('compression genuinely shrinks the link for a real-sized recipe', async () => {
+    const big = recipe({
+      steps: Array.from({ length: 12 }, (_, i) => `Step ${i + 1}: stir the pot gently and season to taste.`),
+    })
+    const compressed = await encodeShare(big)
+    const legacySize = Buffer.from(JSON.stringify({ t: big.title, p: big.steps })).toString('base64url').length
+    expect(compressed.length).toBeLessThan(legacySize)
+    expect(compressed.length).toBeLessThan(2000)
   })
 })

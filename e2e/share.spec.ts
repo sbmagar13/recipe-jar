@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test'
 
-// Build a share payload the same way src/lib/share.ts does (base64url JSON).
+// Build a FIRST-GENERATION share payload (plain base64url JSON). Links in this
+// format are already out in the world, so opening one must keep working even
+// though new links are compressed (z. prefix); the copy-link test below covers
+// the compressed format end to end.
 function sharePayload(obj: unknown): string {
   return Buffer.from(JSON.stringify(obj)).toString('base64url')
 }
@@ -28,6 +31,8 @@ test('opening a shared #recipe= link shows the card, savable to my jar', async (
   await page.goto(`/#recipe=${SHARED}`)
 
   await expect(page.getByRole('heading', { level: 1, name: 'Shared Chocolate Cake' })).toBeVisible()
+  // The quiet note tells the receiver what this is.
+  await expect(page.getByText(/Someone shared this recipe with you/)).toBeVisible()
   await expect(page.getByText('200 g dark chocolate')).toBeVisible()
   await expect(page.getByText('Melt the chocolate.')).toBeVisible()
   await expect(page.getByText('by A Friend')).toBeVisible()

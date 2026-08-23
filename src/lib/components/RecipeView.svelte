@@ -485,10 +485,12 @@
   let shareMsgTimer: ReturnType<typeof setTimeout> | undefined
 
   async function shareRecipe() {
-    const link = recipeShareUrl(recipe)
+    const link = await recipeShareUrl(recipe)
     if (navigator.share) {
       try {
-        await navigator.share({ title: recipe.title, url: link })
+        // text travels into the message body (WhatsApp etc.), so the share
+        // reads "Dal Tadka <link>" instead of a bare wall of characters.
+        await navigator.share({ title: recipe.title, text: recipe.title, url: link })
         return
       } catch (err) {
         // User closed the sheet: done. Anything else: fall through to copy.
