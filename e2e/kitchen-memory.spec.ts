@@ -46,9 +46,8 @@ test('finishing cook mode asks the question and files a dated note', async ({ pa
   await expect(page.getByText(/Cooked 2 times/)).toBeVisible()
   await page.getByLabel("What you'd change next time").fill('perfect as is')
   await page.getByRole('button', { name: 'Add to my notes' }).click()
-  const value = await page.locator('.notes-input').inputValue()
-  expect(value).toMatch(/less salt next time/)
-  expect(value).toMatch(/perfect as is/)
+  await expect(page.locator('.notes-input')).toHaveValue(/less salt next time/)
+  await expect(page.locator('.notes-input')).toHaveValue(/perfect as is/)
 })
 
 test('"Not this time" closes the moment without a note, cook still counted', async ({ page }) => {

@@ -510,7 +510,10 @@
 
   async function shareRecipe() {
     const link = await recipeShareUrl(recipe)
-    if (navigator.share) {
+    // Some OS share sheets clip very long URLs in transit (macOS Safari cut a
+    // 2,000-char link to ~1,550, which opens as a sad home page). The
+    // clipboard keeps every byte, so big recipes go straight to copy.
+    if (navigator.share && link.length <= 1400) {
       try {
         // text travels into the message body (WhatsApp etc.), so the share
         // reads "Dal Tadka <link>" instead of a bare wall of characters.

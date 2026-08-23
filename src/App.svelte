@@ -255,6 +255,7 @@
   // True while the showing card arrived via someone's share link: the card
   // gets a quiet one-line note saying so. Cleared on any navigation.
   let sharedIn = $state(false)
+  let shareDecodePending = false
 
   // Back/Forward, plus a share or bookmarklet link pasted into the address bar
   // of an already-open tab, all land here.
@@ -266,17 +267,25 @@
     }
     const sharedPayload = consumeShareHash()
     if (sharedPayload) {
-      // Decoding is async (the compressed format inflates via the browser);
-      // a mangled payload quietly lands on home, hash already cleared.
+      // Decoding is async (the compressed format inflates via the browser).
+      shareDecodePending = true
       void decodeShare(sharedPayload).then((shared) => {
+        shareDecodePending = false
         if (shared) {
           void showImportedRecipe(shared, true)
         } else {
-          applyRoute(parseRoute(location.hash))
+          // A payload that will not decode is almost always a link that lost
+          // its tail in a messaging app. Say so instead of a silent home page.
+          void applyRoute(parseRoute(location.hash)).then(() => {
+            errorMsg =
+              'That shared recipe link looks cut short. Links sometimes lose their tail when copied through other apps; ask for it to be sent again with "Copy link".'
+          })
         }
       })
       return
     }
+    // Belt and braces: never let a stray event stomp an in-flight share decode.
+    if (shareDecodePending) return
     applyRoute(parseRoute(location.hash))
   }
 
@@ -302,7 +311,10 @@
   const sharedTargetUrl = consumeShareTargetQuery()
 
   if (typeof window !== 'undefined') {
-    window.addEventListener('popstate', onLocationChange)
+    // hashchange alone covers every transition in a pure-hash router (all
+    // routes differ by hash). Listening to popstate as well made every hash
+    // navigation fire the handler twice, and the twin call, seeing the
+    // already-consumed hash of a share link, stomped its error handling.
     window.addEventListener('hashchange', onLocationChange)
   }
 

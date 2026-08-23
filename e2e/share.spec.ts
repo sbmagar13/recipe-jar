@@ -47,9 +47,16 @@ test('opening a shared #recipe= link shows the card, savable to my jar', async (
   await expect(page.getByRole('button', { name: /My Jar \(1\)/ })).toBeVisible()
 })
 
-test('a mangled share link fails safe (stays on home, app alive)', async ({ page }) => {
+test('a mangled share link fails safe with a helpful message', async ({ page }) => {
   await page.goto('/#recipe=corrupted-not-a-recipe')
   await expect(page.getByRole('heading', { name: /Just the recipe/ })).toBeVisible()
+  await expect(page.getByText(/looks cut short/)).toBeVisible()
+})
+
+test('a truncated compressed link explains itself too', async ({ page }) => {
+  // Real-world case: macOS Safari's share sheet clipped a long link mid-payload.
+  await page.goto('/#recipe=z.jVfbjhy3Ef2VAh8WvUDvjEaKZGDefIMjJEIEW4BhBH6oYVd208tmEbxMZxwE8Efo')
+  await expect(page.getByText(/looks cut short/)).toBeVisible()
 })
 
 test('Share button copies a working link (clipboard fallback)', async ({ page, browserName }) => {

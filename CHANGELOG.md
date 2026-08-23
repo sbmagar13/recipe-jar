@@ -6,6 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Long share links survive the journey now.** macOS Safari's share sheet
+  turned out to clip very long URLs (a 2,000-character link arrived with
+  ~450 characters missing, and opened as a silent home page). Links above
+  ~1,400 characters now go straight to the clipboard, which keeps every
+  byte; shorter ones keep the native share sheet. And a link that does
+  arrive cut short now explains itself instead of silently showing home.
+
 ### Added
 
 - **Kitchen memory.** Finishing a saved recipe in cook mode (reaching ✓ Done)
