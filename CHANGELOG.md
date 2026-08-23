@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.19.1] - 2026-08-23
+
 ### Fixed
 
 - The units toggle rendered as a crushed circle: it lives in the servings
@@ -574,7 +576,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.19.1...HEAD
+[1.19.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.19.1
 [1.19.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.19.0
 [1.18.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.18.0
 [1.17.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.17.0
