@@ -21,7 +21,8 @@
   import { parseRoute, routeToHash, type Route } from './lib/route'
   import RecipeView from './lib/components/RecipeView.svelte'
   import JarView from './lib/components/JarView.svelte'
-  import ShopPlan from './lib/components/ShopPlan.svelte'
+  // ShopPlan loads on demand: it is only reachable from My Jar's plan button,
+  // and the entry budget wants the bytes back (same treatment as AboutView).
   import ManualEntry from './lib/components/ManualEntry.svelte'
   import ImportHelp from './lib/components/ImportHelp.svelte'
   import InstallTip from './lib/components/InstallTip.svelte'
@@ -736,7 +737,10 @@
       <button class="linklike" onclick={() => goAdd()}>+ Add your own recipe</button>
     </p>
   {:else if view === 'shop'}
-    <ShopPlan onback={goBack} />
+    {#await import('./lib/components/ShopPlan.svelte') then M}
+      {@const ShopPlan = M.default}
+      <ShopPlan onback={goBack} />
+    {/await}
   {:else if view === 'add'}
     <ManualEntry oncreate={handleCreate} onback={goBack} initialText={pendingPhotoText} />
   {:else if view === 'import'}

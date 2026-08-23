@@ -530,6 +530,42 @@
     } catch {
       shareMsg = 'Could not copy the link.'
     }
+    showShareMsg()
+  }
+
+  // The recipe as a picture: lands beautifully where long links are awkward.
+  let cardBusy = $state(false)
+  async function shareCard() {
+    cardBusy = true
+    try {
+      const { renderRecipeCard } = await import('../sharecard')
+      const blob = await renderRecipeCard(recipe)
+      const file = new File([blob], `${recipe.title.replace(/[^\w-]+/g, '-').slice(0, 60) || 'recipe'}.png`, {
+        type: 'image/png',
+      })
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: recipe.title })
+          return
+        } catch (err) {
+          if (err instanceof Error && err.name === 'AbortError') return
+        }
+      }
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = file.name
+      a.click()
+      URL.revokeObjectURL(a.href)
+      shareMsg = 'Image saved. Send it to anyone.'
+    } catch {
+      shareMsg = 'Could not make the image.'
+    } finally {
+      cardBusy = false
+    }
+    showShareMsg()
+  }
+
+  function showShareMsg() {
     clearTimeout(shareMsgTimer)
     shareMsgTimer = setTimeout(() => (shareMsg = ''), 4000)
   }
@@ -684,6 +720,9 @@
           <button class="remove" onclick={onremove}>Remove</button>
         {/if}
         <button class="share" onclick={shareRecipe}>↗ Share</button>
+        <button class="share" onclick={shareCard} disabled={cardBusy}>
+          {cardBusy ? 'Drawing…' : '🖼 Image'}
+        </button>
         {#if recipe.ingredients.length > 0}
           <button class="shop-open" onclick={() => (showShopping = true)}>🛒 Shopping list</button>
         {/if}

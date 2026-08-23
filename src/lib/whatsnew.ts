@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.14.0': [
-    'Your jar remembers how you cook. Finish a recipe in cook mode and it counts the cook and asks one question: anything you would change next time? The answer lands as a dated note on the recipe, so each dish slowly becomes your version.',
+  '1.15.0': [
+    'Share a recipe as a picture. The new Image button draws the whole card, ingredients and steps in Recipe Jar style, as one image for WhatsApp or the family group, where a long link is clumsy. Drawn on your device; nothing touches a server.',
   ],
 }
 

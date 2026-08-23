@@ -6,6 +6,17 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Share as an image.** A new Image button next to Share draws the whole
+  recipe, title with the tomato underline, ingredients, numbered method, in
+  the brand's light look on a canvas, and hands it to the share sheet as a
+  PNG (or downloads it where file sharing is unsupported). Made for the
+  places recipes actually travel, WhatsApp and family groups, where a
+  2,000-character link is technically correct and socially wrong. Drawn
+  entirely on-device in a lazy chunk; no photo is fetched, so nothing leaves
+  the browser and no host is pinged.
+
 ## [1.14.0] - 2026-08-23
 
 ### Fixed
