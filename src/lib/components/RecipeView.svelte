@@ -824,7 +824,7 @@
         {#if servings !== baseServings}
           <button class="reset-servings" onclick={() => (servings = baseServings)}>reset</button>
         {/if}
-        <button class="linklike units-toggle" onclick={toggleUnits}>
+        <button class="units-toggle" onclick={toggleUnits}>
           {units === 'metric' ? '⇄ original units' : '⇄ metric'}
         </button>
         {#if wakeLockSupported}

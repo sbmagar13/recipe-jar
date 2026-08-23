@@ -429,6 +429,27 @@ button:not(:disabled):not(.linklike):active {
   color: #fff;
 }
 
+/* The units toggle lives in the servings row but is a pill, not a circle:
+   it must escape the 36px round button styling above. */
+.units-toggle {
+  width: auto !important;
+  height: auto !important;
+  border: 1.5px solid var(--rule) !important;
+  border-radius: 999px !important;
+  background: var(--sheet) !important;
+  color: var(--accent-ink) !important;
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  padding: 7px 14px;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+.units-toggle:hover {
+  border-color: var(--accent-ink) !important;
+  background: var(--sheet) !important;
+  color: var(--accent-ink) !important;
+}
+
 .servings span {
   font-weight: 600;
   min-width: 100px;

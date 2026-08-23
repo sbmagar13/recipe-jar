@@ -6,6 +6,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The units toggle rendered as a crushed circle: it lives in the servings
+  row, whose buttons are styled as round − / + controls, and inherited the
+  36px circle. It is now a proper pill, visually paired with the screen-on
+  chip.
+
 ## [1.19.0] - 2026-08-23
 
 ### Added
