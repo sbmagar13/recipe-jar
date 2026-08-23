@@ -6,6 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **Sharper share images.** The recipe card image now draws at 2x, so the
+  ingredients stay crisp when someone zooms in on a phone, which is how the
+  picture is actually used at the stove. The tomato underline scales with
+  the title instead of sitting as a fixed stub under long names, and a
+  truly enormous recipe falls back to 1x rather than tripping the iOS
+  canvas pixel ceiling.
+
 ## [1.16.0] - 2026-08-23
 
 ### Added

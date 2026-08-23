@@ -114,14 +114,20 @@ export async function renderRecipeCard(recipe: Recipe): Promise<Blob> {
   }
   h += 110 // footer
 
+  // Drawn at 2x: cooks zoom into the ingredients on a phone, and 1x text goes
+  // soft on a retina screen. All layout math stays in 1x units via the scale.
+  // iOS caps a canvas near 16.7M pixels, so a truly enormous recipe falls
+  // back to 1x rather than failing to render at all.
+  const SCALE = W * 2 * Math.ceil(h) * 2 <= 16_000_000 ? 2 : 1
   const canvas = document.createElement('canvas')
-  canvas.width = W
-  canvas.height = Math.ceil(h)
+  canvas.width = W * SCALE
+  canvas.height = Math.ceil(h) * SCALE
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('canvas unavailable')
+  ctx.scale(SCALE, SCALE)
 
   ctx.fillStyle = PAPER
-  ctx.fillRect(0, 0, W, canvas.height)
+  ctx.fillRect(0, 0, W, Math.ceil(h))
   ctx.textBaseline = 'alphabetic'
 
   let y = 96
@@ -131,14 +137,18 @@ export async function renderRecipeCard(recipe: Recipe): Promise<Blob> {
   ctx.fillText('Recipe Jar', PAD, y)
   y += 60
 
-  // Title with the hand-drawn tomato line under it
+  // Title with the hand-drawn tomato line under it, sized to the last line.
+  ctx.font = TITLE_FONT
+  const titleLines = wrapLines(recipe.title, content, measurer(ctx, TITLE_FONT))
+  const lastLineWidth = titleLines.length > 0 ? ctx.measureText(titleLines[titleLines.length - 1]).width : 260
   y = drawWrapped(ctx, recipe.title, PAD, y, content, TITLE_FONT, GREEN, 78)
+  const strokeW = Math.min(420, Math.max(180, lastLineWidth * 0.45))
   ctx.strokeStyle = TOMATO
   ctx.lineWidth = 5
   ctx.lineCap = 'round'
   ctx.beginPath()
   ctx.moveTo(PAD + 2, y - 44)
-  ctx.quadraticCurveTo(PAD + 130, y - 52, PAD + 260, y - 46)
+  ctx.quadraticCurveTo(PAD + strokeW / 2, y - 52, PAD + strokeW, y - 46)
   ctx.stroke()
   y += 34
   if (meta) {
