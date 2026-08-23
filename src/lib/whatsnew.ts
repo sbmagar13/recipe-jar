@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.13.1': [
-    'Sharing a recipe makes a much shorter link now (the whole card still travels inside it, nothing touches a server), the message includes the dish name instead of a bare link, and a card someone shares with you says so, with a keep button right there. Old shared links keep working.',
+  '1.14.0': [
+    'Your jar remembers how you cook. Finish a recipe in cook mode and it counts the cook and asks one question: anything you would change next time? The answer lands as a dated note on the recipe, so each dish slowly becomes your version.',
   ],
 }
 

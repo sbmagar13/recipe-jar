@@ -6,6 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Kitchen memory.** Finishing a saved recipe in cook mode (reaching ✓ Done)
+  now counts as cooking it, no extra button hunt, and opens one gentle
+  question: "Anything you'd change next time?" The answer is appended to the
+  recipe's personal notes with a date, so the tweaks accumulate and the
+  recipe slowly becomes your version. "Not this time" closes it; unsaved
+  recipes are left alone.
+
 ## [1.13.1] - 2026-08-23
 
 ### Changed

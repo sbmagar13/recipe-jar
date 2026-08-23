@@ -1316,6 +1316,49 @@ footer {
   text-align: center;
 }
 
+/* Kitchen memory: the warm moment right after ✓ Done. */
+.cook-memory {
+  background: var(--sheet);
+  border: 1.5px solid var(--rule);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cook-memory-q {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cook-memory-input {
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font: inherit;
+  background: var(--paper);
+  color: var(--ink);
+}
+.cook-memory-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cook-memory-add {
+  background: var(--basil);
+  color: #fdfbf4;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cook-memory-add:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .jar-list {
   list-style: none;
   padding: 0;

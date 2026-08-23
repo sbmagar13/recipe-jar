@@ -60,7 +60,26 @@
     stepIndex = 0
     noteDirty = false
     noteSaved = false
+    justCooked = false
+    memoryText = ''
   })
+
+  // --- Kitchen memory: the moment right after ✓ Done ---
+  // Finishing every step IS cooking the dish, so it marks the cook and asks
+  // one gentle question. The answer becomes a dated line in the notes, and
+  // over months the recipe stops being a copy of a website and becomes yours.
+  let justCooked = $state(false)
+  let memoryText = $state('')
+
+  function addMemory() {
+    const t = memoryText.trim()
+    if (t) {
+      const stamp = new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+      onsavenotes(notes ? `${notes}\n${stamp}: ${t}` : `${stamp}: ${t}`)
+    }
+    justCooked = false
+    memoryText = ''
+  }
 
   // Cook mode: keep the screen awake while at the stove.
   const wakeLockSupported = 'wakeLock' in navigator
@@ -325,13 +344,18 @@
     }
   }
 
-  /** The happy ending: the cook reached ✓ Done, so forget the place-keeper. */
+  /** The happy ending: the cook reached ✓ Done, so forget the place-keeper,
+   *  count the cook, and open the kitchen-memory moment (saved recipes). */
   function finishCooking() {
     resumed = false
     try {
       localStorage.removeItem(COOKPOS_KEY)
     } catch {}
     stopCooking()
+    if (savedId !== null) {
+      justCooked = true
+      oncooked()
+    }
   }
 
   function nextStep() {
@@ -633,6 +657,22 @@
         onclose={() => (showShopping = false)}
       />
     {:else}
+      {#if justCooked}
+        <div class="cook-memory" role="group" aria-label="Just cooked">
+          <p class="cook-memory-q">Cooked it 🎉 Anything you'd change next time?</p>
+          <input
+            class="cook-memory-input"
+            bind:value={memoryText}
+            placeholder="less sugar, more chili, doubled the sauce…"
+            aria-label="What you'd change next time"
+            onkeydown={(e) => e.key === 'Enter' && addMemory()}
+          />
+          <div class="cook-memory-actions">
+            <button class="cook-memory-add" onclick={addMemory} disabled={!memoryText.trim()}>Add to my notes</button>
+            <button class="linklike" onclick={() => ((justCooked = false), (memoryText = ''))}>Not this time</button>
+          </div>
+        </div>
+      {/if}
       <div class="card-actions">
         {#if savedId === null}
           <button class="save" onclick={onsave}>+ Save to my jar</button>
