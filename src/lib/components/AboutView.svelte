@@ -42,11 +42,12 @@
     <li>
       <strong>What we measure.</strong> To keep the app working we log three things, and only
       these: the <em>hostname</em> of a page we couldn't read (e.g. <code>example.com</code>, so
-      the parser can be fixed), uncaught error messages from our own code, and an anonymous
-      counter that a recipe was saved, with the day, the browser family (like “Chrome”), and
-      whether it was mobile or desktop. Never the recipe, the full address, a user agent, an IP,
-      or anything that identifies you. This is switched off entirely if your browser
-      sends “Do Not Track” or Global Privacy Control.
+      the parser can be fixed), uncaught error messages from our own code, and anonymous
+      counters that a feature was used: a recipe saved, a dish searched, a recipe shared, a
+      cook finished, a day planned. Each counter records only the day, the browser family
+      (like “Chrome”), and whether it was mobile or desktop. Never the recipe, the search
+      words, the full address, a user agent, an IP, or anything that identifies you. This is
+      switched off entirely if your browser sends “Do Not Track” or Global Privacy Control.
     </li>
     <li>
       <strong>Hosting.</strong> The site runs on Cloudflare Pages, which processes requests to

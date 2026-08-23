@@ -141,3 +141,23 @@ describe('cleanHost (report endpoint)', () => {
     expect(cleanHost('a'.repeat(200) + '.com')).toBe('')
   })
 })
+
+describe('insights helpers', () => {
+  it('lastDays fills a zero-padded window ending today', async () => {
+    const { lastDays } = await import('../functions/api/insights')
+    const days = { '2026-08-22': 3, '2026-08-23': 5, '2026-07-01': 9 }
+    const out = lastDays(days, '2026-08-23', 5)
+    expect(out).toEqual([0, 0, 0, 3, 5])
+  })
+
+  it('sparklinePath scales into the box and survives flat series', async () => {
+    const { sparklinePath } = await import('../functions/api/insights')
+    const p = sparklinePath([0, 5, 10], 220, 44)
+    expect(p.startsWith('M1.0 43.0')).toBe(true)
+    expect(p).toContain('L219.0 1.0') // the max touches the top
+    const flat = sparklinePath([0, 0, 0], 220, 44)
+    expect(flat).toContain('43.0') // baseline, no NaN
+    expect(flat).not.toContain('NaN')
+    expect(sparklinePath([], 220, 44)).toBe('')
+  })
+})

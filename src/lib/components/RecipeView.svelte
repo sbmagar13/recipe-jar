@@ -2,6 +2,7 @@
   import type { Recipe } from '../types'
   import { formatQty } from '../quantity'
   import { recipeShareUrl } from '../share'
+  import { countEvent } from '../telemetry'
   import { extractStepTimers, formatClock } from '../timers'
   import { stepGroups, cookSteps } from '../steps'
   import ShoppingList from './ShoppingList.svelte'
@@ -355,6 +356,7 @@
     if (savedId !== null) {
       justCooked = true
       oncooked()
+      countEvent('cook-finish')
     }
   }
 
@@ -518,6 +520,7 @@
         // text travels into the message body (WhatsApp etc.), so the share
         // reads "Dal Tadka <link>" instead of a bare wall of characters.
         await navigator.share({ title: recipe.title, text: recipe.title, url: link })
+        countEvent('share-link')
         return
       } catch (err) {
         // User closed the sheet: done. Anything else: fall through to copy.
@@ -527,6 +530,7 @@
     try {
       await navigator.clipboard.writeText(link)
       shareMsg = 'Link copied. Send it to anyone.'
+      countEvent('share-link')
     } catch {
       shareMsg = 'Could not copy the link.'
     }
@@ -546,6 +550,7 @@
       if (navigator.canShare?.({ files: [file] })) {
         try {
           await navigator.share({ files: [file], title: recipe.title })
+          countEvent('share-image')
           return
         } catch (err) {
           if (err instanceof Error && err.name === 'AbortError') return
@@ -557,6 +562,7 @@
       a.click()
       URL.revokeObjectURL(a.href)
       shareMsg = 'Image saved. Send it to anyone.'
+      countEvent('share-image')
     } catch {
       shareMsg = 'Could not make the image.'
     } finally {

@@ -78,7 +78,7 @@ export function aggregateFails(names: string[]): Record<string, Record<string, n
 }
 
 /** Every key under a prefix, following list cursors. */
-async function listKeys(kv: KVNamespace, prefix: string): Promise<string[]> {
+export async function listKeys(kv: KVNamespace, prefix: string): Promise<string[]> {
   const names: string[] = []
   let cursor: string | undefined
   for (;;) {

@@ -4,6 +4,7 @@
   import { mergedHeader } from '../shoplist'
   import { PLAN_KEY, WEEKDAYS_KEY, dayLabel, orderedDays, readPairs } from '../weekplan'
   import ShoppingList from './ShoppingList.svelte'
+  import { countEvent } from '../telemetry'
 
   interface Props {
     onback: () => void
@@ -45,7 +46,10 @@
   function setDay(id: number, value: string) {
     const next = new Map(days)
     if (value === '') next.delete(id)
-    else next.set(id, Number(value))
+    else {
+      next.set(id, Number(value))
+      countEvent('plan-day')
+    }
     days = next
     persistPlan()
   }

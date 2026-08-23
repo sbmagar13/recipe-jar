@@ -17,7 +17,12 @@ interface Env {
   STATS?: KVNamespace
 }
 
-const EVENTS = new Set(['save'])
+// Feature-usage events, all equally anonymous: each records only that the
+// thing happened. 'save' a recipe kept, 'search' a dish search run,
+// 'share-link'/'share-image' a recipe sent onward, 'cook-finish' a recipe
+// cooked to ✓ Done, 'plan-day' a dish given a night, 'pantry' a what-can-I-
+// cook lookup. The About page discloses the lot.
+const EVENTS = new Set(['save', 'search', 'share-link', 'share-image', 'cook-finish', 'plan-day', 'pantry'])
 const MAX_BODY = 200 // bytes; the body is a tiny {"event":"save"}
 
 function today(): string {

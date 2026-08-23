@@ -6,6 +6,18 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **Anonymous counters for feature use, and a private dashboard.** The saves
+  counter's pattern (one unique key per event, day + browser family + device
+  class, nothing else) now also counts a dish search, a shared link or image,
+  a finished cook, and a planned day, so "which features earn their keep" is
+  answerable without surveilling anyone. The About page discloses the full
+  list; Do Not Track and Global Privacy Control still switch everything off.
+  A token-gated /api/insights page renders it all as one self-contained HTML
+  dashboard: totals, 30-day sparklines, browser/device split, and the parse-
+  failure table with markup-unread rows highlighted as signal.
+
 ## [1.16.2] - 2026-08-23
 
 ### Changed

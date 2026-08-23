@@ -16,7 +16,7 @@
   import { consumeImportHash } from './lib/bookmarklet'
   import { consumeShareHash, decodeShare } from './lib/share'
   import { imageToText } from './lib/ocr'
-  import { reportParseIssue } from './lib/telemetry'
+  import { countEvent, reportParseIssue } from './lib/telemetry'
   import { demoRecipe } from './lib/demo'
   import { parseRoute, routeToHash, type Route } from './lib/route'
   import RecipeView from './lib/components/RecipeView.svelte'
@@ -370,6 +370,7 @@
     hiIndex = -1
     dishQuery = query
     searching = true
+    countEvent('search') // one executed search (the debounce already coalesces typing)
     try {
       // Results paint as each site answers; the slowest site never gates the first.
       const outcome = await searchSitesForgiving(query, (partial, usedQuery) => {

@@ -65,7 +65,16 @@ const COUNT_ENDPOINT = '/api/count'
  * Honors Do-Not-Track / Global Privacy Control via trackingAllowed(), and can
  * never throw. Unlike reportParseIssue it does not dedupe: each real save counts.
  */
-export function countEvent(event: 'save'): void {
+export type CountedEvent =
+  | 'save'
+  | 'search'
+  | 'share-link'
+  | 'share-image'
+  | 'cook-finish'
+  | 'plan-day'
+  | 'pantry'
+
+export function countEvent(event: CountedEvent): void {
   try {
     if (!trackingAllowed()) return
     const body = JSON.stringify({ event })
