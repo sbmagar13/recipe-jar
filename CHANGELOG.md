@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.16.2] - 2026-08-23
+
 ### Changed
 
 - **The failure tally triages itself.** Parse-failure telemetry now records a
@@ -528,7 +530,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.16.1...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.16.2...HEAD
+[1.16.2]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.16.2
 [1.16.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.16.1
 [1.16.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.16.0
 [1.15.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.15.0
