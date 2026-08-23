@@ -13,14 +13,17 @@ const ASSETS = 'dist/assets'
 
 // Budgets in KB of gzipped output. Set with ~15% headroom over current size so
 // they catch real regressions without nagging on small, deliberate additions.
-// Raised once for the Phase 1 cook features (timers + focus cook mode), and
-// again for the opt-in photo-import chunk (tesseract API; the ~6 MB engine is
-// self-hosted under /ocr and never counted here). The entry budget is the guard
-// that matters: it is what every visitor downloads. Photo import is lazy.
+// Raised once for the Phase 1 cook features (timers + focus cook mode), again
+// for the opt-in photo-import chunk (tesseract API; the ~6 MB engine is
+// self-hosted under /ocr and never counted here), and a third time for the
+// 1.x lazy chunks (spelling correction, auto-backup, the share-image card),
+// each of which downloads only when its feature is used. The entry budget is
+// the guard that matters: it is what every visitor downloads, and it went
+// DOWN across those releases (77.9 → 75.8) as rarely-visited views moved out.
 const BUDGETS = [
   { label: 'entry JS  (gz)', match: (f) => /^index-.*\.js$/.test(f), maxKB: 78 },
   { label: 'entry CSS (gz)', match: (f) => /^index-.*\.css$/.test(f), maxKB: 12 },
-  { label: 'all assets (gz)', match: (f) => /\.(js|css)$/.test(f), maxKB: 100 },
+  { label: 'all assets (gz)', match: (f) => /\.(js|css)$/.test(f), maxKB: 110 },
 ]
 
 if (!existsSync(ASSETS)) {
