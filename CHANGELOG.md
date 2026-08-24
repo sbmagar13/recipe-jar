@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-08-24
+
 ### Added
 
 - **Edit any saved recipe.** The ✎ Edit button opens the manual-entry form
@@ -589,7 +591,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.19.1...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.20.0...HEAD
+[1.20.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.20.0
 [1.19.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.19.1
 [1.19.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.19.0
 [1.18.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.18.0
