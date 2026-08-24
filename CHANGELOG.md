@@ -6,6 +6,19 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Edit any saved recipe.** The ✎ Edit button opens the manual-entry form
+  prefilled (import helpers hidden: an edit is a touch-up, not a re-import).
+  Saving keeps everything the form does not touch: image, author, source,
+  times, and crucially the entry's tags, notes, savedAt, and cook history.
+  The gap this closes: kitchen memory could remember "less salt next time"
+  but nothing could actually apply it.
+- **A visible cooking history.** Each "I cooked this" (and every ✓ Done in
+  cook mode) now records its date; from the second cook the card shows
+  "Your history: 3 Aug · 12 Aug · 24 Aug". Dates ride in backups and share
+  nothing anywhere, like every other part of the story.
+
 ## [1.19.1] - 2026-08-23
 
 ### Fixed

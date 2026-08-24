@@ -12,8 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.19.0': [
-    'Cups to grams, on your side of the kitchen. A new toggle on every recipe card turns cups and ounces into grams and millilitres: "1 cup flour" reads "≈ 120 g flour" (the ≈ is honest, cups of flour vary), "8 oz" reads "225 g" exactly. Spoons stay spoons. Works in cook mode too; the shopping list keeps the original words.',
+  '1.20.0': [
+    'Every recipe is yours to change now. A new Edit button on saved recipes opens the familiar form with everything filled in: fix a line, halve the salt for good, rewrite a step. Your tags, notes, and cooking history stay put. And once you have cooked a dish twice, the card starts showing your history: every date you made it.',
   ],
 }
 

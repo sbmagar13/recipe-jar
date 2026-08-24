@@ -11,6 +11,7 @@
     setNotes,
     setTags,
     markCooked,
+    updateRecipe,
     type SavedRecipe,
   } from './lib/db'
   import { consumeImportHash } from './lib/bookmarklet'
@@ -137,7 +138,14 @@
   async function handleCooked() {
     if (savedId === null) return
     const cookedCount = await markCooked(savedId)
-    if (savedEntry) savedEntry = { ...savedEntry, cookedCount, lastCooked: Date.now() }
+    if (savedEntry) {
+      savedEntry = {
+        ...savedEntry,
+        cookedCount,
+        lastCooked: Date.now(),
+        cookedDates: [...(savedEntry.cookedDates ?? []), Date.now()].slice(-50),
+      }
+    }
   }
 
   async function handleSaveTags(tags: string[]) {
@@ -218,6 +226,16 @@
   // text (a plain "type your own") clears any leftover OCR so the form is blank.
   function goAdd(text = '') {
     pendingPhotoText = text
+    editingId = null
+    go('add')
+  }
+
+  // "Make it yours": edit the currently shown saved recipe in the manual form.
+  let editingId = $state<number | null>(null)
+  function startEdit() {
+    if (savedId === null || !recipe) return
+    editingId = savedId
+    pendingPhotoText = ''
     go('add')
   }
 
@@ -526,6 +544,16 @@
   }
 
   async function handleCreate(r: Recipe) {
+    if (editingId !== null) {
+      const id = editingId
+      editingId = null
+      await updateRecipe(id, r)
+      recipe = r
+      savedId = id
+      savedEntry = (await getRecipeById(id)) ?? null
+      navigate({ view: 'recipe', id })
+      return
+    }
     recipe = r
     savedId = await saveRecipe(r)
     await refreshCount()
@@ -728,6 +756,8 @@
       notes={savedEntry?.notes ?? ''}
       cookedCount={savedEntry?.cookedCount ?? 0}
       lastCooked={savedEntry?.lastCooked ?? null}
+      cookedDates={savedEntry?.cookedDates ?? []}
+      onedit={startEdit}
       tags={savedEntry?.tags ?? []}
       onsave={handleSave}
       onremove={handleRemove}
@@ -752,7 +782,12 @@
       <PantryView onopen={openSaved} onback={goBack} />
     {/await}
   {:else if view === 'add'}
-    <ManualEntry oncreate={handleCreate} onback={goBack} initialText={pendingPhotoText} />
+    <ManualEntry
+      oncreate={handleCreate}
+      onback={goBack}
+      initialText={pendingPhotoText}
+      editing={editingId !== null ? recipe : null}
+    />
   {:else if view === 'import'}
     <ImportHelp onback={goBack} ontypein={() => goAdd()} />
   {:else if view === 'about'}

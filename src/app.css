@@ -1344,6 +1344,13 @@ footer {
   color: var(--ink);
 }
 
+/* The little cooking-history line under the cooked row. */
+.cooked-history {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 /* Kitchen memory: the warm moment right after ✓ Done. */
 .cook-memory {
   background: var(--sheet);

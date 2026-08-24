@@ -13,6 +13,7 @@
     notes?: string
     cookedCount?: number
     lastCooked?: number | null
+    cookedDates?: number[]
     tags?: string[]
     onsave: () => void
     onremove: () => void
@@ -20,6 +21,7 @@
     onsavenotes?: (notes: string) => void
     oncooked?: () => void
     onsavetags?: (tags: string[]) => void
+    onedit?: () => void
   }
 
   let {
@@ -28,6 +30,7 @@
     notes = '',
     cookedCount = 0,
     lastCooked = null,
+    cookedDates = [],
     tags = [],
     onsave,
     onremove,
@@ -35,6 +38,7 @@
     onsavenotes = () => {},
     oncooked = () => {},
     onsavetags = () => {},
+    onedit = () => {},
   }: Props = $props()
 
   let baseServings = $derived(recipe.servings ?? 4)
@@ -760,6 +764,7 @@
         {:else}
           <span class="saved-badge">✓ In your jar</span>
           <button class="remove" onclick={onremove}>Remove</button>
+          <button class="share" onclick={onedit}>✎ Edit</button>
         {/if}
         <button class="share" onclick={shareRecipe}>↗ Share</button>
         <button class="share" onclick={shareCard} disabled={cardBusy}>
@@ -796,6 +801,14 @@
             </span>
           {/if}
         </div>
+        {#if cookedDates.length > 1}
+          <p class="cooked-history">
+            Your history: {cookedDates
+              .slice(-6)
+              .map((d) => fmtCookedDate(d))
+              .join(' · ')}{cookedDates.length > 6 ? ' · …' : ''}
+          </p>
+        {/if}
 
         <div class="tags-edit">
           {#each tags as tag (tag)}

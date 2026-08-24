@@ -16,6 +16,8 @@ export interface SavedRecipe {
   lastCooked?: number
   /** How many times they've cooked it. */
   cookedCount?: number
+  /** When each cook happened (capped; drives the little history line). */
+  cookedDates?: number[]
 }
 
 /** Small key-value rows that are not recipes (e.g. the auto-backup file
@@ -75,6 +77,14 @@ export async function saveRecipe(recipe: Recipe): Promise<number> {
   return id
 }
 
+/** Replace a saved recipe's content (title, ingredients, steps, …). Tags,
+ *  notes, cook history, and the original savedAt are left untouched: editing
+ *  makes the dish yours, it does not reset its story. */
+export async function updateRecipe(id: number, recipe: Recipe): Promise<void> {
+  const clean = toPlainRecipe(recipe)
+  await db.recipes.update(id, { recipe: clean, title: clean.title })
+}
+
 export async function removeRecipe(id: number): Promise<void> {
   await db.recipes.delete(id)
 }
@@ -113,7 +123,8 @@ export async function setTags(id: number, tags: string[]): Promise<void> {
 export async function markCooked(id: number): Promise<number> {
   const entry = await db.recipes.get(id)
   const cookedCount = (entry?.cookedCount ?? 0) + 1
-  await db.recipes.update(id, { cookedCount, lastCooked: Date.now() })
+  const cookedDates = [...(entry?.cookedDates ?? []), Date.now()].slice(-50)
+  await db.recipes.update(id, { cookedCount, lastCooked: Date.now(), cookedDates })
   return cookedCount
 }
 
@@ -132,6 +143,7 @@ interface Backup {
     notes?: string
     lastCooked?: number
     cookedCount?: number
+    cookedDates?: number[]
   }>
 }
 
@@ -151,6 +163,7 @@ export async function exportJar(): Promise<string> {
       ...(e.notes ? { notes: e.notes } : {}),
       ...(e.lastCooked ? { lastCooked: e.lastCooked } : {}),
       ...(e.cookedCount ? { cookedCount: e.cookedCount } : {}),
+      ...(e.cookedDates?.length ? { cookedDates: e.cookedDates } : {}),
     })),
   }
   return JSON.stringify(backup, null, 2)
@@ -188,6 +201,7 @@ export async function importJar(json: string): Promise<{ added: number; skipped:
       notes: entry.notes ?? '',
       lastCooked: entry.lastCooked,
       cookedCount: entry.cookedCount ?? 0,
+      cookedDates: entry.cookedDates ?? [],
     } as unknown as SavedRecipe)
     added++
   }

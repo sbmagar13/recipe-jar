@@ -11,9 +11,12 @@
     // Text handed over from the home-screen photo picker: OCR runs there, and we
     // land here with the fields already filled and ready to review.
     initialText?: string
+    // A saved recipe being edited: fields prefill, the photo/paste helpers hide
+    // (an edit is a touch-up, not a re-import), and metadata is preserved.
+    editing?: Recipe | null
   }
 
-  let { oncreate, onback, initialText = '' }: Props = $props()
+  let { oncreate, onback, initialText = '', editing = null }: Props = $props()
 
   let title = $state('')
   let servingsText = $state('4')
@@ -37,6 +40,13 @@
   }
 
   onMount(() => {
+    if (editing) {
+      title = editing.title
+      servingsText = editing.servings !== null ? String(editing.servings) : (editing.yieldText ?? '')
+      ingredientsText = editing.ingredients.map((i) => i.raw).join('\n')
+      stepsText = editing.steps.join('\n')
+      return
+    }
     if (initialText.trim()) {
       pasteText = initialText
       autofillFromPaste()
@@ -78,17 +88,22 @@
       .map((l) => l.trim().replace(/^\d+[.)]\s*/, ''))
       .filter(Boolean)
     const servings = parseInt(servingsText, 10)
-    oncreate({
-      title: title.trim() || 'My recipe',
+    // Editing keeps the parts the form does not touch (image, author, source,
+    // times); a fresh creation starts clean.
+    const base = editing ?? {
       description: '',
       image: null,
       author: null,
       sourceUrl: '',
-      servings: Number.isFinite(servings) && servings > 0 ? servings : null,
-      yieldText: servingsText,
       totalTime: null,
       prepTime: null,
       cookTime: null,
+    }
+    oncreate({
+      ...base,
+      title: title.trim() || 'My recipe',
+      servings: Number.isFinite(servings) && servings > 0 ? servings : null,
+      yieldText: servingsText,
       ingredients,
       steps,
     })
@@ -96,9 +111,14 @@
 </script>
 
 <section class="manual">
-  <h1 class="jar-title">Add or paste a recipe</h1>
+  <h1 class="jar-title">{editing ? 'Edit recipe' : 'Add or paste a recipe'}</h1>
+  {#if editing}
+    <p class="sub">Make it yours: fix a line, change an amount, rewrite a step. Tags, notes, and your cooking history stay put.</p>
+  {:else}
   <p class="sub">For family recipes, or any page that would not import. Snap a photo or paste the text to auto-fill, then fix anything that looks off. Kept on this device, like everything else.</p>
+  {/if}
 
+  {#if !editing}
   <div class="photo-box">
     <label class="photo-btn" class:busy={ocrBusy}>
       {#if ocrBusy}
@@ -128,6 +148,7 @@
       <span class="backup-msg">Filled below. Review and fix anything, then create.</span>
     {/if}
   </div>
+  {/if}
 
   <form onsubmit={create} class="manual-form">
     <label>
@@ -147,7 +168,7 @@
       <textarea bind:value={stepsText} rows="8" required placeholder="Rinse the lentils.&#10;Boil with turmeric for 20 minutes.&#10;Temper the cumin in ghee and pour over."></textarea>
     </label>
     <div class="manual-actions">
-      <button type="submit" class="save">Create recipe</button>
+      <button type="submit" class="save">{editing ? 'Save changes' : 'Create recipe'}</button>
       <button type="button" class="again" onclick={onback}>Cancel</button>
     </div>
   </form>
