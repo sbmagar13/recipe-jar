@@ -169,6 +169,13 @@
       localStorage.setItem(UNITS_KEY, units)
     } catch {}
   }
+  // The toggle only appears when the card has something it can convert:
+  // an all-metric recipe (grams and spoons) would make it a dead button,
+  // which reads as broken. Cheap check, mirrors convert.ts's scope.
+  const convertible = $derived(
+    recipe.ingredients.some((i) => /(^|\s)(cups?|oz|ounces?|lbs?|pounds?)(\s|\.|$)/i.test(i.raw)),
+  )
+
   /** What the card and cook sheet render: metric when asked and known. */
   function displayLine(ing: Recipe['ingredients'][number]): string {
     if (units === 'metric' && convertMod && ing.qty !== null) {
@@ -837,9 +844,11 @@
         {#if servings !== baseServings}
           <button class="reset-servings" onclick={() => (servings = baseServings)}>reset</button>
         {/if}
-        <button class="units-toggle" onclick={toggleUnits}>
-          {units === 'metric' ? '⇄ original units' : '⇄ metric'}
-        </button>
+        {#if convertible}
+          <button class="units-toggle" onclick={toggleUnits}>
+            {units === 'metric' ? '⇄ original units' : '⇄ metric'}
+          </button>
+        {/if}
         {#if wakeLockSupported}
           <button class="cook-toggle" class:on={awake} onclick={toggleAwake} aria-pressed={awake}>
             {awake ? '☀ Screen stays on' : '☾ Keep screen on'}

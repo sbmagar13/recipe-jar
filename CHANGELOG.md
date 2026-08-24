@@ -6,6 +6,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- The units toggle no longer appears on recipes with nothing to convert. An
+  already-metric card (grams and spoons throughout) made "⇄ metric" a dead
+  button, which read as broken; now it only shows when the card actually has
+  cups, ounces, or pounds to translate.
+
 ## [1.20.0] - 2026-08-24
 
 ### Added
