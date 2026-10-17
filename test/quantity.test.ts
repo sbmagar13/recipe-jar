@@ -12,6 +12,11 @@ describe('parseNumberExpr', () => {
     expect(parseNumberExpr('2,25')).toBe(2.25)
   })
 
+  it('treats a 3-digit group after comma/dot as a thousands separator', () => {
+    expect(parseNumberExpr('1,275')).toBe(1275)
+    expect(parseNumberExpr('10.000')).toBe(10_000)
+  })
+
   it('parses simple and mixed fractions', () => {
     expect(parseNumberExpr('3/4')).toBe(0.75)
     expect(parseNumberExpr('1 1/2')).toBe(1.5)
@@ -53,6 +58,14 @@ describe('parseIngredientLine', () => {
 
   it('leaves quantity-less lines untouched', () => {
     expect(parseIngredientLine('salt to taste')).toEqual({ qty: null, qtyEnd: null, rest: 'salt to taste' })
+  })
+
+  it('keeps unit attached after a thousands-separated mass', () => {
+    expect(parseIngredientLine('1,275g passata')).toEqual({
+      qty: 1275,
+      qtyEnd: null,
+      rest: 'g passata',
+    })
   })
 })
 

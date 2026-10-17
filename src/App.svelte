@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Recipe } from './lib/types'
-  import { parseRecipeFromHtml, parseAllRecipesFromHtml, pickBestRecipe } from './lib/parse'
+  import { parseAllRecipesFromHtml, pickBestRecipe } from './lib/parse'
+  import { parseImportedHtml } from './lib/importRecipe'
   import { searchSitesForgiving, type SearchHit } from './lib/sitesearch'
   import {
     saveRecipe,
@@ -477,7 +478,12 @@
     dishQuery = ''
     choices = null
     try {
-      const res = await fetch(`/api/proxy?url=${encodeURIComponent(target)}`)
+      let sourceUrl = target
+      if (/youtu\.?be/i.test(target)) {
+        const { isYouTubeUrl, normalizeYouTubeWatchUrl } = await import('./lib/youtube')
+        if (isYouTubeUrl(target)) sourceUrl = normalizeYouTubeWatchUrl(target) ?? target
+      }
+      const res = await fetch(`/api/proxy?url=${encodeURIComponent(sourceUrl)}`)
       if (!res.ok) {
         const body = await res.json().catch(() => ({ error: 'Could not fetch that page' }))
         throw new Error(body.error ?? 'Could not fetch that page')
@@ -486,13 +492,14 @@
       // A page can carry several recipes (the dish plus a related-recipes
       // carousel). Auto-pick when one matches the page title; otherwise ask.
       searchHits = null
-      const all = parseAllRecipesFromHtml(html, target)
+      const all = parseAllRecipesFromHtml(html, sourceUrl)
       if (all.length > 1 && !pickBestRecipe(all, html)) {
         choices = all.slice(0, 6)
         loading = false
         return
       }
-      const parsed = parseRecipeFromHtml(html, target)
+      // Structured recipe first; YouTube watch pages may fall back to description text.
+      const parsed = await parseImportedHtml(html, sourceUrl)
       if (!parsed) {
         blocked = true
         // Fetched fine but no recipe found. Two very different stories, told
@@ -501,11 +508,11 @@
         // recipe markup at all was probably never a recipe (noise). Sends
         // only the hostname and this coarse reason, never the page or URL.
         const hasMarkup = /recipeIngredient|itemtype="[^"]*schema\.org\/Recipe|"@type"\s*:\s*"[Rr]ecipe"/.test(html)
-        reportParseIssue(target, hasMarkup ? 'markup-unread' : 'no-recipe')
+        reportParseIssue(sourceUrl, hasMarkup ? 'markup-unread' : 'no-recipe')
         throw new Error('No recipe found on that page.')
       }
       recipe = parsed
-      const existing = await findBySource(target)
+      const existing = await findBySource(sourceUrl)
       savedId = existing?.id ?? null
       navigate({ view: 'recipe', id: savedId })
       url = ''

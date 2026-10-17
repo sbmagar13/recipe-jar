@@ -2,7 +2,6 @@
   import { onMount } from 'svelte'
   import type { Recipe } from '../types'
   import { parseIngredientLine } from '../quantity'
-  import { parseRecipeText } from '../textparse'
   import { imageToText } from '../ocr'
 
   interface Props {
@@ -30,7 +29,8 @@
   let ocrPct = $state(0)
   let ocrError = $state('')
 
-  function autofillFromPaste() {
+  async function autofillFromPaste() {
+    const { parseRecipeText } = await import('../textparse')
     const parsed = parseRecipeText(pasteText)
     if (parsed.title) title = parsed.title
     if (parsed.servings) servingsText = parsed.servings

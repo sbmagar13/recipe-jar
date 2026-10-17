@@ -9,9 +9,42 @@ export interface ParsedText {
   steps: string // newline-joined
 }
 
-const INGREDIENTS_HEADER = /^(ingredients|ingredienser|zutaten|ingr[eé]dients|you will need|shopping list)\b[:\s]*$/i
-const STEPS_HEADER = /^(method|methods|instructions?|directions?|steps|preparation|g[öo]r s[åa] h[äa]r|instruktioner|tillagning|s[åa] h[äa]r g[öo]r du)\b[:\s]*$/i
-const NOISE = /^(ingredients|method|instructions|directions|steps|preparation)\b/i
+/**
+ * Core header patterns — matched against {@link normalizeHeaderCandidate} output
+ * so "🛒 INGREDIENTS LIST" and "Ingredients:" share one allowlist.
+ */
+export const INGREDIENTS_HEADER =
+  /^(?:ingredients(?:\s+list)?|ingredienser|zutaten|ingr[eé]dients|you will need|shopping list|المكونات|المقادير)[:\s]*$/i
+export const STEPS_HEADER =
+  /^(?:methods?|instructions?|directions?|(?:cooking|quick)\s+steps|steps|preparation|recipe|rezept|how to (?:make|cook|prepare)(?:\s+it)?|g[öo]r s[åa] h[äa]r|instruktioner|tillagning|s[åa] h[äa]r g[öo]r du|(?:ال)?طريقة(?:\s+(?:التحضير|الإعداد)(?:\s+.*)?)?)[:\s]*$/i
+
+const SECTION_DIVIDER = /^[-–—=*_]{2,}$/
+
+/** Strip emoji, Markdown, and bullets so "🛒 INGREDIENTS LIST" matches the allowlist. */
+export function normalizeHeaderCandidate(line: string): string {
+  return line
+    .trim()
+    .replace(/^(?:[^\p{L}\p{N}]+)/u, '')
+    .replace(/\*\*/g, '')
+    .trim()
+}
+
+export function isIngredientsHeader(line: string): boolean {
+  return INGREDIENTS_HEADER.test(normalizeHeaderCandidate(line))
+}
+
+export function isStepsHeader(line: string): boolean {
+  return STEPS_HEADER.test(normalizeHeaderCandidate(line))
+}
+
+/** English (and other Latin-script) block, as opposed to an Arabic header in the same paste. */
+function isLatinRecipeHeader(line: string): boolean {
+  return isRecipeHeader(line) && !/[\u0600-\u06FF]/.test(line)
+}
+
+function isRecipeHeader(line: string): boolean {
+  return isIngredientsHeader(line) || isStepsHeader(line)
+}
 
 // Lines that are website or app chrome, not recipe content. Dropped before
 // parsing so an OCR'd or pasted page does not turn nav, ratings and badges into
@@ -35,21 +68,30 @@ function isChrome(line: string): boolean {
   return CHROME_LINE.some((re) => re.test(line))
 }
 
-// Leading list bullets and checkbox glyphs.
-const BULLET = /^\s*(?:[-*•·▢□☐●▪]|\d+[.)])\s+/
+// Leading list bullets, checkbox glyphs, and Western / Arabic-Indic numerals.
+const NUMBERED = /^\s*[\d\u0660-\u0669\u06F0-\u06F9]+[.)]\s+/
+const GLYPH = /^[-*•·▢□☐●▪]+\s+/
 
 // A measurement-ish token at the start suggests an ingredient line.
 const MEASURE = /^\s*(?:\d|½|¼|¾|⅓|⅔|⅛|a\s|an\s|one\s|two\s|three\s|pinch|dash|handful|clove|tsp|tbsp|cup|g\b|kg|ml|dl|l\b|oz|lb)/i
 
 function stripBullet(s: string): string {
-  return s.replace(BULLET, '').trim()
+  return s
+    .trim()
+    .replace(/^#{1,6}\s+/, '')
+    .replace(NUMBERED, '')
+    .replace(GLYPH, '')
+    .replace(/\*\*/g, '')
+    .trim()
 }
 
+// "for 12 minutes" is a cook time. Swedish "för 4" is a serving count.
+const SERVINGS =
+  /(?:serves|servings|yield|makes|portions?|portioner)\D{0,4}(\d{1,3})(?!\s*(?:minutes?|mins?|hours?|hrs?|seconds?|secs?)\b)|(\d{1,3})\s*(?:servings|portions|portioner|people|personer)\b|\bför\s+(\d{1,3})\b/i
+
 function detectServings(text: string): string {
-  const m =
-    text.match(/(?:serves|servings|yield|makes|portions?|portioner|f[öo]r)\D{0,4}(\d{1,3})/i) ||
-    text.match(/(\d{1,3})\s*(?:servings|portions|portioner|people|personer)/i)
-  return m ? m[1] : ''
+  const m = text.match(SERVINGS)
+  return m?.[1] || m?.[2] || m?.[3] || ''
 }
 
 function looksLikeIngredient(line: string): boolean {
@@ -62,19 +104,40 @@ function looksLikeIngredient(line: string): boolean {
   return words <= 8 && l.length <= 60 && !endsSentence
 }
 
+/** First index at or after `from` matching `pred`, or -1. */
+function findLine(lines: string[], pred: (line: string) => boolean, from = 0): number {
+  for (let i = from; i < lines.length; i++) if (pred(lines[i]!)) return i
+  return -1
+}
+
 /** Parse pasted recipe text into editable form fields. */
 export function parseRecipeText(text: string): ParsedText {
-  const rawLines = text.split(/\r?\n/).map((l) => l.trim())
-  const lines = rawLines.filter((l) => l.length > 0 && !isChrome(l))
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !isChrome(l))
   const servings = detectServings(text)
 
-  // Locate section headers.
+  // Prefer a Latin (usually English) ingredients+steps pair when the paste has both languages.
   let ingIdx = -1
   let stepIdx = -1
-  lines.forEach((l, i) => {
-    if (ingIdx === -1 && INGREDIENTS_HEADER.test(l)) ingIdx = i
-    if (stepIdx === -1 && STEPS_HEADER.test(l)) stepIdx = i
-  })
+  let latin = false
+  for (let i = 0; i < lines.length; i++) {
+    if (!isIngredientsHeader(lines[i]!)) continue
+    const step = findLine(lines, isStepsHeader, i + 1)
+    const nextIng = findLine(lines, isIngredientsHeader, i + 1)
+    if (step === -1 || (nextIng !== -1 && step > nextIng)) continue
+    const isLat = isLatinRecipeHeader(lines[i]!) && isLatinRecipeHeader(lines[step]!)
+    if (ingIdx === -1 || (isLat && !latin)) {
+      ingIdx = i
+      stepIdx = step
+      latin = isLat
+    }
+  }
+  if (ingIdx === -1 && stepIdx === -1) {
+    ingIdx = findLine(lines, isIngredientsHeader)
+    stepIdx = findLine(lines, isStepsHeader)
+  }
 
   let title = ''
   const ingredients: string[] = []
@@ -83,18 +146,20 @@ export function parseRecipeText(text: string): ParsedText {
   if (ingIdx !== -1 || stepIdx !== -1) {
     // Header-driven split (the reliable case).
     const firstHeader = Math.min(...[ingIdx, stepIdx].filter((n) => n !== -1))
-    title = lines.slice(0, firstHeader).find((l) => !NOISE.test(l)) ?? ''
+    title = lines.slice(0, firstHeader).find((l) => !isRecipeHeader(l)) ?? ''
 
     const ingEnd = stepIdx > ingIdx ? stepIdx : lines.length
     if (ingIdx !== -1) {
       for (const l of lines.slice(ingIdx + 1, ingEnd)) {
-        if (STEPS_HEADER.test(l) || INGREDIENTS_HEADER.test(l)) continue
+        if (isRecipeHeader(l) || SECTION_DIVIDER.test(l)) continue
         ingredients.push(stripBullet(l))
       }
     }
     if (stepIdx !== -1) {
       for (const l of lines.slice(stepIdx + 1)) {
-        if (STEPS_HEADER.test(l) || INGREDIENTS_HEADER.test(l)) continue
+        // Divider or a new Ingredients header → outro / another language block.
+        if (SECTION_DIVIDER.test(l) || isIngredientsHeader(l)) break
+        if (isStepsHeader(l)) continue
         steps.push(stripBullet(l))
       }
     }
@@ -102,7 +167,7 @@ export function parseRecipeText(text: string): ParsedText {
     // No headers: classify line by line. First line is the title.
     title = lines[0] ?? ''
     for (const l of lines.slice(1)) {
-      const isNumbered = /^\s*\d+[.)]\s+/.test(l)
+      const isNumbered = NUMBERED.test(l)
       if (isNumbered) steps.push(stripBullet(l))
       else if (looksLikeIngredient(l)) ingredients.push(stripBullet(l))
       else steps.push(stripBullet(l))

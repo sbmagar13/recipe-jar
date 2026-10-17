@@ -26,9 +26,13 @@ export function parseNumberExpr(s: string): number | null {
   // Simple fraction "3/4"
   const frac = s.match(/^(\d+)\s*\/\s*(\d+)$/)
   if (frac) return parseInt(frac[1], 10) / parseInt(frac[2], 10)
-  // Decimal with comma or dot
+  // Decimal or thousands group with comma/dot.
+  // Exactly 3 digits after the separator → thousands ("1,275g"); 1–2 → decimal ("0,5", "2,25").
   const dec = s.match(/^(\d+)[.,](\d+)$/)
-  if (dec) return parseFloat(`${dec[1]}.${dec[2]}`)
+  if (dec) {
+    if (dec[2].length === 3) return parseInt(`${dec[1]}${dec[2]}`, 10)
+    return parseFloat(`${dec[1]}.${dec[2]}`)
+  }
   const int = s.match(/^\d+$/)
   if (int) return parseInt(s, 10)
   return null
