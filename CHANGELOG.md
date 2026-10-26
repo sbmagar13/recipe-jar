@@ -6,6 +6,32 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **YouTube links.** Paste a video or Shorts link (youtube.com, youtu.be,
+  m.youtube.com) and the jar reads the recipe out of the video's
+  description, where creators often type the whole thing, into the editor,
+  link and thumbnail kept, for you to check before saving. A watch page
+  has no recipe markup and almost no visible text (the description sits
+  inside a script), so until now every YouTube link ended in "No recipe
+  found". The description goes through the same gate as a page with no
+  markup: it needs an ingredients header and something that reads like a
+  method, so a vlog or a "cookbook in bio" still gets the honest "No
+  recipe found". Every form of a video link becomes one watch URL, so the
+  same video imported twice shows the saved copy. Contributed by
+  @musavvirahmed in #25, reshaped to land in the editor like every other
+  text read.
+
+### Changed
+
+- The paste parser recognises headers the way people type them on YouTube
+  and in notes apps: with an emoji ("🛒 INGREDIENTS LIST"), in Markdown
+  ("### Ingredients:", "**Method**"), as "Ingredients: ..." on one line,
+  in Arabic (المكونات, طريقة التحضير), and twice in a bilingual text, where
+  the Latin-script block wins. Markdown bullets and heading marks are
+  stripped from lines, a "---" divider ends the steps, and "cook for 12
+  minutes" is no longer read as 12 servings. Also from #25.
+
 ## [1.22.0] - 2026-10-22
 
 ### Added

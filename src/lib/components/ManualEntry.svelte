@@ -119,7 +119,11 @@
   {#if editing}
     <p class="sub">Make it yours: fix a line, change an amount, rewrite a step. Tags, notes, and your cooking history stay put.</p>
   {:else if initialSource}
-    <p class="sub" role="status">That page has no recipe markup, so we read its text instead. Check the fields look right, then create. The link stays on the card.</p>
+    <p class="sub" role="status">
+      {initialSource.url.includes('youtube.com')
+        ? 'That is a video, so we read its description instead.'
+        : 'That page has no recipe markup, so we read its text instead.'} Check the fields look right, then create. The link stays on the card.
+    </p>
   {:else}
   <p class="sub">For family recipes, or any page that would not import. Snap a photo or paste the text to auto-fill, then fix anything that looks off. Kept on this device, like everything else.</p>
   {/if}

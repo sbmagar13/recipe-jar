@@ -64,6 +64,9 @@ honest version: paste a link, get the recipe, keep it. Forever. For nothing.
 - **Pages with no recipe markup** (a blog that typed the recipe into a table
   or a list) open the editor pre-filled from the page text, link kept, for
   you to check and save.
+- **YouTube links** (a video or a Short) open the editor pre-filled from the
+  video's description, where creators often type the whole recipe, with the
+  link and thumbnail kept.
 - **Blocked sites** (NYT Cooking, AllRecipes, Serious Eats) that block fetching:
   use the one-click bookmarklet that runs in your own browser.
 - **Back up the whole jar** to a single file, or copy it as text. Restore either way.
