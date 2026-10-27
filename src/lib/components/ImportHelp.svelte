@@ -62,7 +62,8 @@
   <p class="hint">
     On a phone, or don't have a bookmarks bar? Copy the recipe text and
     <button class="linklike" onclick={ontypein}>paste it to auto-fill</button>,
-    then fix anything that looks off. A one-tap phone version is coming with the installable app.
+    then fix anything that looks off. On Android, the installed app also takes a link shared
+    straight from the browser or the YouTube app.
   </p>
 
   <button class="again" onclick={onback}>← Back</button>

@@ -6,6 +6,26 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Dark mode, the parts that stayed light.** The "back up now" banner kept
+  its cream background while its text went cream too, so in dark mode it was
+  a pale box with nothing readable in it. The notes box, the paste box and
+  the paste-to-restore box had the same problem, white fields with
+  near-white text. All four now follow the theme. The white Install and
+  Update buttons keep their dark green text in both themes.
+- **The home-screen tip no longer covers the bottom of the page.** It floats
+  over the viewport, and the last row of buttons could hide behind it; the
+  page now scrolls clear of it.
+
+### Added
+
+- **How to put Recipe Jar on your phone**, on the About page: there is
+  nothing in an app store, so the steps for iPhone (Safari, Share, Add to
+  Home Screen, and Open in Safari first from inside another app) and
+  Android (Install, or Add to Home screen) now have a permanent home, not
+  just the one-time tip.
+
 ## [1.24.0] - 2026-10-27
 
 ### Added

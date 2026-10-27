@@ -70,6 +70,27 @@
     respective authors. Please cook, share, and credit kindly.
   </p>
 
+  <h2>On your phone</h2>
+  <p>
+    Recipe Jar is a web app, so there is nothing in an app store. It installs from the browser,
+    and once it is on your home screen it opens full screen, works offline, and your jar is
+    safe from being cleared.
+  </p>
+  <ul>
+    <li>
+      <strong>iPhone and iPad.</strong> Open recipejar.app in Safari, tap <strong>Share</strong>
+      (the square with the arrow), then <strong>Add to Home Screen</strong>. From a link opened
+      inside another app, like Instagram, tap the browser's menu first and choose
+      <strong>Open in Safari</strong>.
+    </li>
+    <li>
+      <strong>Android.</strong> Open recipejar.app in Chrome and tap <strong>Install</strong>
+      when it is offered, or the browser menu and then <strong>Add to Home screen</strong>.
+      The installed app also shows up in the share sheet, so a recipe link or a YouTube video
+      can be sent straight to it.
+    </li>
+  </ul>
+
   <h2>Open source</h2>
   <p>
     Recipe Jar is open source under the MIT licence. Read the code, file an issue, or fork it at

@@ -36,6 +36,13 @@
 
   const visible = $derived(active && !dismissed && !isStandalone && mode !== 'none')
 
+  // The tip floats over the bottom of the viewport; give the page room to
+  // scroll out from under it so the last row of controls is never covered.
+  $effect(() => {
+    document.documentElement.classList.toggle('has-install-tip', visible)
+    return () => document.documentElement.classList.remove('has-install-tip')
+  })
+
   async function install() {
     if (!deferred) return
     await deferred.prompt()
