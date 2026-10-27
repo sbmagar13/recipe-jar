@@ -900,6 +900,26 @@ button:not(:disabled):not(.linklike):active {
   cursor: not-allowed;
 }
 
+/* Cook mode reads to you: a third, quieter button between Back and Next,
+   shown only when the browser has an on-device voice. */
+.cook-read {
+  flex: 0 0 auto;
+  border-radius: 12px;
+  padding: 16px 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 56px;
+  background: none;
+  border: 1.5px solid var(--rule);
+  color: var(--accent-ink);
+}
+
+.cook-read.on {
+  border: 2px solid var(--basil);
+  padding: 15.5px 13.5px;
+}
+
 .cook-next {
   flex: 2;
   background: var(--basil);

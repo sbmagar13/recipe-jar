@@ -299,6 +299,7 @@
       if (changed) timers = next
       if (justFinished.length > 0) {
         fireAlarm() // the first alert, right as it finishes
+        announceTimers(justFinished) // and said out loud, when the cook asked for a voice
         const nextAlarming = { ...alarming }
         for (const k of justFinished) nextAlarming[k] = ALARM_BEEPS
         alarming = nextAlarming
@@ -330,6 +331,96 @@
   let stepIndex = $state(0)
   let showCookIngredients = $state(false)
   let lockFromCook = false
+
+  // --- Cook mode reads to you (on-device speech; the module is lazy) ---
+  // The control shows only when the browser has a voice that stays on the
+  // device; desktop Chrome's network voices never count. The choice is
+  // remembered, so a cook who likes it hears each step from the first.
+  const READ_KEY = 'recipe-jar:readAloud'
+  const speechPossible = typeof speechSynthesis !== 'undefined'
+  function hasLocalVoice(): boolean {
+    try {
+      return speechSynthesis.getVoices().some((v) => v.localService)
+    } catch {
+      return false
+    }
+  }
+  const localVoiceAtLoad = speechPossible && hasLocalVoice()
+  let canRead = $state(localVoiceAtLoad)
+  if (speechPossible && !localVoiceAtLoad) {
+    // Chrome fills the voice list a moment after load.
+    speechSynthesis.addEventListener('voiceschanged', () => (canRead = hasLocalVoice()), { once: true })
+  }
+  let readAloud = $state(
+    (() => {
+      try {
+        return localStorage.getItem(READ_KEY) === 'on'
+      } catch {
+        return false
+      }
+    })(),
+  )
+  let speakMod = $state<typeof import('../speak') | null>(null)
+  let speakLoading = false
+  async function loadSpeech() {
+    if (speakMod || speakLoading) return
+    speakLoading = true
+    try {
+      speakMod = await import('../speak')
+    } finally {
+      speakLoading = false
+    }
+  }
+  // A remembered "on" loads the module early, so the Cook tap can read step 1
+  // inside that same gesture (iOS allows the first utterance only from a tap).
+  $effect(() => {
+    if (readAloud && canRead && !speakMod) void loadSpeech()
+  })
+  function speechLang(): string {
+    return document.documentElement.lang || navigator.language
+  }
+  function announceStep() {
+    if (!speakMod || !canRead || !readAloud || !cooking) return
+    const step = cookList[stepIndex]
+    if (step) speakMod.speak(speakMod.spokenText(step.text), speechLang())
+  }
+  function announceTimers(keys: string[]) {
+    if (!speakMod || !canRead || !readAloud || !cooking) return
+    const labels = keys
+      .map((k) => {
+        const [i, j] = k.split('-').map(Number)
+        return stepTimers[i]?.[j]?.label
+      })
+      .filter((l): l is string => Boolean(l))
+    if (labels.length > 0) speakMod.speak(`Timer done: ${labels.map(speakMod.spokenText).join(', ')}`, speechLang())
+  }
+  function stopReading() {
+    speakMod?.stop()
+  }
+  async function toggleRead() {
+    readAloud = !readAloud
+    try {
+      localStorage.setItem(READ_KEY, readAloud ? 'on' : 'off')
+    } catch {
+      /* not remembered, still works now */
+    }
+    if (!readAloud) {
+      stopReading()
+      return
+    }
+    if (!speakMod) {
+      // iOS lets a page speak only after a tap-born utterance: an empty one
+      // here, inside the tap, unlocks the real ones that follow the load.
+      try {
+        speechSynthesis.speak(new SpeechSynthesisUtterance(''))
+      } catch {
+        /* then there is no speech here */
+      }
+      await loadSpeech()
+    }
+    announceStep()
+  }
+  $effect(() => () => stopReading())
 
   // A phone call or a stray Escape mid-recipe should not lose your place:
   // the current step is remembered (one cook at a time, freshest wins) and
@@ -377,6 +468,7 @@
     stepDir = 1
     showCookIngredients = false
     cooking = true
+    announceStep() // a remembered "read each step" starts on this tap
     if (wakeLockSupported && !awake) {
       lockFromCook = true
       acquireLock()
@@ -385,6 +477,7 @@
 
   function stopCooking() {
     silenceAllAlarms()
+    stopReading()
     cooking = false
     if (lockFromCook) {
       lockFromCook = false
@@ -395,6 +488,7 @@
   /** The happy ending: the cook reached ✓ Done, so forget the place-keeper,
    *  count the cook, and open the kitchen-memory moment (saved recipes). */
   function finishCooking() {
+    stopReading()
     resumed = false
     try {
       localStorage.removeItem(COOKPOS_KEY)
@@ -410,14 +504,19 @@
   function nextStep() {
     silenceAllAlarms() // moving on counts as "I've got it"
     stepDir = 1
-    if (stepIndex < cookList.length - 1) stepIndex++
-    else finishCooking()
+    if (stepIndex < cookList.length - 1) {
+      stepIndex++
+      announceStep()
+    } else finishCooking()
   }
 
   function prevStep() {
     silenceAllAlarms()
     stepDir = -1
-    if (stepIndex > 0) stepIndex--
+    if (stepIndex > 0) {
+      stepIndex--
+      announceStep()
+    }
   }
 
   // Jump straight to a step (cook position) — e.g. tapping a tray timer.
@@ -426,6 +525,7 @@
     if (pos >= 0 && pos < cookList.length) {
       stepDir = pos > stepIndex ? 1 : -1
       stepIndex = pos
+      announceStep()
     }
   }
 
@@ -733,6 +833,18 @@
         {/if}
         <div class="cook-nav">
           <button class="cook-prev" onclick={prevStep} disabled={stepIndex === 0}>◀ Back</button>
+          {#if canRead}
+            <button
+              class="cook-read"
+              class:on={readAloud}
+              onclick={toggleRead}
+              aria-pressed={readAloud}
+              aria-label={readAloud ? 'Stop reading the steps aloud' : 'Read each step aloud'}
+              title={readAloud ? 'Stop reading the steps aloud' : 'Read each step aloud'}
+            >
+              {readAloud ? '🔈 Reading' : '🔊 Read'}
+            </button>
+          {/if}
           {#if stepIndex < cookList.length - 1}
             <button class="cook-next" onclick={nextStep}>Next ▶</button>
           {:else}

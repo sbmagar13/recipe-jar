@@ -12,12 +12,8 @@
 // anything below the current minor is unreachable bytes in the entry bundle.
 // Past notes live in CHANGELOG.md.
 export const WHATS_NEW: Record<string, string[]> = {
-  '1.23.1': [
-    'If a YouTube link says YouTube would not show the video to our server, use the bookmarklet: it now reads the video description in your own browser. Drag it to your bookmarks bar again to pick up the new one.',
-  ],
-  '1.23.0': [
-    'Paste a YouTube link, a video or a Short, and the jar reads the recipe out of the video description into the editor, link and thumbnail kept, for you to check before saving. A video that only says "cookbook in bio" still gets an honest "No recipe found".',
-    'The paste box understands headers the way people type them on YouTube and in notes apps: with an emoji, in Markdown, as "Ingredients: ..." on one line, and in Arabic.',
+  '1.24.0': [
+    'Cook mode can read to you now. Tap Read on any step and keep your hands in the dough: every step is read as you reach it, and a finished timer says so out loud. All on your device, like everything else.',
   ],
 }
 

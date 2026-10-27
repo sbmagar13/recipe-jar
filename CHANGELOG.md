@@ -6,6 +6,19 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **Cook mode reads to you.** A Read button sits between Back and Next in
+  cook mode. Tap it and the current step is read aloud, and so is every
+  step you move to, until you tap it again. A timer that finishes says so
+  out loud too, on top of the beep. The choice is remembered for the next
+  cook. Fractions, degrees, ranges and unit abbreviations are said as words
+  ("a half teaspoon", "400 degrees F", "25 to 30 minutes"). Speech runs on
+  the device: only voices the browser marks as on-device are ever used, so
+  desktop Chrome's Google network voices are skipped, and a browser with no
+  on-device voice shows no button at all. Nothing about a recipe leaves the
+  device, like everything else.
+
 ## [1.23.1] - 2026-10-27
 
 ### Fixed

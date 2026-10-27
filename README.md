@@ -51,7 +51,7 @@ honest version: paste a link, get the recipe, keep it. Forever. For nothing.
   same ingredient adds up across them ("2 cups flour" + "1 cup flour" = "3 cups
   flour"), scaled per recipe. Tick things off in the store, share the rest.
 - **Cook mode**: one step at a time, wake lock, and "simmer 20 minutes" becomes
-  a tappable timer.
+  a tappable timer. It can read each step to you, in the browser's own on-device voice.
 - **Save unlimited recipes** to your own device (IndexedDB). Search them by name
   or ingredient, tag them, add notes, count your cooks.
 - **Add from a photo**: snap a printed recipe and on-device OCR fills in the

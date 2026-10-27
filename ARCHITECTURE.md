@@ -42,6 +42,7 @@ nothing per user.
 | `rescue.ts` | Pages with no recipe markup: page text to editor text, through one gate (an ingredients header plus something that reads like a method) so a page that was never a recipe still fails honestly. Lazy. |
 | `youtube.ts` | YouTube links: one canonical watch URL, and the video's description (inside the player JSON) through the same rescue gate. Lazy. |
 | `timers.ts` | Extract cook durations from step text ("simmer 20 min") into tappable timers. |
+| `speak.ts` | Cook mode reads to you: step text as spoken words, and the voice choice (on-device voices only). Lazy. |
 | `db.ts` | The jar: Dexie/IndexedDB wrapper. Save, search, tags, notes, cook stats, and JSON backup/restore. |
 | `share.ts` | Encode/decode a whole recipe into a shareable `#recipe=` link (base64url), and the Web Share glue. |
 | `bookmarklet.ts` | The in-browser bookmarklet path for sites that block server fetching, via a `#import=` hash. |
