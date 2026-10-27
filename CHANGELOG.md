@@ -6,6 +6,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.24.2] - 2026-10-27
+
 ### Changed
 
 - **The Read button in cook mode is a round speaker now.** The first cut
@@ -747,7 +749,8 @@ The first public release. Everything below ships on day one.
 - Hardened fetch proxy: caller verification, SSRF guards, HTML-only responses,
   and edge caching.
 
-[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.24.1...HEAD
+[Unreleased]: https://github.com/sbmagar13/recipe-jar/compare/v1.24.2...HEAD
+[1.24.2]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.24.2
 [1.24.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.24.1
 [1.24.0]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.24.0
 [1.23.1]: https://github.com/sbmagar13/recipe-jar/releases/tag/v1.23.1
