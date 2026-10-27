@@ -6,6 +6,16 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- **The Read button in cook mode is a round speaker now.** The first cut
+  was a wide text button with an emoji, which fought the flat glyphs used
+  everywhere else, squeezed Back onto two lines, and changed width when it
+  switched to "Reading". It is now a fixed-size circle with a stroke-drawn
+  speaker, one sound wave when quiet and two when reading, filled green
+  while on. Back and Next keep to one line each down to the smallest
+  phones.
+
 ## [1.24.1] - 2026-10-27
 
 ### Fixed

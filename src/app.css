@@ -900,6 +900,12 @@ button:not(:disabled):not(.linklike):active {
 }
 
 .cook-prev {
+  /* A little more of the row than a plain third, and tighter sides, so
+     "◀ Back" stays on one line next to the round Read button on a phone. */
+  flex: 1.2;
+  padding-left: 10px;
+  padding-right: 10px;
+  white-space: nowrap;
   background: none;
   border: 1.5px solid var(--rule);
   color: var(--accent-ink);
@@ -913,25 +919,30 @@ button:not(:disabled):not(.linklike):active {
 /* Cook mode reads to you: a third, quieter button between Back and Next,
    shown only when the browser has an on-device voice. */
 .cook-read {
-  flex: 0 0 auto;
-  border-radius: 12px;
-  padding: 16px 14px;
-  font-size: 1.05rem;
-  font-weight: 700;
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
   cursor: pointer;
-  min-height: 56px;
   background: none;
   border: 1.5px solid var(--rule);
   color: var(--accent-ink);
 }
 
 .cook-read.on {
-  border: 2px solid var(--basil);
-  padding: 15.5px 13.5px;
+  background: var(--basil);
+  border-color: var(--basil);
+  color: #fff;
 }
 
 .cook-next {
   flex: 2;
+  padding-left: 12px;
+  padding-right: 12px;
+  white-space: nowrap;
   background: var(--basil);
   color: #fff;
   border: none;

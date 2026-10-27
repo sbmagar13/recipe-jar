@@ -842,7 +842,12 @@
               aria-label={readAloud ? 'Stop reading the steps aloud' : 'Read each step aloud'}
               title={readAloud ? 'Stop reading the steps aloud' : 'Read each step aloud'}
             >
-              {readAloud ? '🔈 Reading' : '🔊 Read'}
+              <!-- A speaker: one sound wave when quiet, two when reading. -->
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H3v6h3l5 4z" />
+                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                {#if readAloud}<path d="M18.5 5.5a9 9 0 0 1 0 13" />{/if}
+              </svg>
             </button>
           {/if}
           {#if stepIndex < cookList.length - 1}
