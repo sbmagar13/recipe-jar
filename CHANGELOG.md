@@ -6,6 +6,20 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- **YouTube links from recipejar.app.** YouTube puts a "confirm you're not
+  a bot" page in front of server fetches at times, and from Cloudflare's
+  edge that was every video the day after 1.23.0 shipped. The player JSON
+  on that page is a stub, so the import found no description and answered
+  "No recipe found". The page data on the same page still carries the
+  description and the title, so the import now reads those too, and takes
+  the thumbnail from the video id when the page leaves it out. When YouTube
+  refuses the server outright, the error says so and points to the
+  bookmarklet, which now lifts the video's description in your own browser,
+  where there is no wall. Drag the bookmarklet to your bookmarks bar again
+  to pick up the new one.
+
 ## [1.23.0] - 2026-10-26
 
 ### Added

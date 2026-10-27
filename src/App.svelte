@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Recipe } from './lib/types'
+  import type { Rescued } from './lib/rescue'
   import { parseRecipeFromHtml, parseAllRecipesFromHtml, pickBestRecipe } from './lib/parse'
   import { searchSitesForgiving, type SearchHit } from './lib/sitesearch'
   import {
@@ -322,17 +323,25 @@
       return
     }
     if (imported.kind === 'text') {
-      const { rescueFromText } = await import('./lib/rescue')
-      const rescued = rescueFromText(imported.text, imported.title, imported.image)
+      // From a video page, the text is the description the bookmarklet lifted
+      // in the cook's own browser: read by the YouTube rules, filed under the
+      // one canonical watch URL.
+      const yt = /youtu\.?be/i.test(imported.url) ? await import('./lib/youtube') : null
+      const watch = yt?.normalizeYouTubeWatchUrl(imported.url) ?? null
+      const url = watch ?? imported.url
+      const rescued =
+        yt && watch
+          ? yt.rescueFromYouTubeText(imported.text, imported.title, watch)
+          : (await import('./lib/rescue')).rescueFromText(imported.text, imported.title, imported.image)
       if (rescued) {
-        const existing = await findBySource(imported.url)
+        const existing = await findBySource(url)
         if (existing) {
           recipe = existing.recipe
           savedId = existing.id
           navigate({ view: 'recipe', id: savedId })
         } else {
-          reportParseIssue(imported.url, 'text-rescued')
-          goAdd(rescued.text, { url: imported.url, image: rescued.image })
+          reportParseIssue(url, 'text-rescued')
+          goAdd(rescued.text, { url, image: rescued.image })
         }
         return
       }
@@ -546,9 +555,16 @@
         // it that way and land in the editor, where the cook checks it before
         // saving: a heuristic read never gets to pose as a clean card. Lazy:
         // only a failed import pays for the rescue code.
-        const rescued = video
-          ? (await import('./lib/youtube')).rescueFromYouTube(html)
-          : (await import('./lib/rescue')).rescueFromHtml(html)
+        let rescued: Rescued | null
+        let refused = false
+        if (video) {
+          const yt = await import('./lib/youtube')
+          rescued = yt.rescueFromYouTube(html, sourceUrl)
+          // No description at all: YouTube's bot wall refused the server.
+          refused = !rescued && !yt.youtubeDescription(html)
+        } else {
+          rescued = (await import('./lib/rescue')).rescueFromHtml(html)
+        }
         if (rescued) {
           const existing = await findBySource(sourceUrl)
           if (existing) {
@@ -564,6 +580,13 @@
           return
         }
         blocked = true
+        if (refused) {
+          // YouTube's "confirm you're not a bot" wall, in front of server
+          // fetches at times. The bookmarklet reads the page in the cook's
+          // own browser, where there is no wall; `blocked` points there.
+          reportParseIssue(sourceUrl, 'youtube-refused')
+          throw new Error('YouTube would not show that video to our server.')
+        }
         // Fetched fine but no recipe found. Two very different stories, told
         // apart so the failure tally triages itself: a page with recipe
         // markup we failed to read is a parser gap (signal); a page with no

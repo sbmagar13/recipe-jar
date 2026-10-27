@@ -1,11 +1,19 @@
 // YouTube links. A watch page has no recipe markup and almost no visible text:
 // the description, where creators often type the whole recipe, sits inside a
-// script as JSON (ytInitialPlayerResponse.videoDetails.shortDescription), which
-// the page-text rescue drops along with every other script. This lifts the
-// description out and sends it through the same rescue gate as any page with
-// no markup, so a video lands in the editor pre-filled, link and thumbnail
-// kept, for the cook to check before saving. Nothing here parses a recipe:
-// the paste parser reads the text once it is in the editor.
+// script as JSON, which the page-text rescue drops along with every other
+// script. This lifts the description out and sends it through the same rescue
+// gate as any page with no markup, so a video lands in the editor pre-filled,
+// link and thumbnail kept, for the cook to check before saving. Nothing here
+// parses a recipe: the paste parser reads the text once it is in the editor.
+//
+// Two places carry the description. The player JSON
+// (ytInitialPlayerResponse.videoDetails.shortDescription) has it when YouTube
+// serves the real page. Behind YouTube's "confirm you're not a bot" wall,
+// which it puts in front of server fetches at times, the player JSON is a
+// stub, but the page data (ytInitialData) still carries the description and
+// the title, so that is read too. When YouTube refuses the server outright,
+// the bookmarklet lifts the description in the cook's own browser, where
+// there is no wall, and rescueFromYouTubeText reads that.
 //
 // No DOM. Lazy loaded: only a YouTube link pays for these bytes.
 import { pageImage, rescueFromLines, type Rescued } from './rescue'
@@ -47,12 +55,19 @@ export function normalizeYouTubeWatchUrl(url: string): string | null {
   return id ? `https://www.youtube.com/watch?v=${id}` : null
 }
 
-// The player JSON, found by brace matching from its marker: the page is a
-// megabyte of script, and a regex over it would be slow and fragile.
-function playerResponse(html: string): string | null {
-  const marker = html.match(/ytInitialPlayerResponse\s*=/)
-  if (!marker || marker.index === undefined) return null
-  const start = html.indexOf('{', marker.index + marker[0].length)
+/** YouTube's own thumbnail for a video link; hqdefault exists for every video. */
+export function youtubeThumbnail(url: string): string | null {
+  const id = videoId(url)
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null
+}
+
+// A JSON object assigned in a script, found by brace matching from its
+// marker: the page is a megabyte of script, and a regex over it would be slow
+// and fragile.
+function jsonAfter(html: string, marker: RegExp): unknown {
+  const m = html.match(marker)
+  if (!m || m.index === undefined) return null
+  const start = html.indexOf('{', m.index + m[0].length)
   if (start === -1) return null
   let depth = 0
   let inString = false
@@ -67,24 +82,53 @@ function playerResponse(html: string): string | null {
     }
     if (ch === '"') inString = true
     else if (ch === '{') depth++
-    else if (ch === '}' && --depth === 0) return html.slice(start, i + 1)
+    else if (ch === '}' && --depth === 0) {
+      try {
+        return JSON.parse(html.slice(start, i + 1))
+      } catch {
+        return null
+      }
+    }
   }
   return null
 }
 
-/** The video's title and description, or null when this is not a watch page. */
-export function youtubeDescription(html: string): { title: string; description: string } | null {
-  const json = playerResponse(html)
-  if (!json) return null
-  let data: unknown
-  try {
-    data = JSON.parse(json)
-  } catch {
-    return null
+// The first value under `key` anywhere in a JSON tree, depth first. The page
+// data is a deep tree of renderers whose nesting YouTube rearranges; the key
+// names are the stable part.
+function find(node: unknown, key: string, depth = 0): unknown {
+  if (!node || typeof node !== 'object' || depth > 40) return undefined
+  const rec = node as Record<string, unknown>
+  if (key in rec) return rec[key]
+  for (const v of Object.values(rec)) {
+    const r = find(v, key, depth + 1)
+    if (r !== undefined) return r
   }
-  const details = (data as { videoDetails?: { title?: unknown; shortDescription?: unknown } }).videoDetails
-  const title = typeof details?.title === 'string' ? details.title.trim() : ''
-  const description = typeof details?.shortDescription === 'string' ? details.shortDescription.trim() : ''
+  return undefined
+}
+
+function str(v: unknown): string {
+  return typeof v === 'string' ? v.trim() : ''
+}
+
+/**
+ * The video's title and description, from the player JSON or, behind the bot
+ * wall, from the page data. Null when neither has them: not a watch page, or
+ * YouTube refused the fetch outright.
+ */
+export function youtubeDescription(html: string): { title: string; description: string } | null {
+  const player = jsonAfter(html, /ytInitialPlayerResponse\s*=/) as {
+    videoDetails?: { title?: unknown; shortDescription?: unknown }
+  } | null
+  let title = str(player?.videoDetails?.title)
+  let description = str(player?.videoDetails?.shortDescription)
+  if (!description) {
+    const data = jsonAfter(html, /ytInitialData\s*=/)
+    if (!data) return null
+    description = str((find(data, 'attributedDescription') as { content?: unknown } | undefined)?.content)
+    const runs = (find(data, 'videoPrimaryInfoRenderer') as { title?: { runs?: { text?: unknown }[] } } | undefined)?.title?.runs
+    if (!title && Array.isArray(runs)) title = runs.map((r) => str(r?.text)).join('').trim()
+  }
   return title && description ? { title, description } : null
 }
 
@@ -130,12 +174,23 @@ export function descriptionLines(description: string): string[] {
 }
 
 /**
- * A video whose description holds the recipe, as editor text with the video's
- * title and thumbnail, or null when the description is not recipe-shaped (a
- * vlog, a gear list, "cookbook in bio").
+ * A fetched watch page whose description holds the recipe, as editor text
+ * with the video's title and thumbnail, or null when the description is not
+ * recipe-shaped (a vlog, a gear list, "cookbook in bio") or not there at all.
+ * The thumbnail is the page's og:image, or YouTube's own for the id when the
+ * bot wall left that out too.
  */
-export function rescueFromYouTube(html: string): Rescued | null {
+export function rescueFromYouTube(html: string, url: string): Rescued | null {
   const video = youtubeDescription(html)
   if (!video) return null
-  return rescueFromLines(descriptionLines(video.description), video.title, pageImage(html))
+  return rescueFromLines(descriptionLines(video.description), video.title, pageImage(html) ?? youtubeThumbnail(url))
+}
+
+/**
+ * The same read over what the bookmarklet lifted from the live video page in
+ * the cook's own browser: the description text, and document.title with its
+ * " - YouTube" suffix.
+ */
+export function rescueFromYouTubeText(text: string, title: string, url: string): Rescued | null {
+  return rescueFromLines(descriptionLines(text), title.replace(/\s+-\s+YouTube$/i, '').trim(), youtubeThumbnail(url))
 }

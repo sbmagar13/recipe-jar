@@ -94,4 +94,26 @@ test('the import help screen offers a draggable bookmarklet', async ({ page }) =
   const href = await bm.getAttribute('href')
   expect(href).toContain('javascript:')
   expect(href).toContain('application/ld+json')
+  expect(href).toContain('ytInitialPlayerResponse')
+})
+
+test('bookmarklet text from a YouTube page lands in the editor, filed under the one watch URL', async ({ page }) => {
+  // What the bookmarklet sends from a video page: the page's JSON-LD (a
+  // VideoObject, not a recipe) and the description it lifted in the browser.
+  const payload = {
+    u: 'https://www.youtube.com/watch?v=abcdefghijk&t=12s',
+    t: 'Salmon Meal Prep - YouTube',
+    j: ['{"@context":"https://schema.org","@type":"VideoObject","name":"Salmon Meal Prep"}'],
+    i: [],
+    x: 'Ingredients: this makes 4 meals\n1 lb salmon fillet\n8 oz dry pasta\n2 cups cherry tomatoes\nDirections:\n1. Bake the salmon with the tomatoes.\n2. Toss with the pasta.\nFollow for more\n#cooking #salmon #mealprep',
+    m: '',
+  }
+  await page.goto('/#import=' + encodeURIComponent(JSON.stringify(payload)))
+  await expect(page.getByRole('heading', { level: 1, name: 'Add or paste a recipe' })).toBeVisible()
+  await expect(page.getByRole('status')).toContainText('read its description')
+  await expect(page.getByLabel('Recipe name')).toHaveValue('Salmon Meal Prep')
+  await expect(page.getByLabel('Servings')).toHaveValue('4')
+  await expect(page.getByLabel(/Steps/)).not.toHaveValue(/Follow for more|#cooking/)
+  await page.getByRole('button', { name: 'Create recipe' }).click()
+  await expect(page.getByRole('link', { name: 'source' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=abcdefghijk')
 })

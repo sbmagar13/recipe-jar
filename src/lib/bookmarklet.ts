@@ -7,7 +7,7 @@ interface ImportPayload {
   t: string // document title (fallback name)
   j: string[] // raw JSON-LD script contents
   i?: string[] // visible ingredient lines (microdata els, or .ingredient-row tables)
-  x?: string // the article's visible text, only when the page had no markup at all
+  x?: string // the article's visible text when the page had no markup at all, or a video's description
   m?: string // og:image, with x
 }
 
@@ -38,10 +38,15 @@ export function appOrigin(): string {
  * amounts; innerText on the live page naturally skips hidden unit variants.
  * When the page has neither, it sends the article's visible text (capped) and
  * the og:image instead, so the app can read the recipe out of plain text.
+ * On a YouTube video page it sends the video's description, from the page's
+ * own player data when that is for this video (YouTube navigates without
+ * reloading, so the global can be stale), else from the description element
+ * as shown: the server fetch runs into YouTube's bot wall at times, the
+ * cook's own browser never does.
  */
 export function bookmarkletCode(): string {
   // Kept as one line, ES5 only; `APP` is substituted with the canonical origin.
-  const src = `(function(){try{var d=document,q=function(s){return [].map.call(d.querySelectorAll(s),function(e){return (e.innerText||'').slice(0,200)})},j=[].map.call(d.querySelectorAll('script[type=\\"application/ld+json\\"]'),function(e){return e.textContent||''}),i=q('[itemprop~=\\"recipeIngredient\\"],[itemprop~=\\"ingredients\\"]');if(!i.length)i=q('.ingredient-row');var x='',m='';if(!j.length&&!i.length){var a=d.querySelector('article')||d.querySelector('main')||d.body,g=d.querySelector('meta[property=\\"og:image\\"]');x=(a.innerText||'').slice(0,8000);m=g&&g.content||''}var p={u:location.href,t:d.title,j:j,i:i.slice(0,80),x:x,m:m};var h=encodeURIComponent(JSON.stringify(p));window.open('APP/#import='+h,'_blank')}catch(e){alert('Recipe Jar: could not read this page.')}})()`
+  const src = `(function(){try{var d=document,q=function(s){return [].map.call(d.querySelectorAll(s),function(e){return (e.innerText||'').slice(0,200)})},j=[].map.call(d.querySelectorAll('script[type=\\"application/ld+json\\"]'),function(e){return e.textContent||''}),i=q('[itemprop~=\\"recipeIngredient\\"],[itemprop~=\\"ingredients\\"]');if(!i.length)i=q('.ingredient-row');var x='',m='',v=(location.search.match(/[?&]v=([^&]+)/)||[])[1]||(location.pathname.match(/[/](?:shorts|live|embed)[/]([^/?#]+)/)||[])[1]||'',y=window.ytInitialPlayerResponse;if(v&&/youtu/.test(location.hostname)){var e=d.querySelector('#description-inline-expander')||d.querySelector('#description');x=((y&&y.videoDetails&&y.videoDetails.videoId===v&&y.videoDetails.shortDescription)||(e&&e.innerText)||'').slice(0,8000)}else if(!j.length&&!i.length){var a=d.querySelector('article')||d.querySelector('main')||d.body,g=d.querySelector('meta[property=\\"og:image\\"]');x=(a.innerText||'').slice(0,8000);m=g&&g.content||''}var p={u:location.href,t:d.title,j:j,i:i.slice(0,80),x:x,m:m};var h=encodeURIComponent(JSON.stringify(p));window.open('APP/#import='+h,'_blank')}catch(e){alert('Recipe Jar: could not read this page.')}})()`
   return 'javascript:' + src.replace('APP', appOrigin())
 }
 

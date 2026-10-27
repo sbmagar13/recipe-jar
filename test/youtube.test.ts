@@ -5,8 +5,13 @@ import {
   isYouTubeUrl,
   normalizeYouTubeWatchUrl,
   rescueFromYouTube,
+  rescueFromYouTubeText,
   youtubeDescription,
+  youtubeThumbnail,
 } from '../src/lib/youtube'
+
+const WATCH = 'https://www.youtube.com/watch?v=abcdefghijk'
+const rescue = (html: string) => rescueFromYouTube(html, WATCH)
 
 // A watch page reduced to what matters: the player JSON inside a script, and
 // the og:image. The descriptions are made up, in the shapes creators use.
@@ -127,7 +132,7 @@ describe('descriptionLines', () => {
 
 describe('rescueFromYouTube', () => {
   it('turns a recipe description into editor text, title and thumbnail kept', () => {
-    const r = rescueFromYouTube(watchPage('Salmon Meal Prep', SALMON))
+    const r = rescue(watchPage('Salmon Meal Prep', SALMON))
     expect(r).not.toBeNull()
     expect(r!.title).toBe('Salmon Meal Prep')
     expect(r!.image).toBe('https://i.ytimg.com/vi/abcdefghijk/maxresdefault.jpg')
@@ -174,7 +179,7 @@ describe('rescueFromYouTube', () => {
       '',
       "🔔 Don't forget to LIKE and SUBSCRIBE!",
     ].join('\n')
-    const r = rescueFromYouTube(watchPage('Easy Instant Pot Kabsa', description))
+    const r = rescue(watchPage('Easy Instant Pot Kabsa', description))
     expect(r).not.toBeNull()
     expect(r!.text).not.toMatch(/[\u0600-\u06FF]|SUBSCRIBE/)
     const parsed = parseRecipeText(r!.text)
@@ -207,7 +212,7 @@ describe('rescueFromYouTube', () => {
       '',
       'This recipe ensures tender beef. Enjoy!',
     ].join('\n')
-    const r = rescueFromYouTube(watchPage('Restaurant Style Beef', description))
+    const r = rescue(watchPage('Restaurant Style Beef', description))
     expect(r).not.toBeNull()
     const parsed = parseRecipeText(r!.text)
     expect(parsed.ingredients.split('\n')).toEqual(['Beef and Marinade:', 'Beef: 2 lbs (lean cut)', 'Baking Soda: 1.5 tsp'])
@@ -216,7 +221,7 @@ describe('rescueFromYouTube', () => {
   })
 
   it('accepts a list with prose steps and no steps header, when the lines read like a recipe', () => {
-    const r = rescueFromYouTube(
+    const r = rescue(
       watchPage('Oat Pancakes', 'Ingredients\n1 cup oats\n1 banana\n2 eggs\nBlend everything and fry small pancakes in butter.'),
     )
     expect(r).not.toBeNull()
@@ -234,20 +239,85 @@ describe('rescueFromYouTube', () => {
   })
 
   it('returns null when the description is not a recipe', () => {
-    expect(rescueFromYouTube(watchPage('Vlog', 'Cookbook in bio 🔗\n\n#cooking'))).toBeNull()
+    expect(rescue(watchPage('Vlog', 'Cookbook in bio 🔗\n\n#cooking'))).toBeNull()
     expect(
-      rescueFromYouTube(
+      rescue(
         watchPage('Weekly vlog', 'New vlog out now\nCamera: Sony A7\nMusic: Epidemic Sound\nThanks so much for watching and see you next week.'),
       ),
     ).toBeNull()
     expect(
-      rescueFromYouTube(watchPage('My setup', 'Gear I use:\nCamera: Sony A7IV\nLens: 24-70mm\nMic: Rode Wireless\nSubscribe for more!')),
+      rescue(watchPage('My setup', 'Gear I use:\nCamera: Sony A7IV\nLens: 24-70mm\nMic: Rode Wireless\nSubscribe for more!')),
     ).toBeNull()
     // A header with a list under it, but no method at all.
-    expect(rescueFromYouTube(watchPage('Shopping', 'Ingredients\n1 cup oats\n1 banana\n2 eggs'))).toBeNull()
+    expect(rescue(watchPage('Shopping', 'Ingredients\n1 cup oats\n1 banana\n2 eggs'))).toBeNull()
   })
 
   it('returns null for a page that is not a watch page', () => {
-    expect(rescueFromYouTube('<html><body><h1>Hello</h1></body></html>')).toBeNull()
+    expect(rescue('<html><body><h1>Hello</h1></body></html>')).toBeNull()
+  })
+})
+
+// What YouTube serves behind its "confirm you're not a bot" wall: a player
+// JSON stub and no og:image, but the page data still carries the description.
+function botPage(title: string, description: string): string {
+  const player = JSON.stringify({ responseContext: {}, playabilityStatus: { status: 'LOGIN_REQUIRED', reason: 'Sign in to confirm you’re not a bot' } })
+  const data = JSON.stringify({
+    contents: {
+      twoColumnWatchNextResults: {
+        results: {
+          results: {
+            contents: [
+              { videoPrimaryInfoRenderer: { title: { runs: [{ text: title }] } } },
+              { videoSecondaryInfoRenderer: { attributedDescription: { content: description } } },
+            ],
+          },
+        },
+      },
+    },
+  })
+  return `<!DOCTYPE html><html><head><title> - YouTube</title></head><body><script>var ytInitialPlayerResponse = ${player};</script><script>var ytInitialData = ${data};</script></body></html>`
+}
+
+describe('behind the bot wall', () => {
+  it('reads the title and description from the page data when the player JSON is a stub', () => {
+    const got = youtubeDescription(botPage('Salmon Meal Prep', SALMON))
+    expect(got?.title).toBe('Salmon Meal Prep')
+    expect(got?.description).toMatch(/^480 cals/)
+  })
+
+  it("rescues the recipe, with YouTube's own thumbnail for the id", () => {
+    const r = rescueFromYouTube(botPage('Salmon Meal Prep', SALMON), 'https://youtu.be/abcdefghijk')
+    expect(r).not.toBeNull()
+    expect(r!.title).toBe('Salmon Meal Prep')
+    expect(r!.image).toBe('https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg')
+    expect(parseRecipeText(r!.text).ingredients.split('\n')).toHaveLength(7)
+  })
+
+  it('returns null when YouTube refused the server outright', () => {
+    const stub = '<html><script>var ytInitialPlayerResponse = {"playabilityStatus":{"status":"LOGIN_REQUIRED"}};</script></html>'
+    expect(youtubeDescription(stub)).toBeNull()
+    expect(rescueFromYouTube(stub, WATCH)).toBeNull()
+  })
+})
+
+describe('rescueFromYouTubeText (the bookmarklet path)', () => {
+  it('reads the lifted description, drops the " - YouTube" title suffix, and uses the thumbnail for the id', () => {
+    const r = rescueFromYouTubeText(SALMON, 'Salmon Meal Prep - YouTube', 'https://www.youtube.com/shorts/abcdefghijk')
+    expect(r).not.toBeNull()
+    expect(r!.title).toBe('Salmon Meal Prep')
+    expect(r!.image).toBe('https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg')
+    expect(parseRecipeText(r!.text).steps.split('\n')).toHaveLength(4)
+  })
+
+  it('returns null for a description that is not a recipe', () => {
+    expect(rescueFromYouTubeText('Cookbook in bio 🔗\n\n#cooking', 'Vlog - YouTube', WATCH)).toBeNull()
+  })
+})
+
+describe('youtubeThumbnail', () => {
+  it('builds the thumbnail from any video link form, null otherwise', () => {
+    expect(youtubeThumbnail('https://youtu.be/abcdefghijk?t=1')).toBe('https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg')
+    expect(youtubeThumbnail('https://m.youtube.com/watch?v=abcdefghijk')).toBe('https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg')
+    expect(youtubeThumbnail('https://example.com/x')).toBeNull()
   })
 })

@@ -83,3 +83,38 @@ test('a video whose description is not a recipe still says so', async ({ page })
   await page.getByLabel('Recipe URL').press('Enter')
   await expect(page.getByRole('alert')).toContainText('No recipe found on that page.')
 })
+
+// What YouTube serves behind its "confirm you're not a bot" wall, which it
+// puts in front of server fetches at times: a player JSON stub, but the page
+// data still carries the description. And the page when it refuses outright.
+const BOT_PAGE = `<!DOCTYPE html><html><head><title> - YouTube</title></head><body><script>var ytInitialPlayerResponse = {"playabilityStatus":{"status":"LOGIN_REQUIRED","reason":"Sign in to confirm you’re not a bot"}};</script><script>var ytInitialData = ${JSON.stringify({
+  contents: { twoColumnWatchNextResults: { results: { results: { contents: [
+    { videoPrimaryInfoRenderer: { title: { runs: [{ text: 'Salmon Meal Prep' }] } } },
+    { videoSecondaryInfoRenderer: { attributedDescription: { content: DESCRIPTION } } },
+  ] } } } },
+})};</script></body></html>`
+const REFUSED_PAGE = `<!DOCTYPE html><html><head><title> - YouTube</title></head><body><script>var ytInitialPlayerResponse = {"playabilityStatus":{"status":"LOGIN_REQUIRED","reason":"Sign in to confirm you’re not a bot"}};</script></body></html>`
+
+test("behind YouTube's bot wall the description is still read, with the thumbnail for the id", async ({ page }) => {
+  await page.route('**/api/proxy*', (route) =>
+    route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: BOT_PAGE })
+  )
+  await page.getByLabel('Recipe URL').fill('https://www.youtube.com/watch?v=abcdefghijk')
+  await page.getByLabel('Recipe URL').press('Enter')
+  await expect(page.getByRole('heading', { level: 1, name: 'Add or paste a recipe' })).toBeVisible()
+  await expect(page.getByLabel('Recipe name')).toHaveValue('Salmon Meal Prep')
+  await expect(page.getByLabel(/Ingredients/)).toHaveValue(/^1 lb salmon fillet/)
+  await page.getByRole('button', { name: 'Create recipe' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Salmon Meal Prep' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'source' })).toHaveAttribute('href', 'https://www.youtube.com/watch?v=abcdefghijk')
+})
+
+test('when YouTube refuses the server, the error says so and points to the bookmarklet', async ({ page }) => {
+  await page.route('**/api/proxy*', (route) =>
+    route.fulfill({ status: 200, contentType: 'text/plain; charset=utf-8', body: REFUSED_PAGE })
+  )
+  await page.getByLabel('Recipe URL').fill('https://youtu.be/abcdefghijk')
+  await page.getByLabel('Recipe URL').press('Enter')
+  await expect(page.getByRole('alert')).toContainText('YouTube would not show that video to our server')
+  await expect(page.getByRole('button', { name: /Use the bookmarklet/ })).toBeVisible()
+})

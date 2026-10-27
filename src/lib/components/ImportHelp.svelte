@@ -55,6 +55,11 @@
   </p>
 
   <p class="hint">
+    On a YouTube video that would not import? The bookmarklet works there too: it
+    reads the video's description in your browser, where YouTube shows the real page.
+  </p>
+
+  <p class="hint">
     On a phone, or don't have a bookmarks bar? Copy the recipe text and
     <button class="linklike" onclick={ontypein}>paste it to auto-fill</button>,
     then fix anything that looks off. A one-tap phone version is coming with the installable app.
